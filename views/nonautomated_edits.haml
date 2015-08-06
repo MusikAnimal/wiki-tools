@@ -1,0 +1,33 @@
+%main.counter
+  %h3 Non-automated edit counter
+  %p Plain and simple.
+
+  - unless params[:data]
+    %form
+      %fieldset.basic
+        %label{for: "username"} Username
+        %input#username{type: "text", placeholder: "Username", name: "username", required: true}
+
+      %fieldset.dropdowns
+        %label{for: "namespace"} Namespace
+        %input#namespace{type: "hidden", name: "namespace", value: namespace}
+        %div.dropdown
+          %div#dropdown_select
+            = namespaceText
+          %ul.namespace-selector
+            - namespaces.keys.each do |namespaceId|
+              %li{"data-id" => namespaceId}
+                = namespaces[namespaceId]
+
+      %fieldset.options
+        %div.checkbox
+          %input#tools{type: "checkbox", name: "tools", value: "on", checked: params[:tools]}
+          %label{for: "tools"} Include tool counts
+        %div.checkbox
+          %input#contribs{type: "checkbox", name: "contribs", value: "on", checked: params[:contribs]}
+          %label{for: "contribs"} List contributions
+
+      %button Submit
+  - else
+    %div
+      There's data!

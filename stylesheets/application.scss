@@ -1,0 +1,178 @@
+@import 'mixins';
+
+body {
+  background: white;
+  font-family: 'Roboto', serif;
+  margin: 0;
+  padding: 10px;
+}
+
+h1 {
+  margin: 0 0 10px;
+}
+
+input {
+  border: solid 1px black;
+  font-family: 'Roboto', serif;
+  letter-spacing: 0.1em;
+  width: 300px;
+  &:focus {
+    outline: #888 auto 5px;
+  }
+  &[type='checkbox'] {
+    position: absolute;
+    visibility: hidden;
+  }
+  &:required, &:invalid {
+    box-shadow: none;
+  }
+}
+
+a, button, div, input {
+  font-size: 14px;
+  &:-moz-placeholder {
+    box-shadow: none !important;
+  }
+  &:focus {
+    outline: #888 auto 5px;
+  }
+}
+
+button {
+  background: white;
+  border: solid 1px black;
+  margin-top: 20px;
+  &:active {
+    background: #EEE;
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+input[type=text], button {
+  display: block;
+  height: 40px;
+  padding: 10px;
+  vertical-align: top;
+  @include prefix(box-sizing, border-box);
+}
+
+.dropdown {
+  border: solid 1px black;
+  cursor: pointer;
+  display: inline-block;
+  height: 40px;
+  line-height: 40px;
+  position: relative;
+  width: 300px;
+  @include prefix(box-sizing, border-box);
+  #dropdown_select {
+    padding: 0 10px;
+    &:after {
+      border-color: black transparent transparent;
+      border-width: 12px 8px 0 8px;
+      border-style: solid;
+      content: "";
+      display: block;
+      height: 0;
+      position: absolute;
+      right: 10px;
+      top: 13px;
+      width: 0;
+    }
+  }
+  ul {
+    background: white;
+    border: solid 1px black;
+    display: none;
+    left: -1px;
+    list-style: none;
+    margin: 0;
+    max-height: 160px;
+    overflow-y: scroll;
+    padding: 0;
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    z-index: 2;
+    &.open {
+      display: block;
+    }
+    li {
+      padding: 0 10px;
+      &:hover {
+        background: #EEE;
+      }
+    }
+  }
+}
+
+.checkbox {
+  margin: 10px 0;
+  padding-left: 20px;
+  position: relative;
+  label {
+    &:before {
+      background-color: white;
+      border: solid 1px black;
+      content : "";
+      display: inline-block;
+      height: 14px;
+      left: 0px;
+      position: absolute;
+      top: 0px;
+      width: 14px;
+    }
+    &:after {
+      background-color: black;
+      content: "";
+      display: none;
+      height: 10px;
+      left: 3px;
+      position: absolute;
+      top: 3px;
+      width: 10px;
+    }
+  }
+  input:checked + label:after {
+    display: block;
+  }
+  input:active + label:before {
+    background-color: #DDDDDD;
+  }
+}
+
+form {
+  &.busy {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+fieldset {
+  border: none;
+  margin: 0 0 10px;
+  padding: 0;
+  &.options {
+    margin-left: 10px;
+  }
+  &.dropdowns {
+    label {
+      display: block;
+    }
+  }
+}
+
+footer {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 40px;
+  a {
+    color: black;
+    text-decoration: none;
+    &:focus {
+      outline: #888 auto 5px;
+    }
+  }
+}

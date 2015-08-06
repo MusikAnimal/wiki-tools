@@ -1,0 +1,1 @@
+!function(){$(".text").on("click",function(){alert("yeah"),$(".namespace-selector").addClass("open")})}();

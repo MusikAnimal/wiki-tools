@@ -1,0 +1,17 @@
+@mixin clearfix {
+  clear: both;
+  &::after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+  }
+}
+
+@mixin prefix($prop, $val) {
+  @each $pre in -webkit-, -moz-, -ms-, -o- {
+    #{$pre}#{$prop}: #{$val};
+  }
+  #{$prop}: #{$val};
+}
