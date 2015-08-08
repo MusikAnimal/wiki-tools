@@ -20,14 +20,43 @@
 
     $("form").submit(function(e) {
       e.preventDefault();
+
+      var path = document.location.pathname.split("/").pop(),
+        params = $(this).serialize();
+
+      history.pushState({}, $("form[name=username]").val() + " - Nonautomated Counter from MusikAnimal", path + "?" + params);
+
       $(this).addClass("busy");
-      $("main").append("<p>Thinking...</p>");
+      $(".output").html("<p>Thinking...</p>");
       $.ajax({
         url: "/nonautomated_edits",
         method: "POST",
-        data: $(this).serialize()
-      }).done(function(resp) {
-        debugger;
+        data: params
+      }).success(function(resp) {
+        $(this).addClass("hide");
+        $(".output").html(
+          resp.username + " has <b>" + resp.count + " edits</b> in the " + resp.namespaceText + " namespace"
+        );
+
+        if(resp.contribs) {
+          $(".output").append("<ul>");
+          $.each(resp.contribs, function(index, contribData) {
+            var year = contribData.rev_timestamp.substr(0, 4),
+              month = contribData.rev_timestamp.substr(4, 2),
+              day = contribData.rev_timestamp.substr(6, 2),
+              hour = contribData.rev_timestamp.substr(8, 2),
+              minute = contribData.rev_timestamp.substr(10, 2),
+                monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+              ];
+
+            $(".output ul").append(
+              Handlebars.templates.contrib(contribData)
+            );
+          });
+        }
+      }.bind(this)).error(function(resp) {
+        alert("Something went wrong. Sorry.");
       });
     });
 

@@ -1,11 +1,29 @@
+html {
+  height: 100%; }
+
 body {
   background: white;
   font-family: 'Roboto', serif;
   margin: 0;
-  padding: 10px; }
+  min-height: 100%;
+  padding: 10px 10px 57px;
+  position: relative;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box; }
 
 h1 {
   margin: 0 0 10px; }
+
+h3 {
+  margin: 0 0 15px; }
+
+header {
+  border-bottom: solid 1px black;
+  margin-bottom: 20px;
+  padding-bottom: 10px; }
 
 input {
   border: solid 1px black;
@@ -122,9 +140,19 @@ input[type=text], button {
   .checkbox input:active + label:before {
     background-color: #DDDDDD; }
 
-form.busy {
-  opacity: 0.5;
-  pointer-events: none; }
+form {
+  height: 300px;
+  -webkit-transition: height 500ms, opacity 1s ease;
+  -moz-transition: height 500ms, opacity 1s ease;
+  -ms-transition: height 500ms, opacity 1s ease;
+  -o-transition: height 500ms, opacity 1s ease;
+  transition: height 500ms, opacity 1s ease; }
+  form.busy {
+    opacity: 0.5;
+    pointer-events: none; }
+  form.hide {
+    height: 0;
+    opacity: 0; }
 
 fieldset {
   border: none;
@@ -135,10 +163,23 @@ fieldset {
   fieldset.dropdowns label {
     display: block; }
 
+.output {
+  font-size: 18px; }
+  .output ul {
+    font-size: 15px; }
+
 footer {
+  background: white;
+  border-top: solid 1px black;
+  bottom: 0;
   font-size: 14px;
   font-weight: bold;
-  margin-top: 40px; }
+  height: 57px;
+  left: 0;
+  line-height: 57px;
+  padding: 0 20px;
+  position: absolute;
+  width: 100%; }
   footer a {
     color: black;
     text-decoration: none; }

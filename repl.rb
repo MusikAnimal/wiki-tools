@@ -14,6 +14,7 @@ module Repl
       @db = db
     end
 
+    # COUNTERS
     def countArticlesCreated(userName)
       count("SELECT count(*) FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " +
         "WHERE rev_user_text = \"#{userName}\" AND rev_timestamp > 1 AND rev_parent_id = 0 " +
@@ -48,6 +49,7 @@ module Repl
       countAutomatedEdits(userName, false, tool)
     end
 
+    # GETTERS
     def getArticlesCreated(userName)
       query = "SELECT page_title, rev_timestamp AS timestamp FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " +
         "WHERE rev_user_text = \"#{userName}\" AND rev_timestamp > 1 AND rev_parent_id = 0 " +
@@ -62,12 +64,16 @@ module Repl
       articles
     end
 
-    def getNonAutomatedEdits(userName)
-      # SELECT rev_id, rev_timestamp, rev_minor_edit, rev_comment FROM enwiki_p.page
-      #   JOIN enwiki_p.revision_userindex ON page_id = rev_page
-      #   WHERE rev_user_text = "Roches" AND page_namespace = 0
-      #   AND rev_comment NOT RLIKE "^Reverted edits by .* (talk) to last version by .*|WP:HG|WP:TW|WP:STiki|Wikipedia:Igloo|Wikipedia:Tools/Navigation_popups|popups|WP:AFCH|Wikipedia:AWB|WP:AWB|WP:CLEANER|WP:HOTCAT|WP:HC|WP:REFILL|User:Jfmantis/WikiPatroller"
-      #   LIMIT 500;
+    def getAutomatedNamespaceEdits(userName, namespace, nonAutomated = false, tool = nil)
+      get("SELECT #{revAttrs} FROM #{@db}.page " +
+        "JOIN enwiki_p.revision_userindex ON page_id = rev_page " +
+        "WHERE rev_user_text = \"#{userName}\" AND page_namespace = #{namespace} " +
+        "AND rev_comment#{" NOT" if nonAutomated} RLIKE \"#{toolRegexes(tool).join("|")}\" " +
+        "LIMIT 50")
+    end
+
+    def getNonAutomatedNamespaceEdits(userName, namespace)
+      getAutomatedNamespaceEdits(userName, namespace, true)
     end
 
     private
@@ -77,7 +83,15 @@ module Repl
       @client.query(query).first.values[0].to_i
     end
 
-    # FIXME: this can just return an array and it will work with toolRegexes[index]
+    def get(query)
+      puts query
+      @client.query(query)
+    end
+
+    def revAttrs
+      ["rev_id", "rev_timestamp", "rev_minor_edit", "rev_comment"].join(", ")
+    end
+
     def toolRegexes(index)
       tools = [
         "^Reverted edits by .* \(talk\) to last version by .*", # Generic revert

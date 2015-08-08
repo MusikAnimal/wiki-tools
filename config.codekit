@@ -24,6 +24,28 @@
 		"outputStyle": 0,
 		"syntaxCheckerStyle": 0
 		},
+	"\/javascripts\/contrib.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/javascripts\/contrib.js",
+		"outputAbbreviatedPath": "\/javascripts\/min\/contrib-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
+	"\/javascripts\/handlebars-v3.0.3.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/javascripts\/handlebars-v3.0.3.js",
+		"outputAbbreviatedPath": "\/javascripts\/min\/handlebars-v3.0.3-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
 	"\/javascripts\/jquery-2.1.1.min.js": {
 		"fileType": 64,
 		"ignore": 1,
@@ -192,8 +214,20 @@
 			},
 		{
 			"followForSyntaxChecking": 1,
-			"linkedFileAbbreviatedPath": "\/javascripts\/main.js",
+			"linkedFileAbbreviatedPath": "\/javascripts\/handlebars-v3.0.3.js",
 			"position": 1,
+			"type": 0
+			},
+		{
+			"followForSyntaxChecking": 1,
+			"linkedFileAbbreviatedPath": "\/javascripts\/contrib.js",
+			"position": 2,
+			"type": 0
+			},
+		{
+			"followForSyntaxChecking": 1,
+			"linkedFileAbbreviatedPath": "\/javascripts\/main.js",
+			"position": 3,
 			"type": 0
 			}
 		]

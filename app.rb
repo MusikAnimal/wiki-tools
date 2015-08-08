@@ -33,14 +33,29 @@ post '/nonautomated_edits' do
 
   replClient = Auth.getRepl
 
-  data = replClient.countNonAutomatedNamespaceEdits(
+  status 200
+
+  countData = replClient.countNonAutomatedNamespaceEdits(
     params["username"],
     params["namespace"]
   )
 
-  status 200
+  res = {
+    username: params["username"],
+    namespace: params["namespace"],
+    namespaceText: namespaces[params["namespace"].to_i],
+    count: countData
+  }
 
-  {count: data}.to_json
+  if params["contribs"]
+    contribsData = replClient.getNonAutomatedNamespaceEdits(
+      params["username"],
+      params["namespace"]
+    )
+    res[:contribs] = contribsData.to_a
+  end
+
+  res.to_json
 end
 
 get '/counter' do

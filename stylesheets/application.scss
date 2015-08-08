@@ -1,14 +1,31 @@
 @import 'mixins';
 
+html {
+  height: 100%;
+}
+
 body {
   background: white;
   font-family: 'Roboto', serif;
   margin: 0;
-  padding: 10px;
+  min-height: 100%;
+  padding: 10px 10px 57px;
+  position: relative;
+  @include prefix(box-sizing, border-box);
 }
 
 h1 {
   margin: 0 0 10px;
+}
+
+h3 {
+  margin: 0 0 15px;
+}
+
+header {
+  border-bottom: solid 1px black;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
 }
 
 input {
@@ -144,9 +161,15 @@ input[type=text], button {
 }
 
 form {
+  height: 300px;
+  @include prefix(transition, "height 500ms, opacity 1s ease");
   &.busy {
     opacity: 0.5;
     pointer-events: none;
+  }
+  &.hide {
+    height: 0;
+    opacity: 0;
   }
 }
 
@@ -164,10 +187,25 @@ fieldset {
   }
 }
 
+.output {
+  font-size: 18px;
+  ul {
+    font-size: 15px;
+  }
+}
+
 footer {
+  background: white;
+  border-top: solid 1px black;
+  bottom: 0;
   font-size: 14px;
   font-weight: bold;
-  margin-top: 40px;
+  height: 57px;
+  left: 0;
+  line-height: 57px;
+  padding: 0 20px;
+  position: absolute;
+  width: 100%;
   a {
     color: black;
     text-decoration: none;
