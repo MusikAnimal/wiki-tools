@@ -24,8 +24,14 @@ h3 {
 
 header {
   border-bottom: solid 1px black;
-  margin-bottom: 20px;
   padding-bottom: 10px;
+}
+
+.another-query {
+  cursor: pointer;
+  display: none;
+  font-weight: bold;
+  margin-top: 10px;
 }
 
 input {
@@ -162,15 +168,17 @@ input[type=text], button {
 
 form {
   height: 300px;
+  margin-top: 20px;
   @include prefix(transition, "height 500ms, opacity 1s ease");
-  &.busy {
-    opacity: 0.5;
-    pointer-events: none;
-  }
   &.hide {
     height: 0;
     opacity: 0;
   }
+}
+
+.busy {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 fieldset {
@@ -187,11 +195,37 @@ fieldset {
   }
 }
 
-.output {
+.output, .total-count {
   font-size: 18px;
   ul {
     font-size: 15px;
   }
+  a {
+    color: #0033cc;
+    text-decoration: none;
+    &:visited {
+      color: #4365cc;
+    }
+  }
+  .minor-edit {
+    font-weight: bold;
+  }
+}
+
+.prev-page {
+  display: none;
+  float: left;
+}
+.next-page {
+  display: none;
+  float: right;
+}
+.contrib-nav {
+  font-weight: bold;
+  height: 20px;
+  padding: 10px 0;
+  @include clearfix;
+  div { cursor: pointer; }
 }
 
 footer {
@@ -206,6 +240,7 @@ footer {
   padding: 0 20px;
   position: absolute;
   width: 100%;
+  @include prefix(box-sizing, border-box);
   a {
     color: black;
     text-decoration: none;

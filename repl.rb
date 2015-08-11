@@ -21,32 +21,9 @@ module Repl
         "AND page_namespace = 0 AND page_is_redirect = 0;")
     end
 
-    def countAutomatedEdits(userName, nonAutomated = false, tool = nil)
-      count("SELECT count(*) FROM #{@db}.revision_userindex WHERE rev_user_text=\"#{userName}\" " +
-        "AND rev_comment#{" NOT" if nonAutomated} RLIKE \"#{toolRegexes(tool).join("|")}\";")
-    end
-
-    def countAutomatedNamespaceEdits(userName, namespace, nonAutomated = false, tool = nil)
-      count("SELECT count(*) FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " +
-        "WHERE rev_user_text = \"#{userName}\" AND page_namespace = #{namespace} " +
-        "AND rev_comment#{" NOT" if nonAutomated} RLIKE \"#{toolRegexes(tool).join("|")}\";")
-    end
-
-    def countNamespaceEdits(userName, namespace = 0)
-      count("SELECT count(*) FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " +
-        "WHERE rev_user_text = \"#{userName}\" AND page_namespace = #{namespace};")
-    end
-
-    def countNonAutomatedEdits(userName)
-      countAutomatedEdits(userName, true)
-    end
-
-    def countNonAutomatedNamespaceEdits(userName, namespace)
-      countAutomatedNamespaceEdits(userName, namespace, true)
-    end
-
-    def countToolEdits(userName, tool)
-      countAutomatedEdits(userName, false, tool)
+    def countEdits(opts)
+      opts[:count] = true
+      getEdits(opts)
     end
 
     # GETTERS
@@ -64,16 +41,26 @@ module Repl
       articles
     end
 
-    def getAutomatedNamespaceEdits(userName, namespace, nonAutomated = false, tool = nil)
-      get("SELECT #{revAttrs} FROM #{@db}.page " +
-        "JOIN enwiki_p.revision_userindex ON page_id = rev_page " +
-        "WHERE rev_user_text = \"#{userName}\" AND page_namespace = #{namespace} " +
-        "AND rev_comment#{" NOT" if nonAutomated} RLIKE \"#{toolRegexes(tool).join("|")}\" " +
-        "LIMIT 50")
-    end
+    def getEdits(opts)
+      opts = {
+        namespace: nil,
+        nonAutomated: nil,
+        tool: nil,
+        limit: 50,
+        offset: 0,
+        count: false
+      }.merge(opts)
 
-    def getNonAutomatedNamespaceEdits(userName, namespace)
-      getAutomatedNamespaceEdits(userName, namespace, true)
+      query = "SELECT " +
+        (opts[:count] ? "COUNT(*) " : "#{revAttrs} ") +
+        "FROM #{@db}.page " +
+        "JOIN enwiki_p.revision_userindex ON page_id = rev_page " +
+        "WHERE rev_user_text = \"#{opts[:username]}\" "+
+        (opts[:namespace] ? "AND page_namespace = #{opts[:namespace]} " : "") +
+        (!opts[:nonAutomated].nil? ? "AND rev_comment #{"NOT " if opts[:nonAutomated]}RLIKE \"#{toolRegexes(opts[:tool]).join("|")}\" " : "") +
+        (!opts[:count] ? "ORDER BY rev_id DESC LIMIT #{opts[:limit]} OFFSET #{opts[:offset]}" : "")
+
+      opts[:count] ? count(query) : get(query)
     end
 
     private
@@ -89,7 +76,7 @@ module Repl
     end
 
     def revAttrs
-      ["rev_id", "rev_timestamp", "rev_minor_edit", "rev_comment"].join(", ")
+      ["page_title", "page_len", "rev_id", "rev_page", "rev_timestamp", "rev_minor_edit", "rev_comment", "rev_len"].join(", ")
     end
 
     def toolRegexes(index)

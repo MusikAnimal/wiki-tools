@@ -35,10 +35,11 @@ post '/nonautomated_edits' do
 
   status 200
 
-  countData = replClient.countNonAutomatedNamespaceEdits(
-    params["username"],
-    params["namespace"]
-  )
+  countData = replClient.countEdits({
+    username: params["username"],
+    namespace: params["namespace"],
+    nonAutomated: true
+  })
 
   res = {
     username: params["username"],
@@ -48,14 +49,26 @@ post '/nonautomated_edits' do
   }
 
   if params["contribs"]
-    contribsData = replClient.getNonAutomatedNamespaceEdits(
-      params["username"],
-      params["namespace"]
+    contribsData = replClient.getEdits(
+      username: params["username"],
+      namespace: params["namespace"],
+      offset: params["offset"],
+      nonAutomated: true
     )
     res[:contribs] = contribsData.to_a
   end
 
-  res.to_json
+  begin
+    return res.to_json
+  rescue Encoding::UndefinedConversionError
+    res[:contribs].map! do |contrib|
+      contrib.merge({
+        contrib["page_title"] => contrib["page_title"].force_encoding('utf-8'),
+        contrib["rev_comment"] => contrib["rev_comment"].force_encoding('utf-8')
+      })
+    end
+    return res.to_json
+  end
 end
 
 get '/counter' do

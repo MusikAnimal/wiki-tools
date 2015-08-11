@@ -4138,15 +4138,35 @@ return /******/ (function(modules) { // webpackBootstrap
 
 (function() {
   var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
-templates['contrib'] = template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  var helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
-  return "<li>\n  (<a href=\"https://en.wikipedia.org/wiki/Special:Diff/"
+templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
+  return "<span class=\"minor-edit\">m</span>";
+  },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, buffer = "<li>\n  <a href=\""
+    + escapeExpression(((helper = (helper = helpers.project_path || (depth0 != null ? depth0.project_path : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"project_path","hash":{},"data":data}) : helper)))
+    + "/wiki/Special:PermaLink/"
     + escapeExpression(((helper = (helper = helpers.rev_id || (depth0 != null ? depth0.rev_id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"rev_id","hash":{},"data":data}) : helper)))
-    + "\">diff</a> | hist)\n  "
-    + escapeExpression(((helper = (helper = helpers.rev_timestamp || (depth0 != null ? depth0.rev_timestamp : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"rev_timestamp","hash":{},"data":data}) : helper)))
-    + "\n  <i>"
+    + "\">"
+    + escapeExpression(((helper = (helper = helpers.datestamp || (depth0 != null ? depth0.datestamp : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"datestamp","hash":{},"data":data}) : helper)))
+    + "</a>\n  (<a href=\""
+    + escapeExpression(((helper = (helper = helpers.project_path || (depth0 != null ? depth0.project_path : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"project_path","hash":{},"data":data}) : helper)))
+    + "/wiki/Special:Diff/"
+    + escapeExpression(((helper = (helper = helpers.rev_id || (depth0 != null ? depth0.rev_id : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"rev_id","hash":{},"data":data}) : helper)))
+    + "\">diff</a> | <a href=\""
+    + escapeExpression(((helper = (helper = helpers.project_path || (depth0 != null ? depth0.project_path : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"project_path","hash":{},"data":data}) : helper)))
+    + "/w/index.php?title="
+    + escapeExpression(((helper = (helper = helpers.page_title || (depth0 != null ? depth0.page_title : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"page_title","hash":{},"data":data}) : helper)))
+    + "&action=history\">hist</a>)\n  . .\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.minor_edit : depth0), {"name":"if","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data});
+  if (stack1 != null) { buffer += stack1; }
+  return buffer + "\n  <a href=\""
+    + escapeExpression(((helper = (helper = helpers.project_path || (depth0 != null ? depth0.project_path : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"project_path","hash":{},"data":data}) : helper)))
+    + "/wiki/"
+    + escapeExpression(((helper = (helper = helpers.page_title || (depth0 != null ? depth0.page_title : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"page_title","hash":{},"data":data}) : helper)))
+    + "\">"
+    + escapeExpression(((helper = (helper = helpers.humanized_page_title || (depth0 != null ? depth0.humanized_page_title : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"humanized_page_title","hash":{},"data":data}) : helper)))
+    + "</a>\n  (<i>"
     + escapeExpression(((helper = (helper = helpers.rev_comment || (depth0 != null ? depth0.rev_comment : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"rev_comment","hash":{},"data":data}) : helper)))
-    + "</i>\n</li>";
+    + "</i>)\n</li>";
 },"useData":true});
 })();
 
@@ -4170,11 +4190,12 @@ templates['contrib'] = template({"compiler":[6,">= 2.0.0-beta.1"],"main":functio
       $("#dropdown_select").text($(this).text());
     });
 
+    var path = document.location.pathname.split("/").pop();
+
     $("form").submit(function(e) {
       e.preventDefault();
 
-      var path = document.location.pathname.split("/").pop(),
-        params = $(this).serialize();
+      var params = $(this).serialize();
 
       history.pushState({}, $("form[name=username]").val() + " - Nonautomated Counter from MusikAnimal", path + "?" + params);
 
@@ -4186,30 +4207,36 @@ templates['contrib'] = template({"compiler":[6,">= 2.0.0-beta.1"],"main":functio
         data: params
       }).success(function(resp) {
         $(this).addClass("hide");
-        $(".output").html(
-          resp.username + " has <b>" + resp.count + " edits</b> in the " + resp.namespaceText + " namespace"
+        $(".total-count").html(
+          resp.username + " has approximately <b>" + resp.count + " non-automated edits</b> in the " + resp.namespaceText + " namespace"
         );
 
         if(resp.contribs) {
-          $(".output").append("<ul>");
-          $.each(resp.contribs, function(index, contribData) {
-            var year = contribData.rev_timestamp.substr(0, 4),
-              month = contribData.rev_timestamp.substr(4, 2),
-              day = contribData.rev_timestamp.substr(6, 2),
-              hour = contribData.rev_timestamp.substr(8, 2),
-              minute = contribData.rev_timestamp.substr(10, 2),
-                monthNames = ["January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"
-              ];
-
-            $(".output ul").append(
-              Handlebars.templates.contrib(contribData)
-            );
-          });
+          insertContribs(resp);
+        } else {
+          $(".output").html("");
         }
+
+        $(".another-query").show();
       }.bind(this)).error(function(resp) {
         alert("Something went wrong. Sorry.");
-      });
+        $(".output").html("");
+        $(this).removeClass("busy");
+      }.bind(this));
+    });
+
+    $(".another-query").on("click", function() {
+      $(".another-query").hide();
+      $(".total-count").html("");
+      $(".output").html("");
+      $("form").removeClass("hide").removeClass("busy")[0].reset();
+      history.pushState({}, "Nonautomated Counter from MusikAnimal", path);
+    });
+
+    $(".next-page").on("click", function() {
+      $("#offset").val(parseInt($("#offset").val()) + 50);
+      $(".prev-page, .next-page").hide();
+      $("form").trigger("submit");
     });
 
     // accessibility hacks
@@ -4219,6 +4246,42 @@ templates['contrib'] = template({"compiler":[6,">= 2.0.0-beta.1"],"main":functio
     //   }
     // });
   });
+
+  function insertContribs(resp) {
+    $(".output").html("<ul>");
+
+    $.each(resp.contribs, function(index, contribData) {
+      var year = contribData.rev_timestamp.substr(0, 4),
+        month = contribData.rev_timestamp.substr(4, 2),
+        day = contribData.rev_timestamp.substr(6, 2),
+        hour = contribData.rev_timestamp.substr(8, 2),
+        minute = contribData.rev_timestamp.substr(10, 2),
+        monthNames = ["January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"
+        ];
+
+      contribData.project_path = "https://en.wikipedia.org";
+      contribData.datestamp = hour + ":" + minute + ", " + day + " " + monthNames[parseInt(month) - 1] + " " + year;
+      contribData.minor_edit = !!contribData.rev_minor_edit;
+      contribData.humanized_page_title = contribData.page_title.replace(/_/g, " ");
+
+      $(".output ul").append(
+        Handlebars.templates.contrib(contribData)
+      );
+    });
+
+    if(parseInt($("[name=offset]").val()) === 0) {
+      $(".prev-page").hide();
+    } else {
+      $(".prev-page").show();
+    }
+
+    if(resp.contribs.length < 50) {
+      $(".next-page").hide();
+    } else {
+      $(".next-page").show();
+    }
+  }
 })();
 
 

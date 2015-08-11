@@ -1,12 +1,13 @@
 %main.counter
   %header
     %h3 Non-automated edit counter
-    Plain and simple.
 
+  %div.another-query &larr; Do another query
   %form
     %fieldset.basic
       %label{for: "username"} Username
       %input#username{type: "text", placeholder: "Example", name: "username", required: true}
+      %input#offset{type: "hidden", name: "offset", value: 0}
 
     %fieldset.dropdowns
       %label{for: "namespace"} Namespace
@@ -29,4 +30,8 @@
 
     %button Submit
 
+  %div.total-count
   %div.output
+  %div.contrib-nav
+    %div.prev-page &larr; Newer 50
+    %div.next-page Older 50 &rarr;
