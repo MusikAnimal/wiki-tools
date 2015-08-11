@@ -161,6 +161,12 @@ form {
   opacity: 0.5;
   pointer-events: none; }
 
+.error {
+  color: #fe765e; }
+
+.gray {
+  color: gray; }
+
 fieldset {
   border: none;
   margin: 0 0 10px;
@@ -170,16 +176,32 @@ fieldset {
   fieldset.dropdowns label {
     display: block; }
 
-.output, .total-count {
+progress {
+  background: white;
+  border: 1px solid black;
+  display: block;
+  height: 20px;
+  width: 200px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none; }
+  progress::-webkit-progress-bar {
+    background: white; }
+  progress::-webkit-progress-value {
+    background: black; }
+
+.contribs-output, .total-output {
   font-size: 18px; }
-  .output ul, .total-count ul {
+  .contribs-output ul, .total-output ul {
     font-size: 15px; }
-  .output a, .total-count a {
+  .contribs-output a, .total-output a {
     color: #0033cc;
     text-decoration: none; }
-    .output a:visited, .total-count a:visited {
+    .contribs-output a:visited, .total-output a:visited {
       color: #4365cc; }
-  .output .minor-edit, .total-count .minor-edit {
+  .contribs-output .minor-edit, .total-output .minor-edit {
     font-weight: bold; }
 
 .prev-page {

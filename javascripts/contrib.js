@@ -20,14 +20,15 @@ templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
     + "&action=history\">hist</a>)\n  . .\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.minor_edit : depth0), {"name":"if","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data});
   if (stack1 != null) { buffer += stack1; }
-  return buffer + "\n  <a href=\""
+  buffer += "\n  <a href=\""
     + escapeExpression(((helper = (helper = helpers.project_path || (depth0 != null ? depth0.project_path : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"project_path","hash":{},"data":data}) : helper)))
     + "/wiki/"
     + escapeExpression(((helper = (helper = helpers.page_title || (depth0 != null ? depth0.page_title : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"page_title","hash":{},"data":data}) : helper)))
     + "\">"
     + escapeExpression(((helper = (helper = helpers.humanized_page_title || (depth0 != null ? depth0.humanized_page_title : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"humanized_page_title","hash":{},"data":data}) : helper)))
-    + "</a>\n  (<i>"
-    + escapeExpression(((helper = (helper = helpers.rev_comment || (depth0 != null ? depth0.rev_comment : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"rev_comment","hash":{},"data":data}) : helper)))
-    + "</i>)\n</li>";
+    + "</a>\n  <i>(";
+  stack1 = ((helper = (helper = helpers.summary || (depth0 != null ? depth0.summary : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"summary","hash":{},"data":data}) : helper));
+  if (stack1 != null) { buffer += stack1; }
+  return buffer + ")</i>\n</li>";
 },"useData":true});
 })();

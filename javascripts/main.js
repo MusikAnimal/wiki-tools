@@ -1,7 +1,9 @@
 (function() {
   $(document).ready(function() {
-    // FIXME: check for `namespace` URL param and set custom dropdown value
-    // OR... you could make the text field not hidden but style it like a normal unstyled DIV!
+    if(document.location.search.indexOf("username=") !== -1) {
+      debugger;
+      // $("form").trigger("submit");
+    }
 
     $("#dropdown_select").on("click", function() {
       $(".namespace-selector").addClass("open");
@@ -28,41 +30,59 @@
       history.pushState({}, $("form[name=username]").val() + " - Nonautomated Counter from MusikAnimal", path + "?" + params);
 
       $(this).addClass("busy");
-      $(".output").html("<p>Thinking...</p>");
+      $(".contribs-output").html("<p>Thinking...</p>");
       $.ajax({
-        url: "/nonautomated_edits",
-        method: "POST",
-        data: params
+        url: "/api/nonautomated_edits",
+        method: "GET",
+        data: params,
+        dataType: "JSON"
       }).success(function(resp) {
         $(this).addClass("hide");
-        $(".total-count").html(
-          resp.username + " has approximately <b>" + resp.count + " non-automated edits</b> in the " + resp.namespaceText + " namespace"
-        );
+        showTotalCount(resp);
 
         if(resp.contribs) {
           insertContribs(resp);
         } else {
-          $(".output").html("");
+          $(".contribs-output").html("");
         }
 
         $(".another-query").show();
       }.bind(this)).error(function(resp) {
-        alert("Something went wrong. Sorry.");
-        $(".output").html("");
+        if(resp.status === 501) {
+          var json = resp.responseJSON;
+
+          $(this).addClass("hide");
+          showTotalCount(json);
+
+          $(".contribs-output").html(
+            "<p class='error'>" + json.error + "</p>"
+          );
+          $(".another-query").show();
+        } else {
+          alert("Something went wrong. Sorry.");
+          $(".contribs-output").html("");
+        }
         $(this).removeClass("busy");
       }.bind(this));
     });
 
     $(".another-query").on("click", function() {
       $(".another-query").hide();
-      $(".total-count").html("");
-      $(".output").html("");
+      $(".total-output").html("");
+      $(".contribs-output").html("");
+      $(".prev-page, .next-page").hide();
       $("form").removeClass("hide").removeClass("busy")[0].reset();
       history.pushState({}, "Nonautomated Counter from MusikAnimal", path);
     });
 
     $(".next-page").on("click", function() {
       $("#offset").val(parseInt($("#offset").val()) + 50);
+      $(".prev-page, .next-page").hide();
+      $("form").trigger("submit");
+    });
+
+    $(".prev-page").on("click", function() {
+      $("#offset").val(parseInt($("#offset").val()) - 50);
       $(".prev-page, .next-page").hide();
       $("form").trigger("submit");
     });
@@ -75,8 +95,14 @@
     // });
   });
 
+  function showTotalCount(resp) {
+    $(".total-output").html(
+      resp.username + " has approximately <b>" + resp.count + " non-automated edits</b> in the " + resp.namespaceText + " namespace"
+    );
+  }
+
   function insertContribs(resp) {
-    $(".output").html("<ul>");
+    $(".contribs-output").html("<ul>");
 
     $.each(resp.contribs, function(index, contribData) {
       var year = contribData.rev_timestamp.substr(0, 4),
@@ -92,8 +118,9 @@
       contribData.datestamp = hour + ":" + minute + ", " + day + " " + monthNames[parseInt(month) - 1] + " " + year;
       contribData.minor_edit = !!contribData.rev_minor_edit;
       contribData.humanized_page_title = contribData.page_title.replace(/_/g, " ");
+      contribData.summary = wikifyText(contribData.rev_comment, contribData.page_title);
 
-      $(".output ul").append(
+      $(".contribs-output ul").append(
         Handlebars.templates.contrib(contribData)
       );
     });
@@ -109,5 +136,26 @@
     } else {
       $(".next-page").show();
     }
+  }
+
+  function wikifyText(text, pageName) {
+    var sectionRegex = new RegExp(/^\/\* (.*?) \*\//), sectionMatch;
+    if(sectionMatch = sectionRegex.exec(text)) {
+      var sectionTitle = sectionMatch[1];
+      text = text.replace(sectionMatch[0],
+        "<a href='https://en.wikipedia.org/wiki/"+pageName+"#"+sectionTitle.replace(/ /g,"_")+"'>&rarr;</a><span class='gray'>"+sectionTitle+":</span> "
+      )
+    }
+
+    var linkRegex = new RegExp(/\[\[(.*?)\]\]/g), linkMatch;
+    while(linkMatch = linkRegex.exec(text)) {
+      var wikilink = linkMatch[1].split("|")[0],
+        wikitext = linkMatch[1].split("|")[1] || wikilink,
+        link = "<a href='https://en.wikipedia.org/wiki/"+wikilink+"' class='section-link'>"+wikitext+"</a>";
+
+      text = text.replace(linkMatch[0], link);
+    }
+
+    return text;
   }
 })();

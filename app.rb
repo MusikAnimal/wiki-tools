@@ -24,16 +24,13 @@ get '/nonautomated_edits' do
   haml :nonautomated_edits, locals: {
     namespace: namespaceId,
     namespaces: namespaces,
-    namespaceText: namespaces[namespaceId]
+    namespaceText: namespaces[namespaceId],
+    username: params[:username]
   }
 end
 
-post '/nonautomated_edits' do
-  content_type :json
-
+get '/api/nonautomated_edits' do
   replClient = Auth.getRepl
-
-  status 200
 
   countData = replClient.countEdits({
     username: params["username"],
@@ -49,14 +46,30 @@ post '/nonautomated_edits' do
   }
 
   if params["contribs"]
-    contribsData = replClient.getEdits(
-      username: params["username"],
-      namespace: params["namespace"],
-      offset: params["offset"],
-      nonAutomated: true
-    )
-    res[:contribs] = contribsData.to_a
+    if replClient.countAllEdits(params["username"]) > 50000
+      status 501
+      return res.merge({
+        contribs: [],
+        error: "Query too large! Unable to retrieve non-automated contributions. User has over 50,000 edits."
+      }).to_json
+    else
+      contribsData = replClient.getEdits(
+        username: params["username"],
+        namespace: params["namespace"],
+        offset: params["offset"],
+        nonAutomated: true
+      )
+      res[:contribs] = contribsData.to_a
+    end
   end
+
+  if params["tools"]
+    res[:tools] = replClient.countToolEdits({
+      username: params["username"]
+    }).to_a
+  end
+
+  status 200
 
   begin
     return res.to_json
@@ -69,6 +82,33 @@ post '/nonautomated_edits' do
     end
     return res.to_json
   end
+end
+
+get '/api/nonautomated_edits/tools/:id' do
+  content_type :json
+
+  replClient = Auth.getRepl
+
+  res = {
+    username: params["username"],
+    tool_id: params["id"],
+    tool_name: replClient.toolNames[params["id"].to_i]
+  }
+
+  if params[:namespace]
+    res[:namespace] = params["namespace"]
+    res[:namespaceText] = namespaces[params["namespace"].to_i]
+  end
+
+  res[:count] = replClient.countEdits({
+    username: params["username"],
+    namespace: params["namespace"],
+    nonAutomated: false,
+    tool: params["id"]
+  })
+
+  status 200
+  res.to_json
 end
 
 get '/counter' do

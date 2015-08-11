@@ -181,6 +181,14 @@ form {
   pointer-events: none;
 }
 
+.error {
+  color: #fe765e;
+}
+
+.gray {
+  color: gray;
+}
+
 fieldset {
   border: none;
   margin: 0 0 10px;
@@ -195,7 +203,23 @@ fieldset {
   }
 }
 
-.output, .total-count {
+progress {
+  background: white;
+  border: 1px solid black;
+  display: block;
+  height: 20px;
+  width: 200px;
+  @include prefix(appearance, none);
+  &::-webkit-progress-bar {
+    background: white;
+    // box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+  }
+  &::-webkit-progress-value {
+    background: black;
+  }
+}
+
+.contribs-output, .total-output {
   font-size: 18px;
   ul {
     font-size: 15px;
