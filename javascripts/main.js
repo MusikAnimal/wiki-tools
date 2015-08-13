@@ -30,6 +30,9 @@
       $("button").blur();
       $(".loading").show();
 
+      var $username = $("[name=username]");
+      $username.val($username.val().charAt(0).toUpperCase() + $username.val().slice(1));
+
       if($("[name=tools]").is(":checked")) {
         if(countData && countData.toolCounts) {
           // already queried for count data
@@ -60,7 +63,7 @@
         countData = resp;
 
         if(toolCount) {
-          countTools(resp);
+          countTools(countData);
         } else {
           showResults(countData);
         }
@@ -175,7 +178,7 @@
       $(".counts-output").hide();
     }
 
-    if(data.contribs) {
+    if(data.contribs && data.contribs.length) {
       insertContribs(data);
     } else {
       $(".contribs-output").html("").hide();
