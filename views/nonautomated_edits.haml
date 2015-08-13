@@ -1,8 +1,7 @@
 %main.counter
   %header
-    %h3 Non-automated edit counter
+    %h1 Non-automated edit counter
 
-  %div.another-query &larr; Do another query
   %form
     %fieldset.basic
       %label{for: "username"} Username
@@ -33,11 +32,16 @@
 
     %button Submit
 
-  %div.total-output
-  %div.counts-output
-  %div.contribs-output
-  %progress{max: "100", value: "0"}
-  %div.progress-report
-  %div.contrib-nav
-    %div.prev-page &larr; Newer 50
-    %div.next-page Older 50 &rarr;
+  %section.output
+    %span.another-query &larr; Do another query
+    %div.total-output.result-block
+    %dl.counts-output.result-block
+    %ul#contribs.contribs-output.result-block
+    %div.contrib-nav
+      %div.prev-page &larr; Newer 50
+      %div.next-page Older 50 &rarr;
+
+  %section.loading
+    %div.loading-text Thinking...
+    %progress{max: "100", value: "0"}
+    %div.progress-report

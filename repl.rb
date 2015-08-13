@@ -30,23 +30,6 @@ module Repl
       getEdits(opts)
     end
 
-    def countToolEdits(opts, progressCallback = nil)
-      toolCounts = []
-      toolNames.each_index do |toolId|
-        opts[:nonAutomated] = false
-        opts[:tool] = toolId
-        toolCounts << {
-          tool: toolNames(toolId),
-          regex: toolRegexes(toolId),
-          count: countEdits(opts)
-        }
-        progressCallback.call(
-          (toolId / toolNames.length.to_f * 100).to_i
-        ) if progressCallback
-      end
-      toolCounts
-    end
-
     # GETTERS
     def getArticlesCreated(userName)
       query = "SELECT page_title, rev_timestamp AS timestamp FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " +
@@ -84,27 +67,17 @@ module Repl
       opts[:count] ? count(query) : get(query)
     end
 
-    def toolNames(index = nil)
-      tools = [
-        "Generic revert",
-        "Huggle",
-        "Twinkle",
-        "STiki",
-        "Igloo",
-        "Popups",
-        "AFCH",
-        "AWB",
-        "WP Cleaner",
-        "HotCat",
-        "reFill",
-        "WikiPatroller",
-        "User:Fox Wilson/delsort"
-      ]
-      if index
-        tools[index.to_i]
-      else
-        tools
+    def getTools
+      res = []
+
+      tools.each_with_index do |tool, toolId|
+        res.push(tool.merge({
+          id: toolId,
+          regex: tool[:regex].gsub(/\\{2}/,"\\")
+        }))
       end
+
+      res
     end
 
     private
@@ -120,29 +93,92 @@ module Repl
     end
 
     def revAttrs
-      ["page_title", "page_len", "rev_id", "rev_page", "rev_timestamp", "rev_minor_edit", "rev_comment", "rev_len"].join(", ")
+      ["page_title", "rev_id", "rev_page", "rev_timestamp", "rev_minor_edit", "rev_comment"].join(", ")
     end
 
-    def toolRegexes(index = nil)
+    def tools(index = nil)
       tools = [
-        "^Reverted edits by \\\\[\\\\[.*?\\\\|.*?\\\\]\\\\] \\\\(\\\\[\\\\[User talk:.*?\\\\|talk\\\\]\\\\]\\\\) to last version by .*", # Generic revert
-        "WP:HG",                                        # Huggle
-        "WP:TW",                                        # Twinkle
-        "WP:STiki",                                     # STiki
-        "Wikipedia:Igloo",                              # Igloo
-        "Wikipedia:Tools\\\\/Navigation_popups|popups", # Popups
-        "WP:AFCH",                                      # AFCH
-        "Wikipedia:AWB|WP:AWB",                         # AWB
-        "WP:CLEANER",                                   # WP Cleaner
-        "WP:HOTCAT|WP:HC",                              # HotCat
-        "WP:REFILL",                                    # reFill
-        "User:Jfmantis/WikiPatroller",                  # WikiPatroller
-        "Wikipedia:WP:FWDS|WP:FWDS"                     # User:Fox Wilson/delsort
+        {
+          name: "Generic rollback",
+          regex: "^Reverted edits by \\\\[\\\\[.*?\\\\|.*?\\\\]\\\\] \\\\(\\\\[\\\\[User talk:.*?\\\\|talk\\\\]\\\\]\\\\) to last version by .*",
+          link: "WP:ROLLBACK"
+        },
+        {
+          name: "Huggle",
+          regex: "WP:HG",
+          link: "WP:HG"
+        },
+        {
+          name: "Twinkle",
+          regex: "WP:TW|WP:TWINKLE",
+          link: "WP:TW"
+        },
+        {
+          name: "STiki",
+          regex: "WP:STiki",
+          link: "WP:STiki"
+        },
+        {
+          name: "Igloo",
+          regex: "Wikipedia:Igloo",
+          link: "Wikipedia:Igloo"
+        },
+        {
+          name: "Popups",
+          regex: "Wikipedia:Tools\\\\/Navigation_popups|popups",
+          link: "WP:POPUPS"
+        },
+        {
+          name: "AFCH",
+          regex: "WP:AFCH",
+          link: "WP:AFCH"
+        },
+        {
+          name: "AWB",
+          regex: "Wikipedia:AWB|WP:AWB",
+          link: "WP:AWB"
+        },
+        {
+          name: "WP Cleaner",
+          regex: "WP:CLEANER",
+          link: "WP:CLEANER"
+        },
+        {
+          name: "HotCat",
+          regex: "WP:HOTCAT|WP:HC",
+          link: "WP:HC"
+        },
+        {
+          name: "reFill",
+          regex: "WP:REFILL",
+          link: "WP:REFILL"
+        },
+        {
+          name: "WikiPatroller",
+          regex: "User:Jfmantis/WikiPatroller",
+          link: "User:Jfmantis/WikiPatroller"
+        },
+        {
+          name: "User:Fox Wilson/delsort",
+          regex: "Wikipedia:WP:FWDS|WP:FWDS",
+          link: "WP:FWDS"
+        }
       ]
+
       if index
         tools[index.to_i]
       else
         tools
+      end
+    end
+
+    def toolRegexes(index = nil)
+      regexes = tools.collect{|t| t[:regex]}
+
+      if index
+        regexes[index.to_i]
+      else
+        regexes
       end
     end
   end

@@ -4,6 +4,7 @@ html {
 body {
   background: white;
   font-family: 'Roboto', serif;
+  font-size: 14px;
   margin: 0;
   min-height: 100%;
   padding: 10px 10px 57px;
@@ -15,20 +16,20 @@ body {
   box-sizing: border-box; }
 
 h1 {
-  margin: 0 0 10px; }
-
-h3 {
-  margin: 0 0 15px; }
+  font-size: 18px;
+  margin: 0; }
 
 header {
   border-bottom: solid 1px black;
-  padding-bottom: 10px; }
+  padding-bottom: 25px;
+  margin-bottom: 15px; }
 
 .another-query {
+  color: black;
   cursor: pointer;
-  display: none;
+  display: inline-block;
   font-weight: bold;
-  margin-top: 10px; }
+  text-decoration: none; }
 
 input {
   border: solid 1px black;
@@ -43,12 +44,10 @@ input {
   input:required, input:invalid {
     box-shadow: none; }
 
-a, button, div, input {
-  font-size: 14px; }
-  a:-moz-placeholder, button:-moz-placeholder, div:-moz-placeholder, input:-moz-placeholder {
-    box-shadow: none !important; }
-  a:focus, button:focus, div:focus, input:focus {
-    outline: #888 auto 5px; }
+a:-moz-placeholder, button:-moz-placeholder, div:-moz-placeholder, input:-moz-placeholder {
+  box-shadow: none !important; }
+a:focus, button:focus, div:focus, input:focus {
+  outline: #888 auto 5px; }
 
 button {
   background: white;
@@ -59,8 +58,12 @@ button {
     button:active:focus {
       outline: none; }
 
+label {
+  font-size: 16px; }
+
 input[type=text], button {
   display: block;
+  font-size: 14px;
   height: 40px;
   padding: 10px;
   vertical-align: top;
@@ -121,25 +124,27 @@ input[type=text], button {
   margin: 10px 0;
   padding-left: 20px;
   position: relative; }
-  .checkbox label:before {
-    background-color: white;
-    border: solid 1px black;
-    content: "";
-    display: inline-block;
-    height: 14px;
-    left: 0px;
-    position: absolute;
-    top: 0px;
-    width: 14px; }
-  .checkbox label:after {
-    background-color: black;
-    content: "";
-    display: none;
-    height: 10px;
-    left: 3px;
-    position: absolute;
-    top: 3px;
-    width: 10px; }
+  .checkbox label {
+    font-size: 14px; }
+    .checkbox label:before {
+      background-color: white;
+      border: solid 1px black;
+      content: "";
+      display: inline-block;
+      height: 14px;
+      left: 0px;
+      position: absolute;
+      top: 0px;
+      width: 14px; }
+    .checkbox label:after {
+      background-color: black;
+      content: "";
+      display: none;
+      height: 10px;
+      left: 3px;
+      position: absolute;
+      top: 3px;
+      width: 10px; }
   .checkbox input:checked + label:after {
     display: block; }
   .checkbox input:active + label:before {
@@ -147,7 +152,6 @@ input[type=text], button {
 
 form {
   height: 300px;
-  margin-top: 20px;
   -webkit-transition: height 500ms, opacity 1s ease;
   -moz-transition: height 500ms, opacity 1s ease;
   -ms-transition: height 500ms, opacity 1s ease;
@@ -176,33 +180,64 @@ fieldset {
   fieldset.dropdowns label {
     display: block; }
 
-progress {
-  background: white;
-  border: 1px solid black;
-  display: block;
-  height: 20px;
-  width: 200px;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  -ms-appearance: none;
-  -o-appearance: none;
-  appearance: none; }
-  progress::-webkit-progress-bar {
-    background: white; }
-  progress::-webkit-progress-value {
-    background: black; }
+.loading {
+  display: none; }
+  .loading progress {
+    background: white;
+    border: 1px solid black;
+    display: none;
+    height: 20px;
+    width: 200px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    -o-appearance: none;
+    appearance: none; }
+    .loading progress::-webkit-progress-bar {
+      background: white; }
+    .loading progress::-webkit-progress-value {
+      background: black; }
+  .loading .loading-text {
+    font-size: 14px;
+    margin-bottom: 10px; }
 
-.contribs-output, .total-output {
-  font-size: 18px; }
-  .contribs-output ul, .total-output ul {
-    font-size: 15px; }
-  .contribs-output a, .total-output a {
+.output {
+  display: none;
+  font-size: 16px; }
+  .output .result-block:before {
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 18px 0; }
+  .output .counts-output:before {
+    content: "Tool counts"; }
+  .output .contribs-output:before {
+    content: "Contributions"; }
+  .output dl {
+    width: 300px; }
+    .output dl dt {
+      display: inline-block;
+      width: 200px; }
+    .output dl dd {
+      display: inline-block;
+      margin: 0;
+      width: 100px; }
+  .output ul {
+    font-size: 15px;
+    padding: 0; }
+    .output ul li {
+      margin-left: 40px; }
+  .output a {
     color: #0033cc;
     text-decoration: none; }
-    .contribs-output a:visited, .total-output a:visited {
+    .output a:visited {
       color: #4365cc; }
-  .contribs-output .minor-edit, .total-output .minor-edit {
+  .output .minor-edit {
     font-weight: bold; }
+
+.another-query {
+  font-size: 14px;
+  margin-bottom: 25px; }
 
 .prev-page {
   display: none;

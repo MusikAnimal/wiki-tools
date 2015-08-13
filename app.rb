@@ -30,6 +30,8 @@ get '/nonautomated_edits' do
 end
 
 get '/api/nonautomated_edits' do
+  content_type :json
+
   replClient = Auth.getRepl
 
   countData = replClient.countEdits({
@@ -50,23 +52,17 @@ get '/api/nonautomated_edits' do
       status 501
       return res.merge({
         contribs: [],
-        error: "Query too large! Unable to retrieve non-automated contributions. User has over 50,000 edits."
+        error: "Query too large! Unable to retrieve non-automated contributions. User has over 50,000 edits. Batch querying will be implemented soon."
       }).to_json
     else
       contribsData = replClient.getEdits(
         username: params["username"],
         namespace: params["namespace"],
-        offset: params["offset"],
+        offset: params["offset"] || 0,
         nonAutomated: true
       )
       res[:contribs] = contribsData.to_a
     end
-  end
-
-  if params["tools"]
-    res[:tools] = replClient.countToolEdits({
-      username: params["username"]
-    }).to_a
   end
 
   status 200
@@ -76,12 +72,22 @@ get '/api/nonautomated_edits' do
   rescue Encoding::UndefinedConversionError
     res[:contribs].map! do |contrib|
       contrib.merge({
-        contrib["page_title"] => contrib["page_title"].force_encoding('utf-8'),
-        contrib["rev_comment"] => contrib["rev_comment"].force_encoding('utf-8')
+        "page_title" => contrib["page_title"].force_encoding('utf-8'),
+        "rev_comment" => contrib["rev_comment"].force_encoding('utf-8')
       })
     end
     return res.to_json
   end
+end
+
+get '/api/nonautomated_edits/tools' do
+  content_type :json
+
+  replClient = Auth.getRepl
+  res = replClient.getTools
+
+  status 200
+  res.to_json
 end
 
 get '/api/nonautomated_edits/tools/:id' do
@@ -90,9 +96,8 @@ get '/api/nonautomated_edits/tools/:id' do
   replClient = Auth.getRepl
 
   res = {
-    username: params["username"],
     tool_id: params["id"],
-    tool_name: replClient.toolNames[params["id"].to_i]
+    tool_name: replClient.getTools[params["id"].to_i][:name]
   }
 
   if params[:namespace]
@@ -100,12 +105,15 @@ get '/api/nonautomated_edits/tools/:id' do
     res[:namespaceText] = namespaces[params["namespace"].to_i]
   end
 
-  res[:count] = replClient.countEdits({
-    username: params["username"],
-    namespace: params["namespace"],
-    nonAutomated: false,
-    tool: params["id"]
-  })
+  if params["username"]
+    res[:username] = params["username"]
+    res[:count] = replClient.countEdits({
+      username: params["username"],
+      namespace: params["namespace"],
+      nonAutomated: false,
+      tool: params["id"]
+    })
+  end
 
   status 200
   res.to_json

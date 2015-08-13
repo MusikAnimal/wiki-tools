@@ -1,8 +1,13 @@
+// TODO: make popstate do something
 (function() {
+  var toolsArray = [], countData;
+  var path = document.location.pathname.split("/").pop();
+
   $(document).ready(function() {
     if(document.location.search.indexOf("username=") !== -1) {
-      debugger;
-      // $("form").trigger("submit");
+      setTimeout(function() {
+        $("form").trigger("submit");
+      });
     }
 
     $("#dropdown_select").on("click", function() {
@@ -12,7 +17,7 @@
         $(document).one("click.dropdown", function() {
           $(".namespace-selector").removeClass("open");
         });
-      }, 0);
+      });
     });
 
     $(".dropdown li").on("click", function() {
@@ -20,33 +25,45 @@
       $("#dropdown_select").text($(this).text());
     });
 
-    var path = document.location.pathname.split("/").pop();
-
     $("form").submit(function(e) {
       e.preventDefault();
+      $("button").blur();
+      $(".loading").show();
+
+      if($("[name=tools]").is(":checked")) {
+        if(countData && countData.toolCounts) {
+          // already queried for count data
+          $("[name=tools]").prop("checked", false);
+        } else {
+          var toolCount = true;
+          updateProgress(0);
+        }
+      }
+
+      if(countData && countData.contribs) {
+        // moving page to page within contribs
+        $("#contribs")[0].scrollIntoView();
+      }
 
       var params = $(this).serialize();
-
       history.pushState({}, $("form[name=username]").val() + " - Nonautomated Counter from MusikAnimal", path + "?" + params);
 
       $(this).addClass("busy");
-      $(".contribs-output").html("<p>Thinking...</p>");
+      $(".loading-wrapper").show();
+
       $.ajax({
         url: "/api/nonautomated_edits",
         method: "GET",
         data: params,
         dataType: "JSON"
       }).success(function(resp) {
-        $(this).addClass("hide");
-        showTotalCount(resp);
+        countData = resp;
 
-        if(resp.contribs) {
-          insertContribs(resp);
+        if(toolCount) {
+          countTools(resp);
         } else {
-          $(".contribs-output").html("");
+          showResults(countData);
         }
-
-        $(".another-query").show();
       }.bind(this)).error(function(resp) {
         if(resp.status === 501) {
           var json = resp.responseJSON;
@@ -56,34 +73,30 @@
 
           $(".contribs-output").html(
             "<p class='error'>" + json.error + "</p>"
-          );
-          $(".another-query").show();
+          ).show();
         } else {
           alert("Something went wrong. Sorry.");
           $(".contribs-output").html("");
         }
+
         $(this).removeClass("busy");
+        if(toolCount) updateProgress(null);
       }.bind(this));
     });
 
-    $(".another-query").on("click", function() {
-      $(".another-query").hide();
-      $(".total-output").html("");
-      $(".contribs-output").html("");
-      $(".prev-page, .next-page").hide();
-      $("form").removeClass("hide").removeClass("busy")[0].reset();
-      history.pushState({}, "Nonautomated Counter from MusikAnimal", path);
-    });
+    $(".another-query").on("click", startOver);
 
     $(".next-page").on("click", function() {
       $("#offset").val(parseInt($("#offset").val()) + 50);
       $(".prev-page, .next-page").hide();
+      $(".contribs-output").addClass("busy");
       $("form").trigger("submit");
     });
 
     $(".prev-page").on("click", function() {
       $("#offset").val(parseInt($("#offset").val()) - 50);
       $(".prev-page, .next-page").hide();
+      $(".contribs-output").addClass("busy");
       $("form").trigger("submit");
     });
 
@@ -95,6 +108,80 @@
     // });
   });
 
+  function startOver() {
+    updateProgress(null);
+    $(".results").html("");
+    $(".output").hide();
+    $("form").removeClass("hide").removeClass("busy")[0].reset();
+    history.pushState({}, "Nonautomated Counter from MusikAnimal", path);
+    countData = undefined;
+  }
+
+  function countTools(params) {
+    if(!toolsArray.length) {
+      api("tools").done(function(resp) {
+        toolsArray = resp;
+      }).then(function() {
+        return countTools(params);
+      });
+    } else {
+      countTool(0, params, {});
+    }
+  }
+
+  function countTool(id, params, data) {
+    if(id === toolsArray.length) {
+      updateProgress(100);
+      countData.toolCounts = data;
+      return showResults(countData);
+    }
+
+    api("tools/"+id, {
+      username: params.username,
+      namespace: params.namespace
+    }).success(function(resp) {
+      updateProgress(parseInt(((id / toolsArray.length - 1) + 1) * 100));
+      data[resp.tool_name] = resp.count;
+    }).error(function(resp) {
+      data[resp.tool_name] = "API failure!";
+    }).done(function() {
+      countTool(id + 1, params, data);
+    });
+  }
+
+  function api(endpoint, params) {
+    return $.ajax({
+      url: "/api/nonautomated_edits/"+endpoint,
+      method: "GET",
+      data: params,
+      dataType: "JSON"
+    })
+  }
+
+  function showResults(data) {
+    updateProgress(null);
+    $("form").addClass("hide");
+    $(".output").show();
+    showTotalCount(data);
+
+    if(data.toolCounts) {
+      $(".counts-output").show();
+      $.each(data.toolCounts, function(tool, count) {
+        $(".counts-output").append(
+          "<dt>" + tool + "</dt><dd>" + count + "</dd>"
+        );
+      });
+    } else {
+      $(".counts-output").hide();
+    }
+
+    if(data.contribs) {
+      insertContribs(data);
+    } else {
+      $(".contribs-output").html("").hide();
+    }
+  }
+
   function showTotalCount(resp) {
     $(".total-output").html(
       resp.username + " has approximately <b>" + resp.count + " non-automated edits</b> in the " + resp.namespaceText + " namespace"
@@ -102,7 +189,7 @@
   }
 
   function insertContribs(resp) {
-    $(".contribs-output").html("<ul>");
+    $(".contribs-output").html("").removeClass("busy").show();
 
     $.each(resp.contribs, function(index, contribData) {
       var year = contribData.rev_timestamp.substr(0, 4),
@@ -120,7 +207,7 @@
       contribData.humanized_page_title = contribData.page_title.replace(/_/g, " ");
       contribData.summary = wikifyText(contribData.rev_comment, contribData.page_title);
 
-      $(".contribs-output ul").append(
+      $(".contribs-output").append(
         Handlebars.templates.contrib(contribData)
       );
     });
@@ -135,6 +222,23 @@
       $(".next-page").hide();
     } else {
       $(".next-page").show();
+    }
+  }
+
+  function updateProgress(value) {
+    if(value !== null) {
+      if(value >= 100) {
+        $("progress").val(100);
+        $(".progress-report").text("Complete!");
+      } else {
+        $(".loading").show();
+        $("progress").val(value).show();
+        $(".progress-report").text(value + "%");
+      }
+    } else {
+      $("progress").val(0).hide();
+      $(".progress-report").text("");
+      $(".loading").hide();
     }
   }
 

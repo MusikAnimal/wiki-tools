@@ -7,6 +7,7 @@ html {
 body {
   background: white;
   font-family: 'Roboto', serif;
+  font-size: 14px;
   margin: 0;
   min-height: 100%;
   padding: 10px 10px 57px;
@@ -15,23 +16,22 @@ body {
 }
 
 h1 {
-  margin: 0 0 10px;
-}
-
-h3 {
-  margin: 0 0 15px;
+  font-size: 18px;
+  margin: 0;
 }
 
 header {
   border-bottom: solid 1px black;
-  padding-bottom: 10px;
+  padding-bottom: 25px;
+  margin-bottom: 15px;
 }
 
 .another-query {
+  color: black;
   cursor: pointer;
-  display: none;
+  display: inline-block;
   font-weight: bold;
-  margin-top: 10px;
+  text-decoration: none;
 }
 
 input {
@@ -52,7 +52,6 @@ input {
 }
 
 a, button, div, input {
-  font-size: 14px;
   &:-moz-placeholder {
     box-shadow: none !important;
   }
@@ -73,8 +72,13 @@ button {
   }
 }
 
+label {
+  font-size: 16px;
+}
+
 input[type=text], button {
   display: block;
+  font-size: 14px;
   height: 40px;
   padding: 10px;
   vertical-align: top;
@@ -136,6 +140,7 @@ input[type=text], button {
   padding-left: 20px;
   position: relative;
   label {
+    font-size: 14px;
     &:before {
       background-color: white;
       border: solid 1px black;
@@ -168,7 +173,6 @@ input[type=text], button {
 
 form {
   height: 300px;
-  margin-top: 20px;
   @include prefix(transition, "height 500ms, opacity 1s ease");
   &.hide {
     height: 0;
@@ -203,27 +207,68 @@ fieldset {
   }
 }
 
-progress {
-  background: white;
-  border: 1px solid black;
-  display: block;
-  height: 20px;
-  width: 200px;
-  @include prefix(appearance, none);
-  &::-webkit-progress-bar {
+.loading {
+  display: none;
+  progress {
     background: white;
-    // box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+    border: 1px solid black;
+    display: none;
+    height: 20px;
+    width: 200px;
+    @include prefix(appearance, none);
+    &::-webkit-progress-bar {
+      background: white;
+      // box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+    }
+    &::-webkit-progress-value {
+      background: black;
+    }
   }
-  &::-webkit-progress-value {
-    background: black;
+
+  .loading-text {
+    font-size: 14px;
+    margin-bottom: 10px;
   }
 }
 
-.contribs-output, .total-output {
-  font-size: 18px;
+.output {
+  display: none;
+  font-size: 16px;
+
+  .result-block:before {
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 18px 0;
+  }
+  .counts-output:before {
+    content: "Tool counts";
+  }
+  .contribs-output:before {
+    content: "Contributions";
+  }
+
+  dl {
+    width: 300px;
+    dt {
+      display: inline-block;
+      width: 200px;
+    }
+    dd {
+      display: inline-block;
+      margin: 0;
+      width: 100px;
+    }
+  }
+
   ul {
     font-size: 15px;
+    padding: 0;
+    li {
+      margin-left: 40px;
+    }
   }
+
   a {
     color: #0033cc;
     text-decoration: none;
@@ -231,9 +276,15 @@ progress {
       color: #4365cc;
     }
   }
+
   .minor-edit {
     font-weight: bold;
   }
+}
+
+.another-query {
+  font-size: 14px;
+  margin-bottom: 25px;
 }
 
 .prev-page {
