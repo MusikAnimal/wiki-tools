@@ -5,3 +5,4 @@ log/
 tmp/
 .sass-cache/
 auth.rb
+env
