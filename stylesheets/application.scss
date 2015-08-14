@@ -235,12 +235,16 @@ fieldset {
   display: none;
   font-size: 16px;
 
-  .result-block:before {
-    display: block;
-    font-size: 18px;
-    font-weight: bold;
-    margin: 18px 0;
+  .result-block {
+    display: none;
+    &:before {
+      display: block;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 18px 0;
+    }
   }
+
   .counts-output:before {
     content: "Tool counts";
   }

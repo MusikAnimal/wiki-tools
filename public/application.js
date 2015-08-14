@@ -4173,7 +4173,7 @@ templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
 
 // TODO: make popstate do something
 (function() {
-  var toolsArray = [], countData;
+  var toolsArray = [], userData = {};
   var path = document.location.pathname.split("/").pop();
 
   $(document).ready(function() {
@@ -4187,7 +4187,7 @@ templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
       $(".namespace-selector").addClass("open");
 
       setTimeout(function() {
-        $(document).one("click.dropdown", function() {
+        $(document).one("click.dropdown", function(e) {
           $(".namespace-selector").removeClass("open");
         });
       });
@@ -4202,21 +4202,16 @@ templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
       e.preventDefault();
       $("button").blur();
       $(".loading").show();
+      $(this).addClass("busy");
 
       var $username = $("[name=username]");
       $username.val($username.val().charAt(0).toUpperCase() + $username.val().slice(1));
 
-      if($("[name=tools]").is(":checked")) {
-        if(countData && countData.toolCounts) {
-          // already queried for count data
-          $("[name=tools]").prop("checked", false);
-        } else {
-          var toolCount = true;
-          updateProgress(0);
-        }
+      if(this.tools.checked) {
+        updateProgress(0);
       }
 
-      if(countData && countData.contribs) {
+      if(userData.contribs) {
         // moving page to page within contribs
         $("#contribs")[0].scrollIntoView();
       }
@@ -4224,39 +4219,26 @@ templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
       var params = $(this).serialize();
       history.pushState({}, $("form[name=username]").val() + " - Nonautomated Counter from MusikAnimal", path + "?" + params);
 
-      $(this).addClass("busy");
-      $(".loading-wrapper").show();
-
       $.ajax({
         url: "/api/nonautomated_edits",
         method: "GET",
         data: params,
         dataType: "JSON"
-      }).success(function(resp) {
-        countData = resp;
-
-        if(toolCount) {
-          countTools(countData);
-        } else {
-          showResults(countData);
-        }
-      }.bind(this)).error(function(resp) {
+      }).success(
+        showData.bind(this)
+      ).error(function(resp) {
         if(resp.status === 501) {
           var json = resp.responseJSON;
-
-          $(this).addClass("hide");
-          showTotalCount(json);
 
           $(".contribs-output").html(
             "<p class='error'>" + json.error + "</p>"
           ).show();
+
+          showData.call(this, json);
         } else {
           alert("Something went wrong. Sorry.");
-          $(".contribs-output").html("");
+          startOver();
         }
-
-        $(this).removeClass("busy");
-        if(toolCount) updateProgress(null);
       }.bind(this));
     });
 
@@ -4288,9 +4270,10 @@ templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
     updateProgress(null);
     $(".results").html("");
     $(".output").hide();
-    $("form").removeClass("hide").removeClass("busy")[0].reset();
+    $(".result-block").hide();
+    $("form").removeClass("busy hide");
     history.pushState({}, "Nonautomated Counter from MusikAnimal", path);
-    countData = undefined;
+    userData = {};
   }
 
   function countTools(params) {
@@ -4308,8 +4291,8 @@ templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
   function countTool(id, params, data) {
     if(id === toolsArray.length) {
       updateProgress(100);
-      countData.toolCounts = data;
-      return showResults(countData);
+      userData.toolCounts = data;
+      return showToolCounts(data);
     }
 
     api("tools/"+id, {
@@ -4334,39 +4317,54 @@ templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
     })
   }
 
-  function showResults(data) {
-    updateProgress(null);
-    $("form").addClass("hide");
-    $(".output").show();
-    showTotalCount(data);
-
-    if(data.toolCounts) {
-      $(".counts-output").show();
-      $.each(data.toolCounts, function(tool, count) {
-        $(".counts-output").append(
-          "<dt>" + tool + "</dt><dd>" + count + "</dd>"
-        );
-      });
-    } else {
-      $(".counts-output").hide();
+  function showData(data) {
+    if($.isEmptyObject(userData)) {
+      userData = data;
+      showTotalCount(data);
     }
 
-    if(data.contribs && data.contribs.length) {
-      insertContribs(data);
+    if(this.contribs.checked) {
+      showContribs(data);
+    }
+
+    if(this.tools.checked &&  !data.toolCounts) {
+      countTools(data);
     } else {
-      $(".contribs-output").html("").hide();
+      // tool counter will do this when it is finished
+      revealResults();
     }
   }
 
-  function showTotalCount(resp) {
+  function showContribs(data) {
+    $(".contribs-output").html("").removeClass("busy").show();
+    insertContribs(data);
+  }
+
+  function showTotalCount(data) {
     $(".total-output").html(
-      resp.username + " has approximately <b>" + resp.count + " non-automated edits</b> in the " + resp.namespaceText + " namespace"
-    );
+      data.username + " has approximately <b>" + data.nonautomated_count + " non-automated edits</b> in the " + data.namespace_text + " namespace"
+    ).show();
+  }
+
+  function showToolCounts(data) {
+    $(".counts-output").show();
+    $.each(data, function(tool, count) {
+      $(".counts-output").append(
+        "<dt>" + tool + "</dt><dd>" + count + "</dd>"
+      );
+    });
+
+    revealResults();
+  }
+
+  function revealResults() {
+    updateProgress(null);
+    $(".loading").hide();
+    $("form").addClass("hide");
+    $(".output").show();
   }
 
   function insertContribs(resp) {
-    $(".contribs-output").html("").removeClass("busy").show();
-
     $.each(resp.contribs, function(index, contribData) {
       var year = contribData.rev_timestamp.substr(0, 4),
         month = contribData.rev_timestamp.substr(4, 2),
@@ -4407,14 +4405,12 @@ templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
         $("progress").val(100);
         $(".progress-report").text("Complete!");
       } else {
-        $(".loading").show();
         $("progress").val(value).show();
         $(".progress-report").text(value + "%");
       }
     } else {
       $("progress").val(0).hide();
       $(".progress-report").text("");
-      $(".loading").hide();
     }
   }
 

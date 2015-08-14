@@ -8,6 +8,7 @@ group :web do
   gem "mysql2"
   gem "pg"
   gem "pry"
+  gem "unicorn"
 end
 
 group :development do
