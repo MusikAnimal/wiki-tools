@@ -7,14 +7,6 @@ require 'json'
 require 'pry'
 require 'auth.rb'
 
-# get 'application.css' do
-#   scss :application
-# end
-
-# get 'application.js' do
-#   js :application
-# end
-
 get '/' do
   redirect :nonautomated_edits
 end
