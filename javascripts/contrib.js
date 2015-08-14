@@ -25,6 +25,7 @@ templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
     + "/wiki/"
     + escapeExpression(((helper = (helper = helpers.page_title || (depth0 != null ? depth0.page_title : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"page_title","hash":{},"data":data}) : helper)))
     + "\">"
+    + escapeExpression(((helper = (helper = helpers.namespace_text || (depth0 != null ? depth0.namespace_text : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"namespace_text","hash":{},"data":data}) : helper)))
     + escapeExpression(((helper = (helper = helpers.humanized_page_title || (depth0 != null ? depth0.humanized_page_title : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"humanized_page_title","hash":{},"data":data}) : helper)))
     + "</a>\n  <i>(";
   stack1 = ((helper = (helper = helpers.summary || (depth0 != null ? depth0.summary : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"summary","hash":{},"data":data}) : helper));

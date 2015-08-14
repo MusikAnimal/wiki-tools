@@ -10,8 +10,12 @@
       });
     }
 
-    $("#dropdown_select").on("click", function() {
+    $("#dropdown_select").on("click", function(e) {
+      if($(".namespace-selector").hasClass("open")) {
+        return;
+      }
       $(".namespace-selector").addClass("open");
+      e.stopPropagation();
 
       setTimeout(function() {
         $(document).one("click.dropdown", function(e) {
@@ -27,12 +31,17 @@
 
     $("form").submit(function(e) {
       e.preventDefault();
+
+      if(!this.username.value) {
+        return alert('Username is required!');
+      }
+
       $("button").blur();
       $(".loading").show();
       $(this).addClass("busy");
 
-      var $username = $("[name=username]");
-      $username.val($username.val().charAt(0).toUpperCase() + $username.val().slice(1));
+      var username = this.username.value;
+      this.username.value = (username.charAt(0).toUpperCase() + username.slice(1));
 
       if(this.tools.checked) {
         updateProgress(0);
@@ -97,7 +106,12 @@
     updateProgress(null);
     $(".results").html("");
     $(".output").hide();
+    $(".loading").hide();
     $(".result-block").hide();
+    $("input[type=checkbox]").prop("checked", false);
+    $("input[type=text]").val("");
+    $("#namespace").val(0);
+    $("#dropdown_select").text("Main"); // TODO: we can do better than this
     $("form").removeClass("busy hide");
     history.pushState({}, "Nonautomated Counter from MusikAnimal", path);
     userData = {};
@@ -127,7 +141,7 @@
       namespace: params.namespace
     }).success(function(resp) {
       updateProgress(parseInt(((id / toolsArray.length - 1) + 1) * 100));
-      data[resp.tool_name] = resp.count;
+      data[resp.tool_name] = resp.nonautomated_count;
     }).error(function(resp) {
       data[resp.tool_name] = "API failure!";
     }).done(function() {
@@ -154,7 +168,7 @@
       showContribs(data);
     }
 
-    if(this.tools.checked &&  !data.toolCounts) {
+    if(this.tools.checked &&  !userData.toolCounts) {
       countTools(data);
     } else {
       // tool counter will do this when it is finished
@@ -168,16 +182,19 @@
   }
 
   function showTotalCount(data) {
+    var namespaceStr = data.namespace_text ? "in the " + data.namespace_text + " namespace" : "total";
     $(".total-output").html(
-      data.username + " has approximately <b>" + data.nonautomated_count + " non-automated edits</b> in the " + data.namespace_text + " namespace"
+      data.username + " has approximately <b>" + data.nonautomated_count + " non-automated edits</b> " + namespaceStr
     ).show();
   }
 
   function showToolCounts(data) {
     $(".counts-output").show();
+    var index = 0;
     $.each(data, function(tool, count) {
       $(".counts-output").append(
-        "<dt>" + tool + "</dt><dd>" + count + "</dd>"
+        "<dt><a href='https://en.wikipedia.org/wiki/" + toolsArray[index++].link + "'>" + tool + "</a></dt>" +
+        "<dd>" + count + "</dd>"
       );
     });
 
@@ -207,6 +224,10 @@
       contribData.minor_edit = !!contribData.rev_minor_edit;
       contribData.humanized_page_title = contribData.page_title.replace(/_/g, " ");
       contribData.summary = wikifyText(contribData.rev_comment, contribData.page_title);
+
+      if(contribData.page_namespace) {
+        contribData.namespace_text = $("li[data-id="+contribData.page_namespace+"]").text().trim()+":";
+      }
 
       $(".contribs-output").append(
         Handlebars.templates.contrib(contribData)

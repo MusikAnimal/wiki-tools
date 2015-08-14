@@ -7,24 +7,29 @@ require 'json'
 require 'pry'
 require 'auth.rb'
 
+before '/*' do
+  @@replClient ||= Auth.getRepl
+  params.delete_if {|k,v| v == ""}
+end
+
 get '/' do
   redirect :nonautomated_edits
 end
 
 get '/nonautomated_edits' do
-  namespaceId = params[:namespace].to_i || 0
+  namespaceId = params[:namespace] ? params[:namespace].to_i : nil
+  namespaceText = namespaces[namespaceId] || "All"
+
   haml :nonautomated_edits, locals: {
     namespace: namespaceId,
     namespaces: namespaces,
-    namespaceText: namespaces[namespaceId],
+    namespaceText: namespaceText,
     username: params[:username]
   }
 end
 
 get '/api/nonautomated_edits' do
   content_type :json
-
-  replClient = Auth.getRepl
 
   if params["username"].to_s.empty?
     status 400
@@ -33,18 +38,20 @@ get '/api/nonautomated_edits' do
     }.to_json
   end
 
-  countData = replClient.countEdits({
+  params["namespace"] = params["namespace"] == "" ? nil : params["namespace"]
+
+  countData = @@replClient.countEdits({
     username: params["username"],
     namespace: params["namespace"],
     nonAutomated: true
   })
 
-  totalEdits = replClient.countAllEdits(params["username"])
+  totalEdits = @@replClient.countAllEdits(params["username"])
 
   res = {
     username: params["username"],
     namespace: params["namespace"],
-    namespace_text: namespaces[params["namespace"].nil? ? nil : params["namespace"].to_i],
+    namespace_text: namespaces[params["namespace"].to_s.empty? ? nil : params["namespace"].to_i],
     total_count: totalEdits,
     nonautomated_count: countData
   }
@@ -57,7 +64,7 @@ get '/api/nonautomated_edits' do
         error: "Query too large! Unable to retrieve non-automated contributions. User has over 50,000 edits. Batch querying will be implemented soon."
       }))
     else
-      contribsData = replClient.getEdits(
+      contribsData = @@replClient.getEdits(
         username: params["username"],
         namespace: params["namespace"],
         offset: params["offset"] || 0,
@@ -85,8 +92,7 @@ end
 get '/api/nonautomated_edits/tools' do
   content_type :json
 
-  replClient = Auth.getRepl
-  res = replClient.getTools
+  res = @@replClient.getTools
 
   status 200
   sendData(res)
@@ -95,11 +101,9 @@ end
 get '/api/nonautomated_edits/tools/:id' do
   content_type :json
 
-  replClient = Auth.getRepl
-
   res = {
     tool_id: params["id"],
-    tool_name: replClient.getTools[params["id"].to_i][:name]
+    tool_name: @@replClient.getTools[params["id"].to_i][:name]
   }
 
   if params[:namespace]
@@ -109,7 +113,7 @@ get '/api/nonautomated_edits/tools/:id' do
 
   if params["username"]
     res[:username] = params["username"]
-    res[:nonautomated_count] = replClient.countEdits({
+    res[:nonautomated_count] = @@replClient.countEdits({
       username: params["username"],
       namespace: params["namespace"],
       nonAutomated: false,

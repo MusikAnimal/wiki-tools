@@ -9,7 +9,8 @@ module Repl
         username: username,
         password: password,
         database: db,
-        port: port
+        port: port,
+        reconnect: true
       )
       @db = db
     end
@@ -60,7 +61,7 @@ module Repl
         "FROM #{@db}.page " +
         "JOIN enwiki_p.revision_userindex ON page_id = rev_page " +
         "WHERE rev_user_text = \"#{opts[:username]}\" "+
-        (opts[:namespace] ? "AND page_namespace = #{opts[:namespace]} " : "") +
+        (opts[:namespace].to_s.empty? ? "" : "AND page_namespace = #{opts[:namespace]} ") +
         (!opts[:nonAutomated].nil? ? "AND rev_comment #{"NOT " if opts[:nonAutomated]}RLIKE \"#{[toolRegexes(opts[:tool])].join("|")}\" " : "") +
         (!opts[:count] ? "ORDER BY rev_id DESC LIMIT #{opts[:limit]} OFFSET #{opts[:offset]}" : "")
 
@@ -93,7 +94,7 @@ module Repl
     end
 
     def revAttrs
-      ["page_title", "rev_id", "rev_page", "rev_timestamp", "rev_minor_edit", "rev_comment"].join(", ")
+      ["page_title", "page_namespace", "rev_id", "rev_page", "rev_timestamp", "rev_minor_edit", "rev_comment"].join(", ")
     end
 
     def tools(index = nil)
