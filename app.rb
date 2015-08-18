@@ -15,7 +15,7 @@ namespace '/musikanimal' do
   end
 
   get '/' do
-    redirect :nonautomated_edits
+    redirect '/musikanimal/nonautomated_edits'
   end
 
   get '/nonautomated_edits' do
