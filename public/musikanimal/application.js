@@ -4230,7 +4230,7 @@ templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
       history.pushState({}, $("form[name=username]").val() + " - Nonautomated Counter from MusikAnimal", path + "?" + params);
 
       $.ajax({
-        url: "/api/nonautomated_edits",
+        url: "/musikanimal/api/nonautomated_edits",
         method: "GET",
         data: params,
         dataType: "JSON"
@@ -4325,7 +4325,7 @@ templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
 
   function api(endpoint, params) {
     return $.ajax({
-      url: "/api/nonautomated_edits/"+endpoint,
+      url: "/musikanimal/api/nonautomated_edits/"+endpoint,
       method: "GET",
       data: params,
       dataType: "JSON"

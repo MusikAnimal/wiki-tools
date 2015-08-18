@@ -2,6 +2,7 @@ source "https://rubygems.org"
 
 group :web do
   gem "sinatra"
+  gem "sinatra-contrib"
   gem "sass"
   gem "haml"
   gem "json"
@@ -11,6 +12,3 @@ group :web do
   gem "unicorn"
 end
 
-group :development do
-  gem "sinatra-contrib"
-end

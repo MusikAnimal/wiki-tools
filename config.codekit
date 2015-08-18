@@ -7,7 +7,7 @@
 		"ignore": 0,
 		"ignoreWasSetByUser": 1,
 		"inputAbbreviatedPath": "\/javascripts\/concat.codekit.js",
-		"outputAbbreviatedPath": "\/public\/application.js",
+		"outputAbbreviatedPath": "\/public\/musikanimal\/application.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 1,
 		"outputStyle": 0,
@@ -57,21 +57,21 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 1
 		},
-	"\/public\/application.css": {
+	"\/public\/musikanimal\/application.css": {
 		"fileType": 16,
 		"ignore": 1,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/public\/application.css",
+		"inputAbbreviatedPath": "\/public\/musikanimal\/application.css",
 		"outputAbbreviatedPath": "No Output Path",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
 		},
-	"\/public\/application.js": {
+	"\/public\/musikanimal\/application.js": {
 		"fileType": 64,
 		"ignore": 1,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/public\/application.js",
-		"outputAbbreviatedPath": "\/public\/min\/application-min.js",
+		"inputAbbreviatedPath": "\/public\/musikanimal\/application.js",
+		"outputAbbreviatedPath": "\/public\/musikanimal\/min\/application-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
@@ -101,7 +101,7 @@
 		"ignore": 0,
 		"ignoreWasSetByUser": 1,
 		"inputAbbreviatedPath": "\/stylesheets\/application.scss",
-		"outputAbbreviatedPath": "\/public\/application.css",
+		"outputAbbreviatedPath": "\/public\/musikanimal\/application.css",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 1,
 		"outputStyle": 3,
