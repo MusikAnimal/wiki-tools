@@ -10,7 +10,7 @@
 		"outputAbbreviatedPath": "\/public\/musikanimal\/application.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 1,
-		"outputStyle": 2,
+		"outputStyle": 0,
 		"syntaxCheckerStyle": 0
 		},
 	"\/javascripts\/contrib.js": {

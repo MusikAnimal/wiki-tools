@@ -47,14 +47,19 @@ module Repl
     end
 
     def getEdits(opts)
+      binding.pry
+
       opts = {
         namespace: nil,
         nonAutomated: nil,
         tool: nil,
         limit: 50,
         offset: 0,
-        count: false
+        count: false,
+        includeRedirects: true
       }.merge(opts)
+
+      binding.pry
 
       query = "SELECT " +
         (opts[:count] ? "COUNT(*) " : "#{revAttrs} ") +
@@ -62,7 +67,7 @@ module Repl
         "JOIN enwiki_p.revision_userindex ON page_id = rev_page " +
         "WHERE rev_user_text = \"#{opts[:username]}\" "+
         (opts[:namespace].to_s.empty? ? "" : "AND page_namespace = #{opts[:namespace]} ") +
-        (!opts[:nonAutomated].nil? ? "AND rev_comment #{"NOT " if opts[:nonAutomated]}RLIKE \"#{[toolRegexes(opts[:tool])].join("|")}\" " : "") +
+        (!opts[:nonAutomated].nil? ? "AND rev_comment #{"NOT " if opts[:nonAutomated]}RLIKE \"#{[toolRegexes(opts[:tool], opts[:includeRedirects])].join("|")}\" " : "") +
         (!opts[:count] ? "ORDER BY rev_id DESC LIMIT #{opts[:limit]} OFFSET #{opts[:offset]}" : "")
 
       opts[:count] ? count(query) : get(query)
@@ -97,7 +102,7 @@ module Repl
       ["page_title", "page_namespace", "rev_id", "rev_page", "rev_timestamp", "rev_minor_edit", "rev_comment"].join(", ")
     end
 
-    def tools(index = nil)
+    def tools(index = nil, includeRedirects = false)
       contribsLink = "\\\\[\\\\[Special:(Contribs|Contributions)\\\\/.*?\\\\|.*?\\\\]\\\\]"
       tools = [
         {
@@ -177,6 +182,14 @@ module Repl
         }
       ]
 
+      if includeRedirects
+        tools << {
+          name: "Reditect",
+          regex: "\\\\[\\\\[WP:AES\\\\|←\\\\]\\\\]Redirected page to \\\\[\\\\[.*?\\\\]\\\\]",
+          link: "[[Wikipedia:Redirect|Redirect]]"
+        }
+      end
+
       if index
         tools[index.to_i]
       else
@@ -184,8 +197,8 @@ module Repl
       end
     end
 
-    def toolRegexes(index = nil)
-      regexes = tools.collect{|t| t[:regex]}
+    def toolRegexes(index = nil, includeRedirects = false)
+      regexes = tools(nil, includeRedirects).collect{|t| t[:regex]}
 
       if index
         regexes[index.to_i]

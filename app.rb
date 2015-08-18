@@ -45,7 +45,8 @@ namespace '/musikanimal' do
     countData = @@replClient.countEdits({
       username: params["username"],
       namespace: params["namespace"],
-      nonAutomated: true
+      nonAutomated: true,
+      includeRedirects: !!params["redirects"]
     })
 
     totalEdits = @@replClient.countAllEdits(params["username"])
@@ -70,7 +71,8 @@ namespace '/musikanimal' do
           username: params["username"],
           namespace: params["namespace"],
           offset: params["offset"] || 0,
-          nonAutomated: true
+          nonAutomated: true,
+      includeRedirects: !!params["redirects"]
         )
         res[:contribs] = contribsData.to_a
       end
