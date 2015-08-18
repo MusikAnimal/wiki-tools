@@ -98,21 +98,32 @@ module Repl
     end
 
     def tools(index = nil)
+      contribsLink = "\\\\[\\\\[Special:(Contribs|Contributions)\\\\/.*?\\\\|.*?\\\\]\\\\]"
       tools = [
         {
           name: "Generic rollback",
-          regex: "^Reverted edits by \\\\[\\\\[.*?\\\\|.*?\\\\]\\\\] \\\\(\\\\[\\\\[User talk:.*?\\\\|talk\\\\]\\\\]\\\\) to last version by .*",
+          regex: "^Reverted edits by #{contribsLink} \\\\(\\\\[\\\\[User talk:.*?\\\\|talk\\\\]\\\\]\\\\) to last version by .*",
           link: "WP:ROLLBACK"
         },
         {
-          name: "Huggle",
-          regex: "WP:HG",
-          link: "WP:HG"
+          name: "Undo",
+          regex: "^Undid revision \\\\d+ by #{contribsLink}",
+          link: "Help:Undo"
+        },
+        {
+          name: "Pending changes revert",
+          regex: "^Reverted \\\\d+ pending edits? by #{contribsLink}",
+          link: "Wikipedia:Reviewing"
         },
         {
           name: "Twinkle",
           regex: "WP:TW|WP:TWINKLE",
           link: "WP:TW"
+        },
+        {
+          name: "Huggle",
+          regex: "WP:HG",
+          link: "WP:HG"
         },
         {
           name: "STiki",
