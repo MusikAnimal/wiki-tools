@@ -108,6 +108,7 @@
     $(".output").hide();
     $(".loading").hide();
     $(".result-block").hide();
+    $(".prev-page, .next-page").hide();
     $("input[type=checkbox]").prop("checked", false);
     $("input[type=text]").val("");
     $("#namespace").val(0);
