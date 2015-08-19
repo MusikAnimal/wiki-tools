@@ -1,9 +1,9 @@
+.DS_Store
 *.gem
 *.rbc
-.DS_Store
 log/
 tmp/
-.sass-cache/
 auth.rb
 env
 *.js.map
+*.scssc

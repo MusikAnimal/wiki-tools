@@ -104,18 +104,19 @@
 
   function startOver() {
     updateProgress(null);
-    $(".results").html("");
     $(".output").hide();
     $(".loading").hide();
-    $(".result-block").hide();
+    $(".result-block").html("").hide();
     $(".prev-page, .next-page").hide();
-    $("input[type=checkbox]").prop("checked", false);
-    $("input[type=text]").val("");
-    $("#namespace").val(0);
-    $("#dropdown_select").text("Main"); // TODO: we can do better than this
+    // $("input[type=checkbox]").prop("checked", false);
+    // $("input[type=text]").val("");
+    $("#offset").val(0);
+    $("#username").val("");
+    // $("#namespace").val("");
+    $("#dropdown_select").text("All"); // TODO: we can do better than this
     $("form").removeClass("busy hide");
+    // history.pushState({}, "Nonautomated Counter from MusikAnimal", path + "?" + $("form").serialize());
     history.pushState({}, "Nonautomated Counter from MusikAnimal", path);
-    userData = {};
   }
 
   function countTools(params) {
@@ -165,7 +166,7 @@
       showTotalCount(data);
     }
 
-    if(this.contribs.checked) {
+    if(this.contribs.checked && !data.error) {
       showContribs(data);
     }
 
@@ -183,7 +184,7 @@
   }
 
   function showTotalCount(data) {
-    var namespaceStr = data.namespace_text ? "in the " + data.namespace_text + " namespace" : "total";
+    var namespaceStr = data.namespace_text ? "in the <b>" + data.namespace_text.toLowerCase() + "</b> namespace" : "total";
     $(".total-output").html(
       data.username + " has approximately <b>" + data.nonautomated_count + " non-automated edits</b> " + namespaceStr
     ).show();

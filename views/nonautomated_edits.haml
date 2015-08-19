@@ -31,6 +31,9 @@
       %div.checkbox
         %input#redirects{type: "checkbox", name: "redirects", value: "on", checked: params[:redirects]}
         %label{for: "redirects"} Exclude redirects
+      %div.checkbox
+        %input#moves{type: "checkbox", name: "moves", value: "on", checked: params[:moves]}
+        %label{for: "moves"} Exclude page moves
 
     %button Submit
 

@@ -172,7 +172,7 @@ input[type=text], button {
 }
 
 form {
-  height: 300px;
+  height: 350px;
   @include prefix(transition, "height 500ms, opacity 1s ease");
   &.hide {
     height: 0;
@@ -183,6 +183,12 @@ form {
 .busy {
   opacity: 0.5;
   pointer-events: none;
+}
+
+@media \0screen\,screen\9 {
+  .busy {
+    display: none;
+  }
 }
 
 .error {
