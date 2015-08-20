@@ -181,6 +181,26 @@ module Repl
           name: "User:Fox Wilson/delsort",
           regex: "Wikipedia:WP:FWDS|WP:FWDS",
           link: "WP:FWDS"
+        },
+        {
+          name: "Ohconfucius script",
+          regex: "\\\\[\\\\[(User:Ohconfucius/.*?|WP:MOSNUMscript)\\\\|script\\\\]\\\\]",
+          link: "User:Ohconfucius/script"
+        },
+        {
+          name: "OneClickArchiver",
+          regex: "\\\\[\\\\[(User:Equazcion/OneClickArchiver|User:Technical 13/1CA)\\\\|OneClickArchiver\\\\]\\\\]",
+          link: "User:Technical 13/1CA"
+        },
+        {
+          name: "editProtectedHelper",
+          regex: "\\\\(\\\\[\\\\[WP:EPH|EPH\\\\]\\\\]\\\\)",
+          link: "WP:EPH"
+        },
+        {
+          name: "WikiLove",
+          regex: "new WikiLove message",
+          link: "WP:LOVE"
         }
       ]
 

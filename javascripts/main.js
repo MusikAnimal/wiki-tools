@@ -108,14 +108,14 @@
     $(".loading").hide();
     $(".result-block").html("").hide();
     $(".prev-page, .next-page").hide();
-    // $("input[type=checkbox]").prop("checked", false);
-    // $("input[type=text]").val("");
+    $("input[type=checkbox]").prop("checked", false);
+    $("input[type=text]").val("");
     $("#offset").val(0);
     $("#username").val("");
-    // $("#namespace").val("");
+    $("#namespace").val("");
     $("#dropdown_select").text("All"); // TODO: we can do better than this
     $("form").removeClass("busy hide");
-    // history.pushState({}, "Nonautomated Counter from MusikAnimal", path + "?" + $("form").serialize());
+    userData = {}
     history.pushState({}, "Nonautomated Counter from MusikAnimal", path);
   }
 
