@@ -1,12 +1,16 @@
-%main.counter
+%main.search
   %header
-    %h1 Non-automated edit counter
+    %h1 Edit summary search
 
   %form
     %fieldset.basic
       %label{for: "username"} Username
       %input#username{type: "text", placeholder: "Example", name: "username", required: true, value: params[:username]}
       %input#offset{type: "hidden", name: "offset", value: 0}
+
+    %fieldset.basic
+      %label{for: "query"} Search query
+      %input#query{type: "text", placeholder: "", name: "query", required: true, value: params[:query]}
 
     %fieldset.dropdowns
       %label{for: "namespace"} Namespace
@@ -21,26 +25,11 @@
             %li{"data-id" => namespaceId}
               = namespaces[namespaceId]
 
-    %fieldset.options
-      %div.checkbox
-        %input#contribs{type: "checkbox", name: "contribs", value: "on", checked: params[:contribs]}
-        %label{for: "contribs"} List contributions
-      %div.checkbox
-        %input#tools{type: "checkbox", name: "tools", value: "on", checked: params[:tools]}
-        %label{for: "tools"} Include tool counts
-      %div.checkbox
-        %input#redirects{type: "checkbox", name: "redirects", value: "on", checked: params[:redirects]}
-        %label{for: "redirects"} Exclude redirects
-      %div.checkbox
-        %input#moves{type: "checkbox", name: "moves", value: "on", checked: params[:moves]}
-        %label{for: "moves"} Exclude page moves
-
     %button Submit
 
   %section.output
     %span.another-query &larr; Do another query
-    %div.summary-output.result-block
-    %dl.counts-output.result-block
+    %div.total-output.result-block
     %ul#contribs.contribs-output.result-block
     %div.contrib-nav
       %div.prev-page &larr; Newer 50

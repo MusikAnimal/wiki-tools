@@ -43,7 +43,7 @@
       var username = this.username.value;
       this.username.value = (username.charAt(0).toUpperCase() + username.slice(1));
 
-      if(this.tools.checked) {
+      if(this.tools.checked && !toolsArray.length) {
         updateProgress(0);
       }
 
@@ -184,9 +184,12 @@
   }
 
   function showTotalCount(data) {
-    var namespaceStr = data.namespace_text ? "in the <b>" + data.namespace_text.toLowerCase() + "</b> namespace" : "total";
-    $(".total-output").html(
-      data.username + " has approximately <b>" + data.nonautomated_count + " non-automated edits</b> " + namespaceStr
+    data.namespace_str = data.namespace_text ? "in the <b>" + data.namespace_text.toLowerCase() + "</b> namespace" : "total";
+    data.automated_count = data.total_count - data.nonautomated_count
+    data.automated_percentage = Math.round((data.automated_count / data.total_count) * 100)
+    data.nonautomated_percentage = Math.round((data.nonautomated_count / data.total_count) * 100)
+    $(".summary-output").html(
+      Handlebars.templates.summary(data)
     ).show();
   }
 

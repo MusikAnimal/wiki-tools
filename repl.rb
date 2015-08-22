@@ -169,8 +169,23 @@ module Repl
         },
         {
           name: "reFill",
-          regex: "WP:REFILL",
+          regex: "User:Zhaofeng Li/Reflinks|WP:REFILL",
           link: "WP:REFILL"
+        },
+        {
+          name: "Checklinks",
+          regex: "using \\\\[\\\\[w:WP:CHECKLINKS\\\\|Checklinks\\\\]\\\\]",
+          link: "WP:CHECKLINKS"
+        },
+        {
+          name: "Dab solver",
+          regex: "using \\\\[\\\\[tools:~dispenser/view/Dab_solver\\\\|Dab solver\\\\]\\\\]",
+          link: "WP:DABSOLVER"
+        },
+        {
+          name: "Reflinks",
+          regex: "\\\\[\\\\[tools:~dispenser/view/Reflinks\\\\|Reflinks\\\\]\\\\]",
+          link: "WP:REFLINKS"
         },
         {
           name: "WikiPatroller",

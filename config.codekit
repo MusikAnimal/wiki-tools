@@ -57,6 +57,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 1
 		},
+	"\/javascripts\/summary.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/javascripts\/summary.js",
+		"outputAbbreviatedPath": "\/javascripts\/min\/summary-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
 	"\/public\/musikanimal\/application.css": {
 		"fileType": 16,
 		"ignore": 1,
@@ -141,6 +152,22 @@
 		"useDoubleQuotes": 0,
 		"useUnixNewlines": 0
 		},
+	"\/views\/edit_summary_search.haml": {
+		"escapeHTMLCharacters": 0,
+		"fileType": 256,
+		"ignore": 1,
+		"ignoreWasSetByUser": 1,
+		"inputAbbreviatedPath": "\/views\/edit_summary_search.haml",
+		"noEscapeInAttributes": 0,
+		"outputAbbreviatedPath": "\/views\/edit_summary_search.html",
+		"outputFormat": 2,
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 0,
+		"useCDATA": 0,
+		"useDoubleQuotes": 0,
+		"useUnixNewlines": 0
+		},
 	"\/views\/index.haml": {
 		"escapeHTMLCharacters": 0,
 		"fileType": 256,
@@ -215,8 +242,14 @@
 			},
 		{
 			"followForSyntaxChecking": 1,
-			"linkedFileAbbreviatedPath": "\/javascripts\/main.js",
+			"linkedFileAbbreviatedPath": "\/javascripts\/summary.js",
 			"position": 3,
+			"type": 0
+			},
+		{
+			"followForSyntaxChecking": 1,
+			"linkedFileAbbreviatedPath": "\/javascripts\/main.js",
+			"position": 4,
 			"type": 0
 			}
 		]

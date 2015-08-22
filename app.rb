@@ -30,6 +30,18 @@ namespace '/musikanimal' do
     }
   end
 
+  # get '/edit_summary_search' do
+  #   namespaceId = params[:namespace] ? params[:namespace].to_i : nil
+  #   namespaceText = namespaces[namespaceId] || "All"
+
+  #   haml :edit_summary_search, locals: {
+  #     namespace: namespaceId,
+  #     namespaces: namespaces,
+  #     namespaceText: namespaceText,
+  #     username: params[:username]
+  #   }
+  # end
+
   get '/api/nonautomated_edits' do
     content_type :json
 

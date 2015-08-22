@@ -251,6 +251,9 @@ fieldset {
     }
   }
 
+  .summary-output:before {
+    content: "Summary";
+  }
   .counts-output:before {
     content: "Tool counts";
   }
@@ -259,7 +262,7 @@ fieldset {
   }
 
   dl {
-    width: 300px;
+    width: 325px;
     dt {
       display: inline-block;
       width: 200px;
@@ -267,8 +270,12 @@ fieldset {
     dd {
       display: inline-block;
       margin: 0;
-      width: 100px;
+      width: 125px;
     }
+  }
+
+  .counts-output {
+    width: 650px;
   }
 
   ul {
@@ -294,7 +301,7 @@ fieldset {
 
 .another-query {
   font-size: 14px;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .prev-page {
