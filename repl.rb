@@ -104,7 +104,7 @@ module Repl
       tools = [
         {
           name: "Generic rollback",
-          regex: "^Reverted edits by #{contribsLink} \\\\(\\\\[\\\\[User talk:.*?\\\\|talk\\\\]\\\\]\\\\) to last version by .*",
+          regex: "^(\\\\[\\\\[Help:Reverting\\\\|Reverted\\\\]\\\\]|Reverted) edits by #{contribsLink} \\\\(\\\\[\\\\[User talk:.*?\\\\|talk\\\\]\\\\]\\\\) to last version by .*",
           link: "WP:ROLLBACK"
         },
         {
