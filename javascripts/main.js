@@ -195,11 +195,33 @@
 
   function showToolCounts(data) {
     $(".counts-output").show();
+
     var index = 0;
-    $.each(data, function(tool, count) {
+    var newData = {};
+
+    $.each(data, function(key, val) {
+      newData[key] = {
+        name: key,
+        count: val,
+        link: toolsArray[index++]
+      }
+    });
+
+    var keysSorted = Object.keys(newData).sort(function(a,b) {
+      return data[a] - data[b];
+    });
+
+    var hasEmpty = false;
+
+    keysSorted.reverse().forEach(function(key) {
+      var props = newData[key];
+      if(props.count === 0) {
+        hasEmpty = true;
+        props.class = "empty";
+      }
+
       $(".counts-output").append(
-        "<dt><a href='https://en.wikipedia.org/wiki/" + toolsArray[index++].link + "'>" + tool + "</a></dt>" +
-        "<dd>" + count + "</dd>"
+        Handlebars.templates.tool(props)
       );
     });
 

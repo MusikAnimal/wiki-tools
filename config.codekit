@@ -68,6 +68,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 1
 		},
+	"\/javascripts\/tool.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/javascripts\/tool.js",
+		"outputAbbreviatedPath": "\/javascripts\/min\/tool-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
 	"\/public\/musikanimal\/application.css": {
 		"fileType": 16,
 		"ignore": 1,
@@ -248,8 +259,14 @@
 			},
 		{
 			"followForSyntaxChecking": 1,
-			"linkedFileAbbreviatedPath": "\/javascripts\/main.js",
+			"linkedFileAbbreviatedPath": "\/javascripts\/tool.js",
 			"position": 4,
+			"type": 0
+			},
+		{
+			"followForSyntaxChecking": 1,
+			"linkedFileAbbreviatedPath": "\/javascripts\/main.js",
+			"position": 5,
 			"type": 0
 			}
 		]

@@ -96,7 +96,7 @@ input[type=text], button {
   @include prefix(box-sizing, border-box);
   #dropdown_select {
     padding: 0 10px;
-    &:after {
+    &::after {
       border-color: black transparent transparent;
       border-width: 12px 8px 0 8px;
       border-style: solid;
@@ -141,7 +141,7 @@ input[type=text], button {
   position: relative;
   label {
     font-size: 14px;
-    &:before {
+    &::before {
       background-color: white;
       border: solid 1px black;
       content : "";
@@ -152,7 +152,7 @@ input[type=text], button {
       top: 0px;
       width: 14px;
     }
-    &:after {
+    &::after {
       background-color: black;
       content: "";
       display: none;
@@ -163,10 +163,10 @@ input[type=text], button {
       width: 10px;
     }
   }
-  input:checked + label:after {
+  input:checked + label::after {
     display: block;
   }
-  input:active + label:before {
+  input:active + label::before {
     background-color: #DDDDDD;
   }
 }
@@ -243,7 +243,7 @@ fieldset {
 
   .result-block {
     display: none;
-    &:before {
+    &::before {
       display: block;
       font-size: 18px;
       font-weight: bold;
@@ -251,13 +251,13 @@ fieldset {
     }
   }
 
-  .summary-output:before {
+  .summary-output::before {
     content: "Summary";
   }
-  .counts-output:before {
+  .counts-output::before {
     content: "Tool counts";
   }
-  .contribs-output:before {
+  .contribs-output::before {
     content: "Contributions";
   }
 
@@ -272,11 +272,14 @@ fieldset {
       margin: 0;
       width: 125px;
     }
+    .empty {
+      display: none;
+    }
   }
 
-  .counts-output {
-    width: 650px;
-  }
+  // .counts-output {
+  //   width: 650px;
+  // }
 
   ul {
     font-size: 15px;
