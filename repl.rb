@@ -154,7 +154,7 @@ module Repl
         },
         {
           name: "AWB",
-          regex: "Wikipedia:AWB|WP:AWB",
+          regex: "Wikipedia:AWB|WP:AWB|Project:AWB",
           link: "WP:AWB"
         },
         {
