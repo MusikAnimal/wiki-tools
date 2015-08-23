@@ -124,7 +124,7 @@ module Repl
         },
         {
           name: "Twinkle",
-          regex: "WP:TW|WP:TWINKLE",
+          regex: "WP:TW|WP:TWINKLE|WP:FRIENDLY",
           link: "WP:TW"
         },
         {
@@ -216,6 +216,16 @@ module Repl
           name: "WikiLove",
           regex: "new WikiLove message",
           link: "WP:LOVE"
+        },
+        {
+          name: "AutoEd",
+          regex: "using \\\\[\\\\[WP:AutoEd\\\\|AutoEd\\\\]\\\\]",
+          link: "WP:AutoEd"
+        },
+        {
+          name: "Mike's Wiki Tool",
+          regex: "using \\\\[\\\\[User:MichaelBillington/MWT\\\\|MWT\\\\]\\\\]",
+          link: "Wikipedia:Mike's Wiki Tool"
         }
       ]
 
