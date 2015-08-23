@@ -114,7 +114,7 @@ module Repl
         },
         {
           name: "Pending changes revert",
-          regex: "^Reverted \\\\d+ pending edits? by #{contribsLink}",
+          regex: "^(\\\\[\\\\[Help:Reverting\\\\|Reverted\\\\]\\\\]|Reverted) \\\\d+ (\\\\[\\\\[Wikipedia:Pending changes\\\\|pending\\\\]\\\\]|pending) edits? (to revision \\\\d+|by #{contribsLink})",
           link: "Wikipedia:Reviewing"
         },
         {
@@ -134,7 +134,7 @@ module Repl
         },
         {
           name: "STiki",
-          regex: "WP:STiki",
+          regex: "WP:STiki|WP:STIKI",
           link: "WP:STiki"
         },
         {
@@ -164,7 +164,7 @@ module Repl
         },
         {
           name: "HotCat",
-          regex: "WP:HOTCAT|WP:HC",
+          regex: "using \\\\[\\\\[(WP:HOTCAT|WP:HC|Help:Gadget-HotCat)\\\\|HotCat\\\\]\\\\]",
           link: "WP:HC"
         },
         {
@@ -184,7 +184,7 @@ module Repl
         },
         {
           name: "Reflinks",
-          regex: "\\\\[\\\\[tools:~dispenser/view/Reflinks\\\\|Reflinks\\\\]\\\\]",
+          regex: "\\\\[\\\\[(tools:~dispenser/view/Reflinks|WP:REFLINKS)\\\\|Reflinks\\\\]\\\\]",
           link: "WP:REFLINKS"
         },
         {
