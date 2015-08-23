@@ -203,7 +203,7 @@
       newData[key] = {
         name: key,
         count: val,
-        link: toolsArray[index++]
+        link: toolsArray[index++].link
       }
     });
 
