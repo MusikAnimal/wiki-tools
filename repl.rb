@@ -226,6 +226,31 @@ module Repl
           name: "Mike's Wiki Tool",
           regex: "using \\\\[\\\\[User:MichaelBillington/MWT\\\\|MWT\\\\]\\\\]",
           link: "Wikipedia:Mike's Wiki Tool"
+        },
+        {
+          name: "Global replace",
+          regex: "\\\\(\\\\[\\\\[c:GR\\\\|GR\\\\]\\\\]\\\\) ",
+          link: "commons:Commons:File renaming/Global replace"
+        },
+        {
+          name: "Admin actions",
+          regex: "^(Protected|Changed protection).*?\\\\[[Ee]dit=|^Removed protection from|^Configured pending changes.*?\\\\[[Aa]uto-accept|^Reset pending changes settings",
+          link: "WP:ADMIN"
+        },
+        {
+          name: "CSD Helper",
+          regex: "\\\\(\\\\[\\\\[User:Ale_jrb/Scripts\\\\|CSDH\\\\]\\\\]\\\\)",
+          link: "User:Ale jrb/Scripts"
+        },
+        {
+          name: "Find link",
+          regex: "using \\\\[\\\\[User:Edward/Find link\\\\|Find link\\\\]\\\\]",
+          link: "User:Edward/Find link"
+        },
+        {
+          name: "responseHelper",
+          regex: "\\\\(using \\\\[\\\\[User:MusikAnimal/responseHelper\\\\|responseHelper\\\\]\\\\]\\\\)",
+          link: "User:MusikAnimal/responseHelper"
         }
       ]
 

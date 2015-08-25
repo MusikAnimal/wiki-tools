@@ -2,6 +2,7 @@
 (function() {
   var toolsArray = [], userData = {};
   var path = document.location.pathname.split("/").pop();
+  var projectPath = "https://en.wikipedia.org"
 
   $(document).ready(function() {
     if(document.location.search.indexOf("username=") !== -1) {
@@ -92,6 +93,10 @@
       $(".prev-page, .next-page").hide();
       $(".contribs-output").addClass("busy");
       $("form").trigger("submit");
+    });
+
+    $(".expander").on("click", function() {
+      $(this).toggleClass("expanded");
     });
 
     // accessibility hacks
@@ -188,6 +193,7 @@
     data.automated_count = data.total_count - data.nonautomated_count
     data.automated_percentage = Math.round((data.automated_count / data.total_count) * 100)
     data.nonautomated_percentage = Math.round((data.nonautomated_count / data.total_count) * 100)
+    data.project_path = projectPath
     $(".summary-output").html(
       Handlebars.templates.summary(data)
     ).show();
@@ -204,7 +210,7 @@
         name: key,
         count: val,
         link: toolsArray[index++].link,
-        project_path: "https://en.wikipedia.org"
+        project_path: projectPath
       }
     });
 
@@ -225,6 +231,12 @@
         Handlebars.templates.tool(props)
       );
     });
+
+    if(keysSorted.indexOf("Admin actions")) {
+      $(".notes-output").append(
+        "<small>Note: Admin actions count represents only actions for which an edit exists, such as page protections</small>"
+      ).show();
+    }
 
     revealResults();
   }
@@ -247,7 +259,7 @@
           "July", "August", "September", "October", "November", "December"
         ];
 
-      contribData.project_path = "https://en.wikipedia.org";
+      contribData.project_path = projectPath;
       contribData.datestamp = hour + ":" + minute + ", " + day + " " + monthNames[parseInt(month) - 1] + " " + year;
       contribData.minor_edit = !!contribData.rev_minor_edit;
       contribData.humanized_page_title = contribData.page_title.replace(/_/g, " ");
