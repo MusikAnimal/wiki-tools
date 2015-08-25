@@ -1,7 +1,11 @@
 <a href="{{project_path}}/wiki/User:{{username}}">{{username}}</a> has approximently <b>{{nonautomated_count}}</b> non-automated edits {{{namespace_str}}}
 
+{{#if namespace_text}}<p>Totals for the <b>{{namespace_text}}</b> namespace:</p>{{/if}}
+
 <dl>
-  <dt>Total live edits</dt><dd>{{total_count}}</dd>
+  <dt>Total edits</dt><dd>{{total_count}}</dd>
   <dt>Automated edits</dt><dd>{{automated_count}}{{#if automated_percentage}} ({{automated_percentage}}%){{/if}}</dd>
   <dt>Non-automated edits</dt><dd>{{nonautomated_count}}{{#if nonautomated_percentage}} ({{nonautomated_percentage}}%){{/if}}</dd>
 </dl>
+
+<small>Note: Edit counts do not include those of deleted pages. All data is approximate.</small>

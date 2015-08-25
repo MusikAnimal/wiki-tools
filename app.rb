@@ -54,21 +54,31 @@ namespace '/musikanimal' do
 
     params["namespace"] = params["namespace"] == "" ? nil : params["namespace"]
 
-    countData = @@replClient.countEdits({
-      username: params["username"],
-      namespace: params["namespace"],
-      nonAutomated: true,
-      includeRedirects: !!params["redirects"]
-    })
+    if !params["totalCountOnly"]
+      countData = @@replClient.countEdits({
+        username: params["username"],
+        namespace: params["namespace"],
+        nonAutomated: true,
+        includeRedirects: !!params["redirects"]
+      })
+    end
 
-    totalEdits = @@replClient.countAllEdits(params["username"])
+    if params["namespace"]
+      totalEdits = @@replClient.countEdits({
+        username: params["username"],
+        namespace: params["namespace"]
+      })
+    else
+      totalEdits = @@replClient.countAllEdits(params["username"])
+    end
 
     res = {
       username: params["username"],
       namespace: params["namespace"],
       namespace_text: namespaces[params["namespace"].to_s.empty? ? nil : params["namespace"].to_i],
       total_count: totalEdits,
-      nonautomated_count: countData
+      automated_count: ((totalEdits - countData) rescue nil),
+      nonautomated_count: (countData rescue nil)
     }
 
     if params["contribs"]
@@ -83,8 +93,7 @@ namespace '/musikanimal' do
           username: params["username"],
           namespace: params["namespace"],
           offset: params["offset"] || 0,
-          nonAutomated: true,
-          includeRedirects: !!params["redirects"]
+          nonAutomated: true
         )
         res[:contribs] = contribsData.to_a
       end
@@ -129,7 +138,7 @@ namespace '/musikanimal' do
 
     if params["username"]
       res[:username] = params["username"]
-      res[:nonautomated_count] = @@replClient.countEdits({
+      res[:count] = @@replClient.countEdits({
         username: params["username"],
         namespace: params["namespace"],
         nonAutomated: false,

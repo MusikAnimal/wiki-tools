@@ -54,8 +54,7 @@ module Repl
         limit: 50,
         offset: 0,
         count: false,
-        includeRedirects: true,
-        includeMovesName: false
+        includeRedirects: false
       }.merge(opts)
 
       query = "SELECT " +
@@ -64,7 +63,7 @@ module Repl
         "JOIN enwiki_p.revision_userindex ON page_id = rev_page " +
         "WHERE rev_user_text = \"#{opts[:username]}\" "+
         (opts[:namespace].to_s.empty? ? "" : "AND page_namespace = #{opts[:namespace]} ") +
-        (!opts[:nonAutomated].nil? ? "AND rev_comment #{"NOT " if opts[:nonAutomated]}RLIKE \"#{[toolRegexes(opts[:tool], opts[:includeRedirects], opts[:includeMovesName])].join("|")}\" " : "") +
+        (!opts[:nonAutomated].nil? ? "AND rev_comment #{"NOT " if opts[:nonAutomated]}RLIKE \"#{[toolRegexes(opts[:tool], opts[:includeRedirects])].join("|")}\" " : "") +
         (!opts[:count] ? "ORDER BY rev_id DESC LIMIT #{opts[:limit]} OFFSET #{opts[:offset]}" : "")
 
       opts[:count] ? count(query) : get(query)
@@ -99,7 +98,8 @@ module Repl
       ["page_title", "page_namespace", "rev_id", "rev_page", "rev_timestamp", "rev_minor_edit", "rev_comment"].join(", ")
     end
 
-    def tools(index = nil, includeRedirects = false, includeMovesName = nil)
+    # TODO: add caching, this doesn't change much
+    def tools(index = nil, includeRedirects = false)
       contribsLink = "\\\\[\\\\[Special:(Contribs|Contributions)\\\\/.*?\\\\|.*?\\\\]\\\\]"
       tools = [
         {
@@ -119,7 +119,7 @@ module Repl
         },
         {
           name: "Page move",
-          regex: ".*? moved page \\\\[\\\\[",
+          regex: "^.*?moved page \\\\[\\\\[(?!.*?WP:AFCH)",
           link: "Help:Move"
         },
         {
@@ -154,7 +154,7 @@ module Repl
         },
         {
           name: "AFCH",
-          regex: "WP:AFCH",
+          regex: "WP:AFCH|WP:AFCHRW",
           link: "WP:AFCH"
         },
         {
@@ -261,7 +261,7 @@ module Repl
 
       if includeRedirects
         tools << {
-          name: "Reditect",
+          name: "Redirect",
           regex: "\\\\[\\\\[WP:AES\\\\|←\\\\]\\\\]Redirected page to \\\\[\\\\[.*?\\\\]\\\\]",
           link: "Wikipedia:Redirect"
         }
@@ -274,8 +274,8 @@ module Repl
       end
     end
 
-    def toolRegexes(index = nil, includeRedirects = false, includeMovesName = nil)
-      regexes = tools(nil, includeRedirects, includeMovesName).collect{|t| t[:regex]}
+    def toolRegexes(index = nil, includeRedirects = false)
+      regexes = tools(nil, includeRedirects).collect{|t| t[:regex]}
 
       if index
         regexes[index.to_i]

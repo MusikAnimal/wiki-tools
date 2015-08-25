@@ -30,14 +30,14 @@
       $("#dropdown_select").text($(this).text());
     });
 
-    $("#contribs").on("change", function() {
-      $redirectsOption = $(".redirects-option");
-      if($redirectsOption.hasClass("invisible")) {
-        $redirectsOption.removeClass("invisible").prop("disabled", false);
-      } else {
-        $redirectsOption.addClass("invisible").prop("disabled", true);
-      }
-    });
+    // $("#contribs").on("change", function() {
+    //   $redirectsOption = $(".redirects-option");
+    //   if($redirectsOption.hasClass("invisible")) {
+    //     $redirectsOption.removeClass("invisible").prop("disabled", false);
+    //   } else {
+    //     $redirectsOption.addClass("invisible").prop("disabled", true);
+    //   }
+    // });
 
     $("form").submit(function(e) {
       e.preventDefault();
@@ -63,6 +63,7 @@
 
       if(this.tools.checked && !toolsArray.length) {
         updateProgress(0);
+        params += "&totalCountOnly=on";
       }
 
       api("", params).success(
@@ -152,7 +153,7 @@
       namespace: params.namespace
     }).success(function(resp) {
       updateProgress(parseInt(((id / toolsArray.length - 1) + 1) * 100));
-      data[resp.tool_name] = resp.nonautomated_count;
+      data[resp.tool_name] = resp.count;
     }).error(function(resp) {
       data[resp.tool_name] = "API failure!";
     }).done(function() {
@@ -172,14 +173,17 @@
   function showData(data) {
     if($.isEmptyObject(userData)) {
       userData = data;
-      showTotalCount(data);
+
+      // nonautomated_count is computed by countTools if that option is checked
+      //  and will call showTotalCount when it is done
+      if(data.nonautomated_count) showTotalCount(userData);
     }
 
     if(this.contribs.checked && !data.error) {
       showContribs(data);
     }
 
-    if(this.tools.checked &&  !userData.toolCounts) {
+    if(this.tools.checked && !userData.toolCounts) {
       countTools(data);
     } else {
       // tool counter will do this when it is finished
@@ -193,8 +197,9 @@
   }
 
   function showTotalCount(data) {
-    data.namespace_str = data.namespace_text ? "in the <b>" + data.namespace_text.toLowerCase() + "</b> namespace" : "total";
-    data.automated_count = data.total_count - data.nonautomated_count
+    data.namespace_text = data.namespace_text.toLowerCase();
+    data.namespace_str = data.namespace_text ? "in the <b>" + data.namespace_text + "</b> namespace" : "total";
+    if(!data.automated_count) data.automated_count = data.total_count - data.nonautomated_count
     data.automated_percentage = Math.round((data.automated_count / data.total_count) * 100)
     data.nonautomated_percentage = Math.round((data.nonautomated_count / data.total_count) * 100)
     data.project_path = projectPath
@@ -223,12 +228,15 @@
     });
 
     var hasEmpty = false;
+    userData.automated_count = 0;
 
     keysSorted.reverse().forEach(function(key) {
       var props = newData[key];
       if(props.count === 0) {
         hasEmpty = true;
         props.class = "empty";
+      } else {
+        userData.automated_count += props.count;
       }
 
       $(".counts-output").append(
@@ -236,11 +244,14 @@
       );
     });
 
-    if(newData["Admin actions"].count > 0) {
+    if(newData["Admin actions"] && newData["Admin actions"].count > 0) {
       $(".notes-output").append(
         "<small>Note: Admin actions count represents only actions for which an edit exists, such as page protections</small>"
       ).show();
     }
+
+    userData.nonautomated_count = userData.total_count - userData.automated_count
+    showTotalCount(userData);
 
     revealResults();
   }
