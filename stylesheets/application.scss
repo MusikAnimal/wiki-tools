@@ -178,6 +178,11 @@ form {
     height: 0;
     opacity: 0;
   }
+  // TODO: use &.hide + .notes {} to hide notes when form is submitted
+}
+
+.invisible {
+  visibility: hidden;
 }
 
 .busy {

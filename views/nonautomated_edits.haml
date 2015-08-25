@@ -28,12 +28,9 @@
       %div.checkbox
         %input#tools{type: "checkbox", name: "tools", value: "on", checked: params[:tools]}
         %label{for: "tools"} Include tool counts
-      %div.checkbox
+      %div.checkbox.redirects-option.invisible
         %input#redirects{type: "checkbox", name: "redirects", value: "on", checked: params[:redirects]}
         %label{for: "redirects"} Exclude redirects
-      %div.checkbox
-        %input#moves{type: "checkbox", name: "moves", value: "on", checked: params[:moves]}
-        %label{for: "moves"} Exclude page moves
 
     %button Submit
 

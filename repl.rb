@@ -118,6 +118,11 @@ module Repl
           link: "Wikipedia:Reviewing"
         },
         {
+          name: "Page move",
+          regex: ".*? moved page \\\\[\\\\[",
+          link: "Help:Move"
+        },
+        {
           name: "Page curation",
           regex: "using \\\\[\\\\[Wikipedia:Page Curation\\\\|Page Curation\\\\]\\\\]",
           link: "Wikipedia:Page Curation"
@@ -259,14 +264,6 @@ module Repl
           name: "Reditect",
           regex: "\\\\[\\\\[WP:AES\\\\|←\\\\]\\\\]Redirected page to \\\\[\\\\[.*?\\\\]\\\\]",
           link: "Wikipedia:Redirect"
-        }
-      end
-
-      if includeMovesName.is_a?(String) && includeMovesName.length > 0
-        tools << {
-          name: "Moves",
-          regex: "#{includeMovesName} moved page",
-          link: "Help:Move"
         }
       end
 

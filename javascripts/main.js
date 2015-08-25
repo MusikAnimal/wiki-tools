@@ -30,6 +30,15 @@
       $("#dropdown_select").text($(this).text());
     });
 
+    $("#contribs").on("change", function() {
+      $redirectsOption = $(".redirects-option");
+      if($redirectsOption.hasClass("invisible")) {
+        $redirectsOption.removeClass("invisible").prop("disabled", false);
+      } else {
+        $redirectsOption.addClass("invisible").prop("disabled", true);
+      }
+    });
+
     $("form").submit(function(e) {
       e.preventDefault();
 
@@ -44,10 +53,6 @@
       var username = this.username.value;
       this.username.value = (username.charAt(0).toUpperCase() + username.slice(1));
 
-      if(this.tools.checked && !toolsArray.length) {
-        updateProgress(0);
-      }
-
       if(userData.contribs) {
         // moving page to page within contribs
         $("#contribs")[0].scrollIntoView();
@@ -56,12 +61,11 @@
       var params = $(this).serialize();
       history.pushState({}, $("form[name=username]").val() + " - Nonautomated Counter from MusikAnimal", path + "?" + params);
 
-      $.ajax({
-        url: "/musikanimal/api/nonautomated_edits",
-        method: "GET",
-        data: params,
-        dataType: "JSON"
-      }).success(
+      if(this.tools.checked && !toolsArray.length) {
+        updateProgress(0);
+      }
+
+      api("", params).success(
         showData.bind(this)
       ).error(function(resp) {
         if(resp.status === 501) {
@@ -158,7 +162,7 @@
 
   function api(endpoint, params) {
     return $.ajax({
-      url: "/musikanimal/api/nonautomated_edits/"+endpoint,
+      url: "/musikanimal/api/nonautomated_edits" + (endpoint ? "/" + endpoint : ""),
       method: "GET",
       data: params,
       dataType: "JSON"
@@ -232,7 +236,7 @@
       );
     });
 
-    if(keysSorted.indexOf("Admin actions")) {
+    if(newData["Admin actions"].count > 0) {
       $(".notes-output").append(
         "<small>Note: Admin actions count represents only actions for which an edit exists, such as page protections</small>"
       ).show();
