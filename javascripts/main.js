@@ -197,7 +197,7 @@
   }
 
   function showTotalCount(data) {
-    data.namespace_text = data.namespace_text.toLowerCase();
+    data.namespace_text = data.namespace_text ? data.namespace_text.toLowerCase() : "";
     data.namespace_str = data.namespace_text ? "in the <b>" + data.namespace_text + "</b> namespace" : "total";
     if(!data.automated_count) data.automated_count = data.total_count - data.nonautomated_count
     data.automated_percentage = Math.round((data.automated_count / data.total_count) * 100)

@@ -19,7 +19,7 @@ namespace '/musikanimal' do
   end
 
   get '/nonautomated_edits' do
-    namespaceId = params[:namespace] ? params[:namespace].to_i : nil
+    namespaceId = params[:namespace].to_s.empty? ? nil : params[:namespace].to_i
     namespaceText = namespaces[namespaceId] || "All"
 
     haml :nonautomated_edits, locals: {
