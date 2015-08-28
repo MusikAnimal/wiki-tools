@@ -11,7 +11,7 @@ require 'auth.rb'
 namespace '/musikanimal' do
   CONTRIBS_FETCH_SIZE = 500
   CONTRIBS_PAGE_SIZE = 50
-  CACHE_TIME = 600
+  CACHE_TIME = eval(File.open("env").read) == :production ? 600 : 30
 
   before '/*' do
     params.delete_if {|k,v| v == ""}
@@ -30,6 +30,12 @@ namespace '/musikanimal' do
       namespaces: namespaces,
       namespaceText: namespaceText,
       username: params[:username]
+    }
+  end
+
+  get '/nonautomated_edits/about' do
+    haml :about, locals: {
+      tools: replClient.getTools.to_a
     }
   end
 

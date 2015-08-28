@@ -256,6 +256,16 @@ module Repl
           name: "responseHelper",
           regex: "\\\\(using \\\\[\\\\[User:MusikAnimal/responseHelper\\\\|responseHelper\\\\]\\\\]\\\\)",
           link: "User:MusikAnimal/responseHelper"
+        },
+        {
+          name: "Advisor.js",
+          regex: "\\\\(using \\\\[\\\\[User:Cameltrader#Advisor.js\\\\|Advisor.js\\\\]\\\\]\\\\)",
+          link: "User:Cameltrader/Advisor"
+        },
+        {
+          name: "AfD closures",
+          regex: "^\\\\[\\\\[Wikipedia:Articles for deletion/.*?closed as",
+          link: "WP:AfD"
         }
       ]
 

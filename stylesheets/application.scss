@@ -1,4 +1,5 @@
 @import 'mixins';
+@import 'about';
 
 html {
   height: 100%;
@@ -202,6 +203,10 @@ form {
 
 .gray {
   color: gray;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 
 fieldset {
