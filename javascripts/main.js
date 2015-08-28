@@ -63,7 +63,6 @@
 
       if(this.tools.checked && !toolsArray.length) {
         updateProgress(0);
-        params += "&totalCountOnly=on";
       }
 
       api("", params).success(
@@ -173,10 +172,7 @@
   function showData(data) {
     if($.isEmptyObject(userData)) {
       userData = data;
-
-      // nonautomated_count is computed by countTools if that option is checked
-      //  and will call showTotalCount when it is done
-      if(data.nonautomated_count) showTotalCount(userData);
+      showTotalCount(userData);
     }
 
     if(this.contribs.checked && !data.error) {
@@ -249,9 +245,6 @@
         "<small>Note: Admin actions count represents only actions for which an edit exists, such as page protections</small>"
       ).show();
     }
-
-    userData.nonautomated_count = userData.total_count - userData.automated_count
-    showTotalCount(userData);
 
     revealResults();
   }

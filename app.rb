@@ -9,8 +9,11 @@ require 'pry'
 require 'auth.rb'
 
 namespace '/musikanimal' do
+  CONTRIBS_FETCH_SIZE = 500
+  CONTRIBS_PAGE_SIZE = 50
+  CACHE_TIME = 600
+
   before '/*' do
-    @@replClient ||= Auth.getRepl
     params.delete_if {|k,v| v == ""}
   end
 
@@ -55,21 +58,21 @@ namespace '/musikanimal' do
     params["namespace"] = params["namespace"] == "" ? nil : params["namespace"]
 
     if !params["totalCountOnly"]
-      countData = @@replClient.countEdits({
+      countData = replCall(:countEdits, {
         username: params["username"],
         namespace: params["namespace"],
         nonAutomated: true,
         includeRedirects: !!params["redirects"]
-      })
+      }).to_i
     end
 
     if params["namespace"]
-      totalEdits = @@replClient.countEdits({
+      totalEdits = replCall(:countEdits, {
         username: params["username"],
         namespace: params["namespace"]
-      })
+      }).to_i
     else
-      totalEdits = @@replClient.countAllEdits(params["username"])
+      totalEdits = replCall(:countAllEdits, params["username"]).to_i
     end
 
     res = {
@@ -84,43 +87,35 @@ namespace '/musikanimal' do
     if params["contribs"]
       if totalEdits > 50000
         status 501
-        return sendData(res.merge({
+        return normalizeData(res.merge({
           contribs: [],
           error: "Query too large! Unable to retrieve non-automated contributions. User has over 50,000 edits. Batch querying will be implemented soon."
         }))
       else
-        contribsData = @@replClient.getEdits(
+        offset = params["offset"].to_i || 0
+        rangeOffset = offset % CONTRIBS_FETCH_SIZE
+
+        res[:contribs] = replCall(:getEdits, {
           username: params["username"],
           namespace: params["namespace"],
-          offset: params["offset"] || 0,
-          nonAutomated: true
-        )
-        res[:contribs] = contribsData.to_a
+          nonAutomated: true,
+          offset: (offset / CONTRIBS_FETCH_SIZE.to_f).floor * CONTRIBS_FETCH_SIZE,
+          limit: CONTRIBS_FETCH_SIZE
+        })[rangeOffset..(rangeOffset + CONTRIBS_PAGE_SIZE)]
       end
     end
 
     status 200
-
-    begin
-      return sendData(res)
-    rescue Encoding::UndefinedConversionError
-      res[:contribs].map! do |contrib|
-        contrib.merge({
-          "page_title" => contrib["page_title"].force_encoding('utf-8'),
-          "rev_comment" => contrib["rev_comment"].force_encoding('utf-8')
-        })
-      end
-      return sendData(res)
-    end
+    normalizeData(res)
   end
 
   get '/api/nonautomated_edits/tools' do
     content_type :json
 
-    res = @@replClient.getTools
+    res = replClient.getTools
 
     status 200
-    sendData(res)
+    normalizeData(res)
   end
 
   get '/api/nonautomated_edits/tools/:id' do
@@ -128,7 +123,7 @@ namespace '/musikanimal' do
 
     res = {
       tool_id: params["id"],
-      tool_name: @@replClient.getTools[params["id"].to_i][:name]
+      tool_name: replClient.getTools[params["id"].to_i][:name]
     }
 
     if params[:namespace]
@@ -138,7 +133,7 @@ namespace '/musikanimal' do
 
     if params["username"]
       res[:username] = params["username"]
-      res[:count] = @@replClient.countEdits({
+      res[:count] = replClient.countEdits({
         username: params["username"],
         namespace: params["namespace"],
         nonAutomated: false,
@@ -147,7 +142,7 @@ namespace '/musikanimal' do
     end
 
     status 200
-    sendData(res)
+    normalizeData(res)
   end
 end
 
@@ -155,7 +150,44 @@ not_found do
   haml :'404'
 end
 
-def sendData(data)
+def replCall(method, params)
+  cacheResponse("#{method}#{params}") do
+    res = replClient.send(method, params)
+    res = res.is_a?(Fixnum) ? res : res.to_a
+
+    begin
+      res.to_json
+    rescue Encoding::UndefinedConversionError
+      res.map! do |contrib|
+        contrib.merge({
+          "page_title" => contrib["page_title"].force_encoding('utf-8'),
+          "rev_comment" => contrib["rev_comment"].force_encoding('utf-8')
+        })
+      end
+      res.to_json
+    end
+  end
+end
+
+def replClient
+  @@replClient ||= Auth.getRepl
+end
+
+def cacheResponse(req, &res)
+  @@redisClient ||= Auth.getRedis
+
+  key = "ma-#{Digest::MD5.hexdigest(req.to_s)}"
+
+  unless ret = @@redisClient.get(key)
+    @@redisClient.set(key, ret = res.call)
+    @@redisClient.expire(key, CACHE_TIME)
+  end
+
+  # either a Hash or a Fixnum stored as a string
+  JSON.parse(ret) rescue ret.to_i
+end
+
+def normalizeData(data)
   data.delete_if { |k,v| v.nil? } if data.is_a?(Hash)
   data.to_json
 end

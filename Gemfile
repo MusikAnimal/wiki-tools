@@ -10,5 +10,6 @@ group :web do
   gem "pg"
   gem "pry"
   gem "unicorn"
+  gem "redis"
 end
 
