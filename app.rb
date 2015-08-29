@@ -11,7 +11,7 @@ require 'auth.rb'
 namespace '/musikanimal' do
   CONTRIBS_FETCH_SIZE = 500
   CONTRIBS_PAGE_SIZE = 50
-  CACHE_TIME = eval(File.open("env").read) == :production ? 600 : 30
+  CACHE_TIME = eval(File.open("env").read) == :production ? 600 : 0
 
   before '/*' do
     params.delete_if {|k,v| v == ""}

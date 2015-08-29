@@ -2,7 +2,7 @@
 (function() {
   var toolsArray = [], userData = {};
   var path = document.location.pathname.split("/").pop();
-  var projectPath = "https://en.wikipedia.org"
+  var projectPath = "https://en.wikipedia.org";
 
   $(document).ready(function() {
     if(document.location.search.indexOf("username=") !== -1) {
@@ -124,7 +124,7 @@
     $("#namespace").val("");
     $("#dropdown_select").text("All"); // TODO: we can do better than this
     $("form").removeClass("busy hide");
-    userData = {}
+    userData = {};
     history.pushState({}, "Nonautomated Counter from MusikAnimal", path);
   }
 

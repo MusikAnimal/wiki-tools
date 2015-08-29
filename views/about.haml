@@ -5,12 +5,13 @@
   %a.another-query{href: "/musikanimal/nonautomated_edits"} &larr; Do a query
 
   %section.description
-    This tool attempts to offer accurate data on how many edits a user has made without the assistance of semi or fully automated tools. A few important notes:
+    This tool attempts to offer accurate data on how many edits a user has made without the assistance of semi or fully automated tools. Mainspace contributions can be listed to exemplify a user's ability to add prose, for instance. A few important notes:
     %ul
       %li All data is approximate.
       %li Deleted contributions are not currently accounted for.
       %li It may take a while to generate data for users with a large edit count. Currently the contribution history is not generated for users with over 50,000 contributions.
-      %li Some tool counts overlap. For instance, Twinkle can perform Moves. Consequently the sum of the tool counts may not equal the total number of automated contributions.
+      %li Some tool counts overlap. For instance, Twinkle can perform page moves. Consequently the sum of the tool counts may not equal the total number of automated contributions.
+      %li All data fetched is from the replication database, which my suffer from replication lag and be slightly behind production data. Furthermore, the tool caches responses for 30 minutes to improve performance.
 
   %section.tools
     There are currently #{tools.length} supported tools that this counter looks for. They are as follows:
@@ -51,8 +52,7 @@
           %span escaped username (required)
         %div
           %span namespace
-          %span
-            ID of namespace (see <a href="https://en.wikipedia.org/wiki/Wikipedia:Namespace">Wikipedia:Namespace</a>)
+          %span ID of namespace (see <a href="https://en.wikipedia.org/wiki/Wikipedia:Namespace">Wikipedia:Namespace</a>)
         %div
           %span redirects
           %span Whether to include redirects. Anything other than blank
@@ -65,17 +65,17 @@
         %div
           %span limit
           %span Number of contributions to fetch, if <tt>contribs</tt> is set (max 500)
-        %div.response
-          %a{href: "#"} Show response
       %li
         %h3 GET /musikanimal/nonautomated_edits/tools
         %div.description
           Fetch a list of all the supported tools provided by the service and the associated data
-        %div.response
-          %a{href: "#"} Show response
       %li
         %h3 GET /musikanimal/nonautomated_edits/tools/:id
         %div.description
-          Fetch the number of times a given user has used the tool with the given id
-        %div.response
-          %a{href: "#"} Show response
+          Fetch information about a tool or the number of times a given user has used the tool
+        %div
+          %span username
+          %span escaped username
+        %div
+          %span namespace
+          %span ID of namespace (see <a href="https://en.wikipedia.org/wiki/Wikipedia:Namespace">Wikipedia:Namespace</a>)

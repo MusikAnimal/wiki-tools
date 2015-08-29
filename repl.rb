@@ -266,16 +266,23 @@ module Repl
           name: "AfD closures",
           regex: "^\\\\[\\\\[Wikipedia:Articles for deletion/.*?closed as",
           link: "WP:AfD"
-        }
-      ]
-
-      if includeRedirects
-        tools << {
+        },
+        {
+          name: "Sagittarius",
+          regex: "\\\\(\\\\[\\\\[User:Kephir/gadgets/sagittarius\\\\|",
+          link: "User:Kephir/gadgets/sagittarius"
+        },
+        {
           name: "Redirect",
           regex: "\\\\[\\\\[WP:AES\\\\|←\\\\]\\\\]Redirected page to \\\\[\\\\[.*?\\\\]\\\\]",
           link: "Wikipedia:Redirect"
+        },
+        {
+          name: "Dashes",
+          regex: "using a \\\\[\\\\[User:GregU/dashes.js\\\\|script\\\\]\\\\]",
+          link: "User:GregU/dashes.js"
         }
-      end
+      ]
 
       if index
         tools[index.to_i]
