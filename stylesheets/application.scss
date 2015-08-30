@@ -173,7 +173,7 @@ input[type=text], button {
 }
 
 form {
-  height: 350px;
+  height: 300px;
   @include prefix(transition, "height 500ms, opacity 1s ease");
   &.hide {
     height: 0;
@@ -376,5 +376,8 @@ footer {
     &:focus {
       outline: #888 auto 5px;
     }
+  }
+  .about-link {
+    float: right;
   }
 }

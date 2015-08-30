@@ -11,6 +11,8 @@
       });
     }
 
+    $(".about-link").attr("href", "/musikanimal/nonautomated_edits/about");
+
     $("#dropdown_select").on("click", function(e) {
       if($(".namespace-selector").hasClass("open")) {
         return;
