@@ -291,6 +291,11 @@ module Repl
           name: "User:Doug/closetfd.js",
           regex: "\\\\(using \\\\[\\\\[User:Doug/closetfd.js",
           link: "User:Doug/closetfd.js"
+        },
+        {
+          name: "Cat-a-lot",
+          regex: "^\\\\[\\\\[Help:Cat-a-lot\\\\|Cat-a-lot\\\\]\\\\]:",
+          link: "Help:Cat-a-lot"
         }
       ]
 
