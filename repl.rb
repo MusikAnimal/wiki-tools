@@ -124,7 +124,7 @@ module Repl
         },
         {
           name: "Page curation",
-          regex: "using \\\\[\\\\[Wikipedia:Page Curation\\\\|Page Curation\\\\]\\\\]",
+          regex: "using \\\\[\\\\[Wikipedia:Page Curation\\\\|Page Curation",
           link: "Wikipedia:Page Curation"
         },
         {
@@ -169,7 +169,7 @@ module Repl
         },
         {
           name: "HotCat",
-          regex: "using \\\\[\\\\[(WP:HOTCAT|WP:HC|Help:Gadget-HotCat)\\\\|HotCat\\\\]\\\\]",
+          regex: "using \\\\[\\\\[(WP:HOTCAT|WP:HC|Help:Gadget-HotCat)\\\\|HotCat",
           link: "WP:HC"
         },
         {
@@ -179,17 +179,17 @@ module Repl
         },
         {
           name: "Checklinks",
-          regex: "using \\\\[\\\\[w:WP:CHECKLINKS\\\\|Checklinks\\\\]\\\\]",
+          regex: "using \\\\[\\\\[w:WP:CHECKLINKS\\\\|Checklinks",
           link: "WP:CHECKLINKS"
         },
         {
           name: "Dab solver",
-          regex: "using \\\\[\\\\[tools:~dispenser/view/Dab_solver\\\\|Dab solver\\\\]\\\\]",
+          regex: "using \\\\[\\\\[tools:~dispenser/view/Dab_solver\\\\|Dab solver",
           link: "WP:DABSOLVER"
         },
         {
           name: "Reflinks",
-          regex: "\\\\[\\\\[(tools:~dispenser/view/Reflinks|WP:REFLINKS)\\\\|Reflinks\\\\]\\\\]",
+          regex: "\\\\[\\\\[(tools:~dispenser/view/Reflinks|WP:REFLINKS)\\\\|Reflinks",
           link: "WP:REFLINKS"
         },
         {
@@ -204,17 +204,17 @@ module Repl
         },
         {
           name: "Ohconfucius script",
-          regex: "\\\\[\\\\[(User:Ohconfucius/.*?|WP:MOSNUMscript)\\\\|script\\\\]\\\\]",
+          regex: "\\\\[\\\\[(User:Ohconfucius/.*?|WP:MOSNUMscript)\\\\|script",
           link: "User:Ohconfucius/script"
         },
         {
           name: "OneClickArchiver",
-          regex: "\\\\[\\\\[(User:Equazcion/OneClickArchiver|User:Technical 13/1CA)\\\\|OneClickArchiver\\\\]\\\\]",
+          regex: "\\\\[\\\\[(User:Equazcion/OneClickArchiver|User:Technical 13/1CA)\\\\|OneClickArchiver",
           link: "User:Technical 13/1CA"
         },
         {
           name: "editProtectedHelper",
-          regex: "\\\\(\\\\[\\\\[WP:EPH|EPH\\\\]\\\\]\\\\)",
+          regex: "WP:EPH|EPH",
           link: "WP:EPH"
         },
         {
@@ -224,12 +224,12 @@ module Repl
         },
         {
           name: "AutoEd",
-          regex: "using \\\\[\\\\[WP:AutoEd\\\\|AutoEd\\\\]\\\\]",
+          regex: "using \\\\[\\\\[WP:AutoEd\\\\|AutoEd",
           link: "WP:AutoEd"
         },
         {
           name: "Mike's Wiki Tool",
-          regex: "using \\\\[\\\\[User:MichaelBillington/MWT\\\\|MWT\\\\]\\\\]",
+          regex: "using \\\\[\\\\[User:MichaelBillington/MWT\\\\|MWT",
           link: "Wikipedia:Mike's Wiki Tool"
         },
         {
@@ -244,22 +244,22 @@ module Repl
         },
         {
           name: "CSD Helper",
-          regex: "\\\\(\\\\[\\\\[User:Ale_jrb/Scripts\\\\|CSDH\\\\]\\\\]\\\\)",
+          regex: "\\\\(\\\\[\\\\[User:Ale_jrb/Scripts\\\\|CSDH",
           link: "User:Ale jrb/Scripts"
         },
         {
           name: "Find link",
-          regex: "using \\\\[\\\\[User:Edward/Find link\\\\|Find link\\\\]\\\\]",
+          regex: "using \\\\[\\\\[User:Edward/Find link\\\\|Find link",
           link: "User:Edward/Find link"
         },
         {
           name: "responseHelper",
-          regex: "\\\\(using \\\\[\\\\[User:MusikAnimal/responseHelper\\\\|responseHelper\\\\]\\\\]\\\\)",
+          regex: "\\\\(using \\\\[\\\\[User:MusikAnimal/responseHelper\\\\|responseHelper",
           link: "User:MusikAnimal/responseHelper"
         },
         {
           name: "Advisor.js",
-          regex: "\\\\(using \\\\[\\\\[User:Cameltrader#Advisor.js\\\\|Advisor.js\\\\]\\\\]\\\\)",
+          regex: "\\\\(using \\\\[\\\\[User:Cameltrader#Advisor.js\\\\|Advisor.js",
           link: "User:Cameltrader/Advisor"
         },
         {
@@ -279,8 +279,18 @@ module Repl
         },
         {
           name: "Dashes",
-          regex: "using a \\\\[\\\\[User:GregU/dashes.js\\\\|script\\\\]\\\\]",
+          regex: "using a \\\\[\\\\[User:GregU/dashes.js\\\\|script",
           link: "User:GregU/dashes.js"
+        },
+        {
+          name: "SPI Helper",
+          regex: "^(Archiving case (to|from)|Adding sockpuppetry (tag|block notice) per) \\\\[\\\\[Wikipedia:Sockpuppet investigations",
+          link: "User:Timotheus Canens/spihelper.js"
+        },
+        {
+          name: "User:Doug/closetfd.js",
+          regex: "\\\\(using \\\\[\\\\[User:Doug/closetfd.js",
+          link: "User:Doug/closetfd.js"
         }
       ]
 

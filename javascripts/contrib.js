@@ -16,6 +16,7 @@ templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
     + "\">diff</a> | <a href=\""
     + escapeExpression(((helper = (helper = helpers.project_path || (depth0 != null ? depth0.project_path : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"project_path","hash":{},"data":data}) : helper)))
     + "/w/index.php?title="
+    + escapeExpression(((helper = (helper = helpers.namespace_text || (depth0 != null ? depth0.namespace_text : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"namespace_text","hash":{},"data":data}) : helper)))
     + escapeExpression(((helper = (helper = helpers.page_title || (depth0 != null ? depth0.page_title : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"page_title","hash":{},"data":data}) : helper)))
     + "&action=history\">hist</a>)\n  . .\n  ";
   stack1 = helpers['if'].call(depth0, (depth0 != null ? depth0.minor_edit : depth0), {"name":"if","hash":{},"fn":this.program(1, data),"inverse":this.noop,"data":data});
@@ -23,6 +24,7 @@ templates['contrib'] = template({"1":function(depth0,helpers,partials,data) {
   buffer += "\n  <a href=\""
     + escapeExpression(((helper = (helper = helpers.project_path || (depth0 != null ? depth0.project_path : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"project_path","hash":{},"data":data}) : helper)))
     + "/wiki/"
+    + escapeExpression(((helper = (helper = helpers.namespace_text || (depth0 != null ? depth0.namespace_text : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"namespace_text","hash":{},"data":data}) : helper)))
     + escapeExpression(((helper = (helper = helpers.page_title || (depth0 != null ? depth0.page_title : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"page_title","hash":{},"data":data}) : helper)))
     + "\">"
     + escapeExpression(((helper = (helper = helpers.namespace_text || (depth0 != null ? depth0.namespace_text : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"namespace_text","hash":{},"data":data}) : helper)))
