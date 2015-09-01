@@ -296,6 +296,16 @@ module Repl
           name: "Cat-a-lot",
           regex: "^\\\\[\\\\[Help:Cat-a-lot\\\\|Cat-a-lot\\\\]\\\\]:",
           link: "Help:Cat-a-lot"
+        },
+        {
+          name: "autoFormatter",
+          regex: "using \\\\[\\\\[:meta:User:TMg/autoFormatter",
+          link: "meta:User:TMg/autoFormatter"
+        },
+        {
+          name: "Citation bot",
+          regex: "\\\\[\\\\[WP:UCB\\\\|Assisted by Citation bot",
+          link: "WP:UCB"
         }
       ]
 
