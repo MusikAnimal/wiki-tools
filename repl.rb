@@ -129,7 +129,7 @@ module Repl
         },
         {
           name: "Twinkle",
-          regex: "WP:TW|WP:TWINKLE|WP:FRIENDLY",
+          regex: "WP:TW|WP:(TWINKLE|Twinkle)|WP:FRIENDLY",
           link: "WP:TW"
         },
         {
@@ -306,6 +306,11 @@ module Repl
           name: "Citation bot",
           regex: "\\\\[\\\\[WP:UCB\\\\|Assisted by Citation bot",
           link: "WP:UCB"
+        },
+        {
+          name: "Red Link Recovery Live",
+          regex: "\\\\[\\\\[w:en:WP:RLR\\\\|You can help!",
+          link: "toollabs:tb-dev/RLRL"
         }
       ]
 

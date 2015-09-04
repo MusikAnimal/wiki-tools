@@ -1,0 +1,9 @@
+{
+  "name" : "musikanimal-nonautomated-contribs",
+  "title" : "Non-automated edit counter",
+  "description" : "View non-automated contributions of a user, and also show a count of all the different tools they've used",
+  "url" : "http://tools.wmflabs.org/musikanimal/nonautomated_edits",
+  "keywords" : "tools, counter, nonautomated, automated contributions, non-automated",
+  "author" : "MusikAnimal",
+  "repository" : "https://github.com/musikanimal/wiki-tools"
+}

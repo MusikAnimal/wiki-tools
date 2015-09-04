@@ -147,6 +147,17 @@
 		"shouldRunBless": 0,
 		"useLibsass": 0
 		},
+	"\/toolinfo.json": {
+		"fileType": 524288,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/toolinfo.json",
+		"orderOutput": 0,
+		"outputAbbreviatedPath": "\/toolinfo-min.json",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1
+		},
 	"\/views\/404.haml": {
 		"escapeHTMLCharacters": 0,
 		"fileType": 256,
