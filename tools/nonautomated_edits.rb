@@ -7,16 +7,12 @@ class WikiTools < Sinatra::Application
       params.delete_if { |_k, v| v == '' }
     end
 
-    get '/' do
-      redirect '/musikanimal/nonautomated_edits'
-    end
-
     get '/nonautomated_edits' do
       namespace_id = params[:namespace].to_s.empty? ? nil : params[:namespace].to_i
       namespace_text = namespaces[namespace_id] || 'All'
 
       haml :nonautomated_edits, locals: {
-        app_name: "Nonautomated edit counter",
+        app_name: 'Nonautomated edit counter',
         namespace: namespace_id,
         namespaces: namespaces,
         namespace_text: namespace_text,

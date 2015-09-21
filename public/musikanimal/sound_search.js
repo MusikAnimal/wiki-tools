@@ -24,12 +24,10 @@ WT.formSubmit = function(e) {
   history.pushState({}, composer + " - Sound Search from MusikAnimal", WT.path + "?" + this.params);
 
   WT.api("", this.params).success(function(data) {
-    data.files = _.map(data.files, function(file) {
-      return _.extend(data.files, {
-        title: file.title,
-        source: escape(file.title.replace("File:", "").replace(/ /g,"_"))
-      });
-    });
+    // data.files = _.map(data.files, function(file) {
+    //   file.links_string = file.links.join("&middot;");
+    //   return files;
+    // });
 
     data.file_count = data.files.length;
     data.plural = files.length > 1;
@@ -8312,9 +8310,19 @@ module.exports = HandlebarsCompiler.template({"1":function(container,depth0,help
     + alias3(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"title","hash":{},"data":data}) : helper)))
     + "\">"
     + alias3(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"title","hash":{},"data":data}) : helper)))
-    + "</a>\n      <audio src=\"https://upload.wikimedia.org/wikipedia/commons/e/e1/"
+    + "</a>\n      <audio src=\""
     + alias3(((helper = (helper = helpers.source || (depth0 != null ? depth0.source : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"source","hash":{},"data":data}) : helper)))
     + "\" controls></audio>\n    </li>\n";
+},"5":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, options, buffer = 
+  "    Links: ";
+  stack1 = ((helper = (helper = helpers.link || (depth0 != null ? depth0.link : depth0)) != null ? helper : helpers.helperMissing),(options={"name":"link","hash":{},"fn":container.program(6, data, 0),"inverse":container.noop,"data":data}),(typeof helper === "function" ? helper.call(depth0,options) : helper));
+  if (!helpers.link) { stack1 = helpers.blockHelperMissing.call(depth0,stack1,options)}
+  if (stack1 != null) { buffer += stack1; }
+  return buffer + "\n";
+},"6":function(container,depth0,helpers,partials,data) {
+    return container.escapeExpression(container.lambda(depth0, depth0))
+    + "&nbsp;";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, helper, options, alias1=helpers.helperMissing, alias2="function", alias3=container.escapeExpression, alias4=helpers.blockHelperMissing, buffer = 
   alias3(((helper = (helper = helpers.file_count || (depth0 != null ? depth0.file_count : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"file_count","hash":{},"data":data}) : helper)))
@@ -8332,7 +8340,8 @@ module.exports = HandlebarsCompiler.template({"1":function(container,depth0,help
   stack1 = ((helper = (helper = helpers.files || (depth0 != null ? depth0.files : depth0)) != null ? helper : alias1),(options={"name":"files","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data}),(typeof helper === alias2 ? helper.call(depth0,options) : helper));
   if (!helpers.files) { stack1 = alias4.call(depth0,stack1,options)}
   if (stack1 != null) { buffer += stack1; }
-  return buffer + "</ul>";
+  return buffer + ((stack1 = helpers["if"].call(depth0,(depth0 != null ? depth0.links : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "</ul>";
 },"useData":true});
 
 },{"hbsfy/runtime":48}]},{},[1,49]);

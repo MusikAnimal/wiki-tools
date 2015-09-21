@@ -4,7 +4,10 @@
   {{#files}}
     <li class="sound-list-file">
       <a href="https://commons.wikimedia.org/wiki/{{title}}">{{title}}</a>
-      <audio src="https://upload.wikimedia.org/wikipedia/commons/e/e1/{{source}}" controls></audio>
+      <audio src="{{source}}" controls></audio>
     </li>
   {{/files}}
+  {{#if links}}
+    Links: {{#link}}{{this}}&nbsp;{{/link}}
+  {{/if}}
 </ul>

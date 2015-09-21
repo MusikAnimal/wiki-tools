@@ -23,12 +23,10 @@ WT.formSubmit = function(e) {
   history.pushState({}, composer + " - Sound Search from MusikAnimal", WT.path + "?" + this.params);
 
   WT.api("", this.params).success(function(data) {
-    data.files = _.map(data.files, function(file) {
-      return _.extend(data.files, {
-        title: file.title,
-        source: escape(file.title.replace("File:", "").replace(/ /g,"_"))
-      });
-    });
+    // data.files = _.map(data.files, function(file) {
+    //   file.links_string = file.links.join("&middot;");
+    //   return files;
+    // });
 
     data.file_count = data.files.length;
     data.plural = files.length > 1;
