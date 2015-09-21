@@ -1,0 +1,19 @@
+{
+  "name": "MAWikiTools",
+  "version": "1.0.0",
+  "description": "MusikAnimal's WikiTools",
+  "repository": "github.com/MusikAnimal/wiki-tools",
+  "author": "MusikAnimal",
+  "license": "MIT",
+  "dependencies": {
+    "grunt-contrib-watch": "0.6.1",
+    "grunt-browserify": "4.0.1",
+    "grunt-contrib-uglify": "0.9.2",
+    "grunt-contrib-sass": "0.9.2",
+    "hbsfy": "2.3.1",
+    "handlebars": "4.0.2",
+    "jquery": "2.1.1",
+    "underscore": "1.8.3"
+  },
+  "engine": "node >= 0.10.0"
+}

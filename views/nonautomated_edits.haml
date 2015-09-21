@@ -12,14 +12,14 @@
       %label{for: "namespace"} Namespace
       %input#namespace{type: "hidden", name: "namespace", value: namespace}
       %div.dropdown
-        %div#dropdown_select
-          = namespaceText
-        %ul.namespace-selector
-          %li{"data-id" => nil}
+        %div.dropdown-text
+          = namespace_text
+        %ul.dropdown-options{"data-select" => "namespace"}
+          %li.dropdown-option{"data-id" => nil}
             All
-          - namespaces.keys.each do |namespaceId|
-            %li{"data-id" => namespaceId}
-              = namespaces[namespaceId]
+          - namespaces.keys.each do |namespace_id|
+            %li.dropdown-option{"data-id" => namespace_id}
+              = namespaces[namespace_id]
 
     %fieldset.options
       %div.checkbox
@@ -28,17 +28,8 @@
       %div.checkbox
         %input#tools{type: "checkbox", name: "tools", value: "on", checked: params[:tools]}
         %label{for: "tools"} Include tool counts
-      / %div.checkbox.redirects-option.invisible
-      /   %input#redirects{type: "checkbox", name: "redirects", value: "on", checked: params[:redirects]}
-      /   %label{for: "redirects"} Exclude redirects
 
     %button Submit
-
-    / %div.expander.notes
-    /   Notes about this tool
-    /   %ul
-    /     %li one
-    /     %li two
 
   %section.output
     %span.another-query &larr; Do another query
@@ -54,3 +45,5 @@
     %div.loading-text Thinking...
     %progress{max: "100", value: "0"}
     %div.progress-report
+
+%script{src: "/musikanimal/nonautomated_edits.js"}

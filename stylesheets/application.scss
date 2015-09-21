@@ -1,4 +1,5 @@
 @import 'mixins';
+@import 'colors';
 @import 'about';
 
 html {
@@ -6,14 +7,14 @@ html {
 }
 
 body {
-  background: white;
+  @include prefix(box-sizing, border-box);
+  background: $white;
   font-family: 'Roboto', serif;
   font-size: 14px;
   margin: 0;
   min-height: 100%;
   padding: 10px 10px 57px;
   position: relative;
-  @include prefix(box-sizing, border-box);
 }
 
 h1 {
@@ -22,51 +23,64 @@ h1 {
 }
 
 header {
-  border-bottom: solid 1px black;
-  padding-bottom: 25px;
+  border-bottom: solid 1px $black;
   margin-bottom: 15px;
+  padding-bottom: 25px;
 }
 
 .another-query {
-  color: black;
+  color: $black;
   cursor: pointer;
   display: inline-block;
+  font-size: 14px;
   font-weight: bold;
+  margin-bottom: 20px;
   text-decoration: none;
 }
 
 input {
-  border: solid 1px black;
+  border: solid 1px $black;
   font-family: 'Roboto', serif;
-  letter-spacing: 0.1em;
+  letter-spacing: .1em;
   width: 300px;
+
   &:focus {
-    outline: #888 auto 5px;
+    outline: $outline auto 5px;
   }
-  &[type='checkbox'] {
+
+  &[type='checkbox'],
+  &[type='radio'] {
     position: absolute;
     visibility: hidden;
   }
-  &:required, &:invalid {
+
+  &:required,
+  &:invalid {
     box-shadow: none;
   }
 }
 
-a, button, div, input {
+a,
+button,
+div,
+input {
   &:-moz-placeholder {
     box-shadow: none !important;
   }
+
   &:focus {
-    outline: #888 auto 5px;
+    outline: $outline auto 5px;
   }
 }
 
 button {
-  background: white;
-  border: solid 1px black;
+  background: $white;
+  border: solid 1px $black;
   margin-top: 20px;
+
   &:active {
-    background: #EEE;
+    background: $gray;
+
     &:focus {
       outline: none;
     }
@@ -77,31 +91,34 @@ label {
   font-size: 16px;
 }
 
-input[type=text], button {
+input[type=text],
+button {
+  @include prefix(box-sizing, border-box);
   display: block;
   font-size: 14px;
   height: 40px;
   padding: 10px;
   vertical-align: top;
-  @include prefix(box-sizing, border-box);
 }
 
 .dropdown {
-  border: solid 1px black;
+  @include prefix(box-sizing, border-box);
+  border: solid 1px $black;
   cursor: pointer;
   display: inline-block;
   height: 40px;
   line-height: 40px;
   position: relative;
   width: 300px;
-  @include prefix(box-sizing, border-box);
-  #dropdown_select {
+
+  .dropdown-text {
     padding: 0 10px;
+
     &::after {
-      border-color: black transparent transparent;
-      border-width: 12px 8px 0 8px;
+      border-color: $black transparent transparent;
       border-style: solid;
-      content: "";
+      border-width: 12px 8px 0;
+      content: '';
       display: block;
       height: 0;
       position: absolute;
@@ -110,9 +127,10 @@ input[type=text], button {
       width: 0;
     }
   }
-  ul {
-    background: white;
-    border: solid 1px black;
+
+  .dropdown-options {
+    background: $white;
+    border: solid 1px $black;
     display: none;
     left: -1px;
     list-style: none;
@@ -124,57 +142,116 @@ input[type=text], button {
     top: 100%;
     width: 100%;
     z-index: 2;
+
     &.open {
       display: block;
     }
-    li {
-      padding: 0 10px;
-      &:hover {
-        background: #EEE;
-      }
+  }
+
+  .dropdown-option {
+    padding: 0 10px;
+
+    &:hover {
+      background: $gray;
     }
+  }
+}
+
+.checkbox,
+.radio {
+  margin: 10px 0;
+  padding-left: 20px;
+  position: relative;
+
+  label {
+    font-size: 14px;
+
+    &::before {
+      background-color: $white;
+      content: '';
+      display: inline-block;
+      position: absolute;
+    }
+
+    &::after {
+      background-color: $black;
+      content: '';
+      display: none;
+      position: absolute;
+    }
+  }
+
+  input:checked + label::after {
+    display: block;
+  }
+}
+
+.radio {
+  &::before {
+    border: solid 8px $black;
+    border-radius: 8px;
+    content: '';
+    display: inline-block;
+    height: 0;
+    left: 1px;
+    position: absolute;
+    top: 0;
+    width: 0;
+  }
+
+  label {
+    &::before {
+      border: solid 7px $white;
+      border-radius: 7px;
+      height: 0;
+      left: 2px;
+      top: 1px;
+      width: 0;
+    }
+
+    &::after {
+      border: solid 4px $black;
+      border-radius: 4px;
+      left: 5px;
+      top: 4px;
+    }
+  }
+
+  input:active + label::before {
+    border-color: $input-active;
   }
 }
 
 .checkbox {
-  margin: 10px 0;
-  padding-left: 20px;
-  position: relative;
   label {
-    font-size: 14px;
     &::before {
-      background-color: white;
-      border: solid 1px black;
-      content : "";
-      display: inline-block;
+      border: solid 1px $black;
       height: 14px;
-      left: 0px;
-      position: absolute;
-      top: 0px;
+      left: 0;
+      top: 0;
       width: 14px;
     }
+
     &::after {
-      background-color: black;
-      content: "";
-      display: none;
       height: 10px;
       left: 3px;
-      position: absolute;
       top: 3px;
       width: 10px;
     }
   }
-  input:checked + label::after {
-    display: block;
-  }
+
   input:active + label::before {
-    background-color: #DDDDDD;
+    background-color: $input-active;
+    left: 0;
+    position: absolute;
+    top: 0;
   }
 }
 
 form {
+  @include prefix(transition, 'height 500ms, opacity 1s ease');
   height: 300px;
-  @include prefix(transition, "height 500ms, opacity 1s ease");
+
   &.hide {
     height: 0;
     opacity: 0;
@@ -187,7 +264,7 @@ form {
 }
 
 .busy {
-  opacity: 0.5;
+  opacity: .5;
   pointer-events: none;
 }
 
@@ -198,7 +275,7 @@ form {
 }
 
 .error {
-  color: #fe765e;
+  color: $error;
 }
 
 .gray {
@@ -210,13 +287,16 @@ form {
 }
 
 fieldset {
-  border: none;
+  border: 0;
   margin: 0 0 10px;
   padding: 0;
+
   &.options {
     margin-left: 10px;
   }
-  &.dropdowns {
+
+  &.dropdowns,
+  &.list-options {
     label {
       display: block;
     }
@@ -225,19 +305,22 @@ fieldset {
 
 .loading {
   display: none;
+
   progress {
-    background: white;
-    border: 1px solid black;
+    @include prefix(appearance, none);
+    background: $white;
+    border: 1px solid $black;
     display: none;
     height: 20px;
     width: 200px;
-    @include prefix(appearance, none);
+
     &::-webkit-progress-bar {
-      background: white;
+      background: $white;
       // box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
     }
+
     &::-webkit-progress-value {
-      background: black;
+      background: $black;
     }
   }
 
@@ -251,32 +334,13 @@ fieldset {
   margin-top: 30px;
 }
 
-.expander {
-  cursor: pointer;
-  & > * {
-    display: none;
-  }
-  &::before {
-    content: "\25B6";
-    display: inline-block;
-    margin-right: 0px;
-  }
-  &.expanded {
-    & > * {
-      display: block;
-    }
-    &::before {
-      content: "\25BC";
-    }
-  }
-}
-
 .output {
   display: none;
   font-size: 16px;
 
   .result-block {
     display: none;
+
     &::before {
       display: block;
       font-size: 18px;
@@ -286,48 +350,51 @@ fieldset {
   }
 
   .summary-output::before {
-    content: "Summary";
+    content: 'Summary';
   }
+
   .counts-output::before {
-    content: "Tool counts";
+    content: 'Tool counts';
   }
+
   .contribs-output::before {
-    content: "Contributions";
+    content: 'Contributions';
   }
 
   dl {
     width: 325px;
+
     dt {
       display: inline-block;
       width: 200px;
     }
+
     dd {
       display: inline-block;
       margin: 0;
       width: 125px;
     }
+
     .empty {
       display: none;
     }
   }
 
-  // .counts-output {
-  //   width: 650px;
-  // }
-
   ul {
     font-size: 15px;
     padding: 0;
+
     li {
       margin-left: 40px;
     }
   }
 
   a {
-    color: #0033cc;
+    color: $anchor;
     text-decoration: none;
+
     &:visited {
-      color: #4365cc;
+      color: $visited;
     }
   }
 
@@ -336,30 +403,29 @@ fieldset {
   }
 }
 
-.another-query {
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-
 .prev-page {
   display: none;
   float: left;
 }
+
 .next-page {
   display: none;
   float: right;
 }
+
 .contrib-nav {
+  @include clearfix;
   font-weight: bold;
   height: 20px;
   padding: 10px 0;
-  @include clearfix;
+
   div { cursor: pointer; }
 }
 
 footer {
-  background: white;
-  border-top: solid 1px black;
+  @include prefix(box-sizing, border-box);
+  background: $white;
+  border-top: solid 1px $black;
   bottom: 0;
   font-size: 14px;
   font-weight: bold;
@@ -369,14 +435,16 @@ footer {
   padding: 0 20px;
   position: absolute;
   width: 100%;
-  @include prefix(box-sizing, border-box);
+
   a {
-    color: black;
+    color: $black;
     text-decoration: none;
+
     &:focus {
-      outline: #888 auto 5px;
+      outline: $outline auto 5px;
     }
   }
+
   .about-link {
     float: right;
   }

@@ -46,6 +46,10 @@ module Repl
       articles
     end
 
+    def getEditsInCategory(userName, category)
+
+    end
+
     def getEdits(opts)
       opts = {
         namespace: nil,
@@ -163,8 +167,8 @@ module Repl
           link: "WP:AWB"
         },
         {
-          name: "WP Cleaner",
-          regex: "WP:CLEANER",
+          name: "WPCleaner",
+          regex: "WP:CLEANER|\\\\[\\\\[\\\\Wikipedia:DPL",
           link: "WP:CLEANER"
         },
         {
@@ -198,9 +202,9 @@ module Repl
           link: "User:Jfmantis/WikiPatroller"
         },
         {
-          name: "User:Fox Wilson/delsort",
-          regex: "Wikipedia:WP:FWDS|WP:FWDS",
-          link: "WP:FWDS"
+          name: "delsort",
+          regex: "Wikipedia:WP:FWDS|WP:FWDS|\\\\(\\\\[\\\\[User:APerson/delsort\\\\|delsort.js",
+          link: "WP:DELSORT#Scripts and tools"
         },
         {
           name: "Ohconfucius script",
@@ -311,6 +315,11 @@ module Repl
           name: "Red Link Recovery Live",
           regex: "\\\\[\\\\[w:en:WP:RLR\\\\|You can help!",
           link: "toollabs:tb-dev/RLRL"
+        },
+        {
+          name: "Script Installer",
+          regex: "\\\\[\\\\[User:Equazcion/ScriptInstaller\\\\|Script Installer",
+          link: "User:Equazcion/ScriptInstaller"
         }
       ]
 
