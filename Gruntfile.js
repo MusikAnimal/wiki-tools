@@ -1,15 +1,13 @@
 module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-browserify');
-  // grunt.loadNpmTasks('hbsfy');
-  // grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-sass');
 
   grunt.initConfig({
     watch: {
       scripts: {
-        files: 'javascripts/*.js',
+        files: ['javascripts/*.js', 'views/**/*.handlebars'],
         tasks: ['browserify']
       },
       css: {
@@ -29,29 +27,34 @@ module.exports = function(grunt) {
             'views/nonautomated_edits/*.handlebars'
           ],
           'public/musikanimal/sound_search.js': [
-            'javascripts/sound_search.js'
+            'javascripts/sound_search.js',
+            'views/sound_search/*.handlebars'
           ]
         }
       }
     },
-    // concat: {
-    //   options: {
-    //     separator: ";"
-    //   },
-    //   dist: {
-    //     src: ["public/musikanimal/application.js"],
-    //     dest: "public/musikanimal/application.js"
-    //   }
-    // },
     sass: {
       dist: {
         options: {
-          style: 'compressed'
+          style: 'compressed',
+          sourcemap: 'none'
         },
         files: [{
           expand: true,
           cwd: 'stylesheets',
-          src: ['*.scss'],
+          src: ['application.scss', 'about.scss'],
+          dest: 'public/musikanimal',
+          ext: '.css'
+        }, {
+          expand: true,
+          cwd: 'stylesheets',
+          src: ['nonautomated_edits.scss'],
+          dest: 'public/musikanimal',
+          ext: '.css'
+        }, {
+          expand: true,
+          cwd: 'stylesheets',
+          src: ['sound_search.scss'],
           dest: 'public/musikanimal',
           ext: '.css'
         }]

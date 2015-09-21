@@ -1,0 +1,87 @@
+@import 'mixins';
+@import 'colors';
+
+.output {
+  .result-block {
+    display: none;
+
+    &::before {
+      display: block;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 18px 0;
+    }
+  }
+
+  .summary-output::before {
+    content: 'Summary';
+  }
+
+  .counts-output::before {
+    content: 'Tool counts';
+  }
+
+  .contribs-output::before {
+    content: 'Contributions';
+  }
+
+  dl {
+    width: 325px;
+
+    dt {
+      display: inline-block;
+      width: 200px;
+    }
+
+    dd {
+      display: inline-block;
+      margin: 0;
+      width: 125px;
+    }
+
+    .empty {
+      display: none;
+    }
+  }
+
+  ul {
+    font-size: 15px;
+    padding: 0;
+
+    li {
+      margin-left: 40px;
+    }
+  }
+
+  a {
+    color: $anchor;
+    text-decoration: none;
+
+    &:visited {
+      color: $visited;
+    }
+  }
+
+  .minor-edit {
+    font-weight: bold;
+  }
+}
+
+.prev-page {
+  display: none;
+  float: left;
+}
+
+.next-page {
+  display: none;
+  float: right;
+}
+
+.contrib-nav {
+  @include clearfix;
+  font-weight: bold;
+  height: 20px;
+  padding: 10px 0;
+
+  div { cursor: pointer; }
+}

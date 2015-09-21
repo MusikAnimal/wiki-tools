@@ -2,7 +2,8 @@ class WikiTools < Sinatra::Application
   namespace '/musikanimal' do
     get '/sound_search' do
       haml :sound_search, locals: {
-        soundLists: sound_list_pages,
+        app_name: 'Sound search',
+        soundlists: sound_list_pages,
         soundlist: sound_list_pages.include?(params[:soundlist]) ? params[:soundlist] : nil
       }
     end
@@ -12,31 +13,35 @@ class WikiTools < Sinatra::Application
 
       files = commonsMW.custom_query({
         list: 'categorymembers',
-        cmtitle: 'Category:#{params[:composer]}',
+        cmtitle: "Category:#{params[:composer]}",
         cmtype: 'file',
         cmlimit: 500
       })[0].to_a.collect { |cf| cf.attributes['title'] }.keep_if { |cf| cf.scan(/\.(?:ogg|flac|midi)$/i).any? }
+      files.map! { |cf| { title: cf } }
+
+      params['soundlist'] = params['soundlist'] == '' ? nil : params['soundlist']
 
       res = {
         composer: params[:composer]
       }
 
-      if params[:unused]
+      if params[:restrict] == 'unused'
         res[:files] = []
         files.delete_if do |file|
           enwikiMW.custom_query({
-            titles: file,
+            titles: file[:title],
             lhprop: 'title',
             lhshow: '!redirect',
             prop: 'linkshere',
             continue: ''
           })[0][0][0].length > 0 rescue false
         end
-      elsif params[:links]
+      elsif params[:restrict] == 'list'
         res[:files] = []
+        binding.pry
         files.each do |file|
           links = enwikiMW.custom_query({
-            titles: file,
+            titles: file[:title],
             lhprop: 'title',
             lhshow: '!redirect',
             prop: 'linkshere',
@@ -44,7 +49,7 @@ class WikiTools < Sinatra::Application
           })[0][0][0].collect { |cf| cf.attributes['title'] }
 
           res[:files] << {
-            title: file,
+            title: file[:title],
             links: links
           }
         end
@@ -54,7 +59,7 @@ class WikiTools < Sinatra::Application
           sound_list_source = enwikiMW.get('Wikipedia:Sound/list/#{params[:soundlist]}')
           sound_list = sound_list_source.scan(/\[\[media:\s*(.*?.(?:ogg|flac|midi))/i).flatten
 
-          files.delete_if { |file| sound_list.include?(file.gsub(/File:/, '')) }
+          files.delete_if { |file| sound_list.include?(file[:title].gsub(/File:/, '')) }
           res[:files] = files
         else
           # error, should be in sound_list_pages

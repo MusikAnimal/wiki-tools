@@ -16,6 +16,7 @@ class WikiTools < Sinatra::Application
       namespace_text = namespaces[namespace_id] || 'All'
 
       haml :nonautomated_edits, locals: {
+        app_name: "Nonautomated edit counter",
         namespace: namespace_id,
         namespaces: namespaces,
         namespace_text: namespace_text,

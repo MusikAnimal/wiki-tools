@@ -1,4 +1,5 @@
 $ = require("jquery");
+_ = require("underscore");
 
 WT = {
   path: document.location.pathname.split("/").pop(),
