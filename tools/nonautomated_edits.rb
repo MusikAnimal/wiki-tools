@@ -85,7 +85,7 @@ class WikiTools < Sinatra::Application
               nonAutomated: true,
               offset: (offset / CONTRIBS_FETCH_SIZE.to_f).floor * CONTRIBS_FETCH_SIZE,
               limit: CONTRIBS_FETCH_SIZE
-            })[range_offset.to_i..end_range_offset.to_i]
+            })[range_offset..end_range_offset]
           end
         end
 
