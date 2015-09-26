@@ -9,7 +9,7 @@ require 'auth.rb'
 
 class WikiTools < Sinatra::Application
   configure :production do
-    set :haml, { ugly: true }
+    set :haml, ugly: true
     set :clean_trace, true
     $CACHE_TIME = 600
   end
@@ -19,7 +19,10 @@ class WikiTools < Sinatra::Application
   end
 
   not_found do
-    haml :'404'
+    unless request.path =~ %r{\/api\/}
+      status 404
+      haml :'404', locals: { app_name: "Whoops, this page doesn't exist!" }
+    end
   end
 end
 

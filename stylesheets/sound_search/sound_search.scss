@@ -1,0 +1,43 @@
+@import '../colors';
+
+.files {
+  display: block;
+}
+
+.sound-list-file {
+  margin-bottom: 10px;
+
+  .action-link {
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .file-output {
+    margin-top: 5px;
+  }
+
+  dl {
+    margin: 0;
+    width: 600px;
+  }
+
+  dt,
+  .label {
+    display: inline-block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    margin-right: -4px;
+    vertical-align: top;
+    width: 100px;
+  }
+
+  dd {
+    display: inline-block;
+    margin: 0 -4px 5px 0;
+    width: 500px;
+
+    * {
+      margin: 0;
+    }
+  }
+}

@@ -1,13 +1,4 @@
-{{file_count}} file{{#plural}}s{{/plural}} found for <a href="{{project_path}}/wiki/{{composer}}">{{composer}}</a>
+{{file_count}} file{{#if plural}}s{{/if}} found for <a href="{{project_path}}/wiki/{{composer}}">{{composer}}</a>
+{{#if unused_count includeZero=true}}<br/>{{unused_count}} file{{#if unused_plural}}s{{/if}} are unused{{/if}}
 
-<ul class="sound-list">
-  {{#files}}
-    <li class="sound-list-file">
-      <a href="https://commons.wikimedia.org/wiki/{{title}}">{{title}}</a>
-      <audio src="{{source}}" controls></audio>
-    </li>
-  {{/files}}
-  {{#if links}}
-    Links: {{#link}}{{this}}&nbsp;{{/link}}
-  {{/if}}
-</ul>
+<ul class="sound-list"></ul>

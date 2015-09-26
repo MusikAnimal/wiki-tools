@@ -14,6 +14,24 @@ WT = {
     });
   },
 
+  updateProgress: function(value, message) {
+    if(value !== null) {
+      if(value >= 100) {
+        $("progress").val(100);
+        $(".progress-report").text("Complete!");
+      } else {
+        $("progress").val(value).show();
+        $(".progress-report").text(value + "%");
+      }
+      if(message) {
+        $(".loading-text").text(message);
+      }
+    } else {
+      $("progress").val(0).hide();
+      $(".progress-report").text("");
+    }
+  },
+
   wikifyText: function(text, pageName) {
     var sectionRegex = new RegExp(/^\/\* (.*?) \*\//),
       sectionMatch = sectionRegex.exec(text);
@@ -40,6 +58,10 @@ WT = {
 };
 
 $(document).ready(function() {
+  $("a").on("click", function(e) {
+    if(e.target.href === "#") e.preventDefault();
+  });
+
   if(document.location.search.indexOf("username=") !== -1) {
     setTimeout(function() {
       $("form").trigger("submit");

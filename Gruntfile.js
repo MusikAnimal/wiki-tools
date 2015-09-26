@@ -42,20 +42,20 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: 'stylesheets',
-          src: ['application.scss', 'about.scss'],
+          src: ['application.scss'],
           dest: 'public/musikanimal',
           ext: '.css'
         }, {
           expand: true,
-          cwd: 'stylesheets',
+          cwd: 'stylesheets/nonautomated_edits',
           src: ['nonautomated_edits.scss'],
           dest: 'public/musikanimal',
           ext: '.css'
         }, {
           expand: true,
-          cwd: 'stylesheets',
+          cwd: 'stylesheets/sound_search',
           src: ['sound_search.scss'],
-          dest: 'public/musikanimal',
+          dest: 'public/musikanimal/sound_search',
           ext: '.css'
         }]
       }

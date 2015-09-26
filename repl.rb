@@ -17,9 +17,9 @@ module Repl
 
     # COUNTERS
     def countArticlesCreated(userName)
-      count("SELECT count(*) FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " +
-        "WHERE rev_user_text = \"#{userName}\" AND rev_timestamp > 1 AND rev_parent_id = 0 " +
-        "AND page_namespace = 0 AND page_is_redirect = 0;")
+      count("SELECT count(*) FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " \
+        "WHERE rev_user_text = \"#{userName}\" AND rev_timestamp > 1 AND rev_parent_id = 0 " \
+        'AND page_namespace = 0 AND page_is_redirect = 0;')
     end
 
     def countAllEdits(userName)
@@ -33,21 +33,17 @@ module Repl
 
     # GETTERS
     def getArticlesCreated(userName)
-      query = "SELECT page_title, rev_timestamp AS timestamp FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " +
-        "WHERE rev_user_text = \"#{userName}\" AND rev_timestamp > 1 AND rev_parent_id = 0 " +
-        "AND page_namespace = 0 AND page_is_redirect = 0;"
+      query = "SELECT page_title, rev_timestamp AS timestamp FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " \
+        "WHERE rev_user_text = \"#{userName}\" AND rev_timestamp > 1 AND rev_parent_id = 0 " \
+        'AND page_namespace = 0 AND page_is_redirect = 0;'
       puts query
       res = @client.query(query)
       articles = []
       res.each do |result|
-        result["timestamp"] = DateTime.parse(result["timestamp"])
+        result["timestamp"] = DateTime.parse(result['timestamp'])
         articles << result
       end
       articles
-    end
-
-    def getEditsInCategory(userName, category)
-
     end
 
     def getEdits(opts)
@@ -61,10 +57,10 @@ module Repl
         includeRedirects: false
       }.merge(opts)
 
-      query = "SELECT " +
-        (opts[:count] ? "COUNT(*) " : "#{revAttrs} ") +
-        "FROM #{@db}.page " +
-        "JOIN enwiki_p.revision_userindex ON page_id = rev_page " +
+      query = 'SELECT ' +
+        (opts[:count] ? 'COUNT(*) ' : "#{revAttrs} ") +
+        "FROM #{@db}.page " \
+        'JOIN enwiki_p.revision_userindex ON page_id = rev_page ' +
         "WHERE rev_user_text = \"#{opts[:username]}\" "+
         (opts[:namespace].to_s.empty? ? "" : "AND page_namespace = #{opts[:namespace]} ") +
         (!opts[:nonAutomated].nil? ? "AND rev_comment #{"NOT " if opts[:nonAutomated]}RLIKE \"#{[toolRegexes(opts[:tool], opts[:includeRedirects])].join("|")}\" " : "") +
@@ -320,6 +316,11 @@ module Repl
           name: "Script Installer",
           regex: "\\\\[\\\\[User:Equazcion/ScriptInstaller\\\\|Script Installer",
           link: "User:Equazcion/ScriptInstaller"
+        },
+        {
+          name: "findargdups",
+          regex: "\\\\[\\\\[:en:User:Frietjes/findargdups",
+          link: "User:Frietjes/findargdups"
         }
       ]
 

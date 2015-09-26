@@ -1,0 +1,74 @@
+%a.another-query{href: "/musikanimal/nonautomated_edits"} &larr; Do a query
+
+%section.description
+  This tool attempts to offer accurate data on how many edits a user has made without the assistance of semi or fully automated tools. Mainspace contributions can be listed to exemplify a user's ability to add prose, for instance. A few important notes:
+  %ul
+    %li All data is approximate.
+    %li Deleted contributions are not currently accounted for.
+    %li It may take a while to generate data for users with a large edit count. Currently the contribution history is not generated for users with over 50,000 contributions.
+    %li Some tool counts overlap. For instance, Twinkle can perform page moves. Consequently the sum of the tool counts may not equal the total number of automated contributions.
+    %li All data fetched is from the replication database, which my suffer from replication lag and be slightly behind production data. Furthermore, the tool caches responses for 30 minutes to improve performance.
+
+%section.tools
+  The <a href="https://en.wikipedia.org/wiki/User:ProveIt GT">ProveIt</a> tool is not included as this is often accompanied by prose, not just addition of references. Aside from that, there are currently #{tools.length} supported tools that this counter looks for. They are as follows:
+
+  %div.list
+    %div.list-item
+      %span.id.heading>
+        ID
+      %span.name.heading>
+        Name
+      %span.regex.heading>
+        Regex
+    %div.list-item
+      - projectPath = "https://en.wikipedia.org"
+      - tools.each do |tool|
+        %span.id>
+          = tool[:id]
+        %span.name>
+          %a{href: "#{projectPath}/#{tool[:link]}"}
+            = tool[:name]
+        %span.regex>
+          = tool[:regex]
+
+  More tools can easily be added. Feel free to request an addition at
+  %a.nowrap{href: "https://en.wikipedia.org/w/index.php?title=User_talk:MusikAnimal&action=edit&section=new&preloadtitle=Requesting%20addition%20to%20nonautomated%20counter%20tool"}
+    User talk:MusikAnimal
+
+%section.api
+  An API is available for other services to use this tool's generated data. Documentation is as follows
+
+  %ul
+    %li
+      %h3 GET /musikanimal/nonautomated_edits
+      %div.description
+        Fetch data about nonautomated contributions of a given user
+      %div
+        %span username
+        %span Escaped username (required)
+      %div
+        %span namespace
+        %span ID of namespace (see <a href="https://en.wikipedia.org/wiki/Wikipedia:Namespace">Wikipedia:Namespace</a>)
+      %div
+        %span contribs
+        %span Whether to include contributions under filtered with given criteria. Anything other than blank
+      %div
+        %span offset
+        %span Offset of contributions to fetch, if <tt>contribs</tt> is set
+      %div
+        %span limit
+        %span Number of contributions to fetch, if <tt>contribs</tt> is set (max 500)
+    %li
+      %h3 GET /musikanimal/nonautomated_edits/tools
+      %div.description
+        Fetch a list of all the supported tools provided by the service and the associated data
+    %li
+      %h3 GET /musikanimal/nonautomated_edits/tools/:id
+      %div.description
+        Fetch information about a tool or the number of times a given user has used the tool
+      %div
+        %span username
+        %span Escaped username
+      %div
+        %span namespace
+        %span ID of namespace (see <a href="https://en.wikipedia.org/wiki/Wikipedia:Namespace">Wikipedia:Namespace</a>)

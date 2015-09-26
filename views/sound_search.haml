@@ -1,37 +1,32 @@
 %form
   %fieldset.basic
-    %label{for: "composer"} Composer
-    %input#composer{type: "text", placeholder: "Wolfgang Amadeus Mozart", name: "composer", required: true, value: params[:composer]}
-
-  %fieldset.restrict-options
-    %div.radio
-      %input#none{type: "radio", name: "restrict", value: "none", checked: true}
-      %label{for: "none"} Do not list pages that use the files
-    %div.radio
-      %input#list{type: "radio", name: "restrict", value: "list", checked: params[:list]}
-      %label{for: "list"} List pages that use the files
-    %div.radio
-      %input#unused{type: "radio", name: "restrict", value: "unused", checked: params[:unused]}
-      %label{for: "unused"} Include only files not currently used in articles
+    %label{for: 'composer'} Composer
+    %input#composer{type: 'text', placeholder: 'Wolfgang Amadeus Mozart', name: 'composer', required: true, value: params[:composer]}
 
   %fieldset.list-options
-    %div.checkbox
-      %input#nosoundlist_toggle{type: "checkbox", name: "nosoundlist_toggle", value: "on", checked: !!soundlist}
-      %label{for: "nosoundlist_toggle"}
-        Include only files not listed at
-        %a{href: "https://en.wikipedia.org/wiki/Wikipedia:Sound/list"} Wikipedia:Sound/list
-    %div.sound-list-pages{style: "display: #{!soundlist.nil? ? 'block' : 'none'}"}
-      %label{for: "soundlist"} Sound list
-      %input#soundlist{type: "hidden", name: "soundlist", value: soundlist || nil}
-      %div.dropdown
-        %div.dropdown-text#dropdown_select
-          = soundlist || "Select soundlist"
-        %ul.dropdown-options
-          %li.dropdown-option{"data-id" => nil}
-            Select soundlist
-          - soundlists.each do |list|
-            %li.dropdown-option{"data-id" => list}
-              = list
+    %div.radio
+      %input#list{type: 'radio', name: 'list', value: 'all', checked: list == 'all'}
+      %label{for: 'list'} List all files
+    %div.radio
+      %input#unused{type: 'radio', name: 'list', value: 'unused', checked: list == 'unused'}
+      %label{for: "unused"} List only files not currently used in articles
+    / %div.radio
+    /   %input#no_sound_list{type: 'radio', name: 'list', value: 'no_sound_list', checked: list == 'no_sound_list'}
+    /   %label{for: 'no_sound_list'}
+    /     List only files not at
+    /     %a{href: 'https://en.wikipedia.org/wiki/Wikipedia:Sound/list'} Wikipedia:Sound/list
+    / %div.sound-list-pages{style: "visibility: #{!soundlist.nil? ? 'visible' : 'hidden'}"}
+    /   %label{for: 'soundlist'} Sound list
+    /   %input#soundlist{type: 'hidden', name: 'soundlist', value: soundlist || nil}
+    /   %div.dropdown
+    /     %div.dropdown-text#dropdown_select
+    /       = soundlist || 'Select soundlist'
+    /     %ul.dropdown-options
+    /       %li.dropdown-option{'data-id' => nil}
+    /         Select soundlist
+    /       - soundlists.each do |list|
+    /         %li.dropdown-option{'data-id' => list}
+    /           = list
 
   %button Submit
 
@@ -41,3 +36,5 @@
 
 %section.loading
   %div.loading-text Thinking...
+  %progress{max: "100", value: "0"}
+  %div.progress-report

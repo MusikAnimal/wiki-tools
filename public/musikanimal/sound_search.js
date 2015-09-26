@@ -1,55 +1,132 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var Handlebars = require("handlebars");
-var files = require("../views/sound_search/files.handlebars");
+var fileTemplate = require("../views/sound_search/file.handlebars");
+var filesTemplate = require("../views/sound_search/files.handlebars");
+var fileProps = {
+  audio: require("../views/sound_search/audio.handlebars"),
+  backlinks: require("../views/sound_search/backlinks.handlebars"),
+  info: require("../views/sound_search/info.handlebars")
+};
 
 WT.listeners = function() {
   $(".another-query").on("click", startOver);
 
-  $("#nosoundlist_toggle").on("click", function() {
-    if(this.checked) {
-      $(".sound-list-pages").show();
+  $("[name=list]").on("change", function(e) {
+    if(this.checked && this.value === 'no_sound_list') {
+      $(".sound-list-pages").css('visibility', 'visible');
     } else {
-      $(".sound-list-pages").hide();
+      $(".sound-list-pages").css('visibility', 'hidden');
     }
   });
 };
 
 WT.formSubmit = function(e) {
-  if(!this.composer.value) {
+  var composer = this.composer.value;
+
+  if(!composer) {
     return alert('Composer is required!');
   }
 
-  var composer = this.composer.value;
+  WT.updateProgress(0, "Fetching files...");
 
   history.pushState({}, composer + " - Sound Search from MusikAnimal", WT.path + "?" + this.params);
 
   WT.api("", this.params).success(function(data) {
-    // data.files = _.map(data.files, function(file) {
-    //   file.links_string = file.links.join("&middot;");
-    //   return files;
-    // });
-
-    data.file_count = data.files.length;
-    data.plural = files.length > 1;
-    data.project_path = WT.projectPath;
-
-    $(".files").append(
-      files(data)
-    );
-
-    $(".loading").hide();
-    $("form").addClass("hide");
-    $(".output").show();
-  }).error(function() {
+    data.listType = this.list.value;
+    if(data.listType === "unused") {
+      getBacklinksOfFiles(data, 0);
+    } else {
+      revealData(data);
+    }
+    // getInfoOfFiles(data, 0);
+  }.bind(this)).error(function() {
     alert("Something went wrong. Sorry.");
     startOver();
   });
 };
 
+function getBacklinksOfFiles(data, index) {
+  if(index === data.files.length) {
+    WT.updateProgress(100, " ");
+    return revealData(data);
+  }
+
+  WT.api("backlinks/"+data.files[index].title).success(function(resp) {
+    WT.updateProgress(parseInt(((index / data.files.length - 1) + 1) * 100));
+    _.extendOwn(data.files[index], resp);
+  }).done(function() {
+    getBacklinksOfFiles(data, index + 1);
+  });
+}
+
+function getInfoOfFiles(data, index) {
+  if(index === data.files.length) {
+    WT.updateProgress(100, " ");
+    return revealData(data);
+  }
+
+  WT.api("info/"+data.files[index].title).success(function(resp) {
+    WT.updateProgress(parseInt(((index / data.files.length - 1) + 1) * 100));
+    _.extendOwn(data.files[index], resp);
+  }).done(function() {
+    getInfoOfFiles(data, index + 1);
+  });
+}
+
+function revealData(data) {
+  data.file_count = data.files.length;
+  data.plural = data.files.length !== 1;
+  data.project_path = WT.projectPath;
+
+  if(data.listType === "unused") {
+    data.files = _.filter(data.files, function(file) {
+      return file.links.length === 0;
+    });
+    data.unused_count = data.files.length;
+    data.unused_plural = data.unused_count !== 1;
+  }
+
+  $(".files").append(
+    filesTemplate(data)
+  );
+
+  _.each(data.files, function(file, index) {
+    file.index = index;
+    $(".sound-list").append(fileTemplate(file));
+  });
+
+  $(".sound-list-file").on("click", ".action-link", function(e) {
+    var $entry = $(e.target).parents(".sound-list-file"),
+      index = $entry.data("index"),
+      fileData = data.files[index],
+      action = e.target.dataset.action,
+      promise = $.Deferred();
+
+    if(action === "backlinks") {
+      promise = WT.api("backlinks/"+fileData.title);
+    } else if(!fileData.source) {
+      promise = WT.api("info/"+fileData.title);
+    } else {
+      promise.resolve(fileData);
+    }
+
+    $entry.find("[data-action="+action+"]").addClass("disabled");
+
+    promise.then(function(resp) {
+      _.extend(data.files[index], resp);
+      $entry.find("."+action).html(fileProps[action](resp));
+    });
+  });
+
+  $(".loading").hide();
+  $("form").addClass("hide");
+  $(".output").show();
+}
+
 function startOver() {
   $(".output").hide();
   $(".loading").hide();
-  $(".result-block").html("").hide();
+  $(".result-block").html("");
   $("input[type=checkbox]").prop("checked", false);
   $("input[type=text]").val("");
   $("#composer").val("");
@@ -57,7 +134,7 @@ function startOver() {
   history.pushState({}, "Sound Search from MusikAnimal", WT.path);
 }
 
-},{"../views/sound_search/files.handlebars":49,"handlebars":34}],2:[function(require,module,exports){
+},{"../views/sound_search/audio.handlebars":49,"../views/sound_search/backlinks.handlebars":50,"../views/sound_search/file.handlebars":51,"../views/sound_search/files.handlebars":52,"../views/sound_search/info.handlebars":53,"handlebars":34}],2:[function(require,module,exports){
 
 },{}],3:[function(require,module,exports){
 (function (process){
@@ -8301,47 +8378,117 @@ module.exports = require("handlebars/runtime")["default"];
 },{"handlebars/runtime":47}],49:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var helper;
+
+  return "<span class=\"label\">Audio</span><audio src=\""
+    + container.escapeExpression(((helper = (helper = helpers.source || (depth0 != null ? depth0.source : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0,{"name":"source","hash":{},"data":data}) : helper)))
+    + "\" controls autoplay></audio>";
+},"useData":true});
+
+},{"hbsfy/runtime":48}],50:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"1":function(container,depth0,helpers,partials,data,blockParams,depths) {
+    var stack1, alias1=container.lambda, alias2=container.escapeExpression;
+
+  return "<a href=\""
+    + alias2(alias1((depths[1] != null ? depths[1].projectPath : depths[1]), depth0))
+    + "/wiki/"
+    + alias2(alias1(depth0, depth0))
+    + "\">"
+    + alias2(alias1(depth0, depth0))
+    + "</a>"
+    + ((stack1 = helpers.unless.call(depth0,(data && data.last),{"name":"unless","hash":{},"fn":container.program(2, data, 0, blockParams, depths),"inverse":container.noop,"data":data})) != null ? stack1 : "");
+},"2":function(container,depth0,helpers,partials,data) {
+    return "&nbsp;&bullet;&nbsp;";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data,blockParams,depths) {
+    var stack1, helper, options, buffer = 
+  "<span class=\"label\">Backlinks</span> ";
+  stack1 = ((helper = (helper = helpers.links || (depth0 != null ? depth0.links : depth0)) != null ? helper : helpers.helperMissing),(options={"name":"links","hash":{},"fn":container.program(1, data, 0, blockParams, depths),"inverse":container.noop,"data":data}),(typeof helper === "function" ? helper.call(depth0,options) : helper));
+  if (!helpers.links) { stack1 = helpers.blockHelperMissing.call(depth0,stack1,options)}
+  if (stack1 != null) { buffer += stack1; }
+  return buffer;
+},"useData":true,"useDepths":true});
+
+},{"hbsfy/runtime":48}],51:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"1":function(container,depth0,helpers,partials,data) {
+    return "<span data-action=\"backlinks\" class=\"action-link\">Links</span> |";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, alias1=helpers.helperMissing, alias2="function", alias3=container.escapeExpression;
+
+  return "<li class=\"sound-list-file\" data-index="
+    + alias3(((helper = (helper = helpers.index || (depth0 != null ? depth0.index : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"index","hash":{},"data":data}) : helper)))
+    + ">\n  <div>\n    (<span data-action=\"audio\" class=\"action-link\">Play</span> |\n    "
+    + ((stack1 = helpers["if"].call(depth0,(depth0 != null ? depth0.unused_count : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "\n    <span data-action=\"info\" class=\"action-link\">Info</span>)\n    <a href=\"https://commons.wikimedia.org/wiki/"
+    + alias3(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"title","hash":{},"data":data}) : helper)))
+    + "\" class=\"link\">"
+    + alias3(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"title","hash":{},"data":data}) : helper)))
+    + "<a>\n  </div>\n  <div class=\"file-output audio\"></div>\n  <div class=\"file-output backlinks\"></div>\n  <dl class=\"file-output info\"></dl>\n</li>";
+},"useData":true});
+
+},{"hbsfy/runtime":48}],52:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template({"1":function(container,depth0,helpers,partials,data) {
     return "s";
 },"3":function(container,depth0,helpers,partials,data) {
-    var helper, alias1=helpers.helperMissing, alias2="function", alias3=container.escapeExpression;
+    var stack1, helper;
 
-  return "    <li class=\"sound-list-file\">\n      <a href=\"https://commons.wikimedia.org/wiki/"
-    + alias3(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"title","hash":{},"data":data}) : helper)))
-    + "\">"
-    + alias3(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"title","hash":{},"data":data}) : helper)))
-    + "</a>\n      <audio src=\""
-    + alias3(((helper = (helper = helpers.source || (depth0 != null ? depth0.source : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"source","hash":{},"data":data}) : helper)))
-    + "\" controls></audio>\n    </li>\n";
-},"5":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, options, buffer = 
-  "    Links: ";
-  stack1 = ((helper = (helper = helpers.link || (depth0 != null ? depth0.link : depth0)) != null ? helper : helpers.helperMissing),(options={"name":"link","hash":{},"fn":container.program(6, data, 0),"inverse":container.noop,"data":data}),(typeof helper === "function" ? helper.call(depth0,options) : helper));
-  if (!helpers.link) { stack1 = helpers.blockHelperMissing.call(depth0,stack1,options)}
-  if (stack1 != null) { buffer += stack1; }
-  return buffer + "\n";
-},"6":function(container,depth0,helpers,partials,data) {
-    return container.escapeExpression(container.lambda(depth0, depth0))
-    + "&nbsp;";
+  return "<br/>"
+    + container.escapeExpression(((helper = (helper = helpers.unused_count || (depth0 != null ? depth0.unused_count : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0,{"name":"unused_count","hash":{},"data":data}) : helper)))
+    + " file"
+    + ((stack1 = helpers["if"].call(depth0,(depth0 != null ? depth0.unused_plural : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + " are unused";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, options, alias1=helpers.helperMissing, alias2="function", alias3=container.escapeExpression, alias4=helpers.blockHelperMissing, buffer = 
-  alias3(((helper = (helper = helpers.file_count || (depth0 != null ? depth0.file_count : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"file_count","hash":{},"data":data}) : helper)))
-    + " file";
-  stack1 = ((helper = (helper = helpers.plural || (depth0 != null ? depth0.plural : depth0)) != null ? helper : alias1),(options={"name":"plural","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data}),(typeof helper === alias2 ? helper.call(depth0,options) : helper));
-  if (!helpers.plural) { stack1 = alias4.call(depth0,stack1,options)}
-  if (stack1 != null) { buffer += stack1; }
-  buffer += " found for <a href=\""
+    var stack1, helper, alias1=helpers.helperMissing, alias2="function", alias3=container.escapeExpression;
+
+  return alias3(((helper = (helper = helpers.file_count || (depth0 != null ? depth0.file_count : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"file_count","hash":{},"data":data}) : helper)))
+    + " file"
+    + ((stack1 = helpers["if"].call(depth0,(depth0 != null ? depth0.plural : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + " found for <a href=\""
     + alias3(((helper = (helper = helpers.project_path || (depth0 != null ? depth0.project_path : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"project_path","hash":{},"data":data}) : helper)))
     + "/wiki/"
     + alias3(((helper = (helper = helpers.composer || (depth0 != null ? depth0.composer : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"composer","hash":{},"data":data}) : helper)))
     + "\">"
     + alias3(((helper = (helper = helpers.composer || (depth0 != null ? depth0.composer : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"composer","hash":{},"data":data}) : helper)))
-    + "</a>\n\n<ul class=\"sound-list\">\n";
-  stack1 = ((helper = (helper = helpers.files || (depth0 != null ? depth0.files : depth0)) != null ? helper : alias1),(options={"name":"files","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data}),(typeof helper === alias2 ? helper.call(depth0,options) : helper));
-  if (!helpers.files) { stack1 = alias4.call(depth0,stack1,options)}
-  if (stack1 != null) { buffer += stack1; }
-  return buffer + ((stack1 = helpers["if"].call(depth0,(depth0 != null ? depth0.links : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "</ul>";
+    + "</a>\n"
+    + ((stack1 = helpers["if"].call(depth0,(depth0 != null ? depth0.unused_count : depth0),{"name":"if","hash":{"includeZero":true},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "\n\n<ul class=\"sound-list\"></ul>";
 },"useData":true});
 
-},{"hbsfy/runtime":48}]},{},[1,49]);
+},{"hbsfy/runtime":48}],53:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template({"1":function(container,depth0,helpers,partials,data) {
+    var stack1, helper;
+
+  return "<dt>Description</dt><dd>"
+    + ((stack1 = ((helper = (helper = helpers.description || (depth0 != null ? depth0.description : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0,{"name":"description","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + "</dd>";
+},"3":function(container,depth0,helpers,partials,data) {
+    var stack1, helper;
+
+  return "<dt>Author</dt><dd>"
+    + ((stack1 = ((helper = (helper = helpers.author || (depth0 != null ? depth0.author : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0,{"name":"author","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + "</dd>";
+},"5":function(container,depth0,helpers,partials,data) {
+    var stack1, helper;
+
+  return "<dt>Date</dt><dd>"
+    + ((stack1 = ((helper = (helper = helpers.date || (depth0 != null ? depth0.date : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0,{"name":"date","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + "</dd>";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return ((stack1 = helpers["if"].call(depth0,(depth0 != null ? depth0.description : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "\n"
+    + ((stack1 = helpers["if"].call(depth0,(depth0 != null ? depth0.author : depth0),{"name":"if","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "\n"
+    + ((stack1 = helpers["if"].call(depth0,(depth0 != null ? depth0.date : depth0),{"name":"if","hash":{},"fn":container.program(5, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
+},"useData":true});
+
+},{"hbsfy/runtime":48}]},{},[1,49,50,51,52,53]);

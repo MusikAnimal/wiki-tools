@@ -1,6 +1,5 @@
 @import 'mixins';
 @import 'colors';
-@import 'about';
 
 html {
   height: 100%;
@@ -248,6 +247,8 @@ button {
   }
 }
 
+span { display: inline-block; }
+
 form {
   @include prefix(transition, 'height 500ms, opacity 1s ease');
   height: 300px;
@@ -263,7 +264,7 @@ form {
   visibility: hidden;
 }
 
-.busy {
+.busy, .disabled {
   opacity: .5;
   pointer-events: none;
 }
@@ -364,5 +365,64 @@ footer {
 
   .about-link {
     float: right;
+  }
+}
+
+.about {
+  font-size: 16px;
+  overflow-x: hidden;
+
+  section {
+    margin-bottom: 15px;
+
+    &::before {
+      display: block;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 18px 0;
+    }
+
+    &.description::before {
+      content: 'Description';
+    }
+
+    &.api::before {
+      content: 'API';
+    }
+  }
+
+  ul {
+    margin: 15px 0 0;
+  }
+
+  .api {
+    ul {
+      font-size: 14px;
+      overflow: auto;
+      padding-left: 20px;
+      white-space: nowrap;
+
+      li {
+        margin-bottom: 15px;
+      }
+    }
+
+    .description {
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      font-family: monospace;
+      margin: 0 0 5px;
+    }
+
+    span:first-child {
+      font-family: monospace;
+      width: 120px;
+    }
+
+    .response {
+      margin-top: 5px;
+    }
   }
 }

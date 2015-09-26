@@ -1,0 +1,49 @@
+.about {
+  section {
+    &.description::before {
+      content: 'About';
+    }
+
+    &.tools::before {
+      content: 'Tools';
+    }
+
+    &.api::before {
+      content: 'API';
+    }
+  }
+
+  .tools {
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .list {
+    margin: 10px 0;
+  }
+
+  .list-item {
+    font-size: 14px;
+    max-height: 285px;
+    overflow: auto;
+    width: 800px;
+
+    .heading {
+      font-weight: bold;
+    }
+
+    .id {
+      width: 50px;
+    }
+
+    .name {
+      width: 200px;
+    }
+
+    .regex {
+      font-family: monospace;
+      white-space: nowrap;
+      width: 550px;
+    }
+  }
+}

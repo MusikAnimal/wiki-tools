@@ -1,0 +1,38 @@
+%a.another-query{href: "/musikanimal/sound_search"} &larr; Do a query
+
+%section.description
+  This tool searches through <a href="https://commons.wikimedia.org">Wikimedia Commons</a> for audio files with the given criteria. It works by searching recursively through the parent category of the given "composer". So for "Wolfgang Amadeus Mozart" the tool will find all the audio files in <a href="https://commons.wikimedia.org/wiki/Category:Wolfgang Amadeus Mozart">Category:Wolfgang Amadeus Mozart</a> and all of its child categories.
+
+  The tool is geared toward classical composers, as there is a wealth of freely licensed audio available, but will work for any query for which a category exist.
+
+%section.api
+  An API is available for other services to use this tool's generated data. Documentation is as follows
+
+  %ul
+    %li
+      %h3 GET /musikanimal/sound_search
+      %div.description
+        Fetch audio files of given composer (or name of category)
+      %div
+        %span composer
+        %span Name of category to search within (required)
+      %div
+        %span list
+        %span One of <b>all</b> (list all files) or <b>unused</b> (list only files not currently used in articles)
+      %div
+        %span backlinks
+        %span Whether to include pages that link to the files. Redundant if <b>list</b> is set to <b>unused</b>. Anything other than blank.
+    %li
+      %h3 GET /musikanimal/sound_search/info/:filenames
+      %div.description
+        Fetch info about given files, such as the description, author, and date
+      %div
+        %span :filenames
+        %span Names of files, separated by a pipe <code>|</code> character (part of the URI, not the query string) (required)
+    %li
+      %h3 GET /musikanimal/sound_search/backlinks/:filename
+      %div.description
+        Fetch pages that link to the given file, excluding redirects
+      %div
+        %span :filename
+        %span Name of the file (part of the URI, not the query string) (required)

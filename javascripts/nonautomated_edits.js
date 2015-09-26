@@ -40,7 +40,7 @@ WT.formSubmit = function(e) {
   history.pushState({}, username + " - Nonautomated Counter from MusikAnimal", WT.path + "?" + this.params);
 
   if(this.tools.checked && !toolsArray.length) {
-    updateProgress(0);
+    WT.updateProgress(0);
   }
 
   WT.api("", this.params).success(
@@ -62,7 +62,7 @@ WT.formSubmit = function(e) {
 };
 
 function startOver() {
-  updateProgress(null);
+  WT.updateProgress(null);
   $(".output").hide();
   $(".loading").hide();
   $(".result-block").html("").hide();
@@ -92,7 +92,7 @@ function countTools(params) {
 
 function countTool(id, params, data) {
   if(id === toolsArray.length) {
-    updateProgress(100);
+    WT.updateProgress(100);
     userData.toolCounts = data;
     return showToolCounts(data);
   }
@@ -101,7 +101,7 @@ function countTool(id, params, data) {
     username: params.username,
     namespace: params.namespace
   }).success(function(resp) {
-    updateProgress(parseInt(((id / toolsArray.length - 1) + 1) * 100));
+    WT.updateProgress(parseInt(((id / toolsArray.length - 1) + 1) * 100));
     data[resp.tool_name] = resp.count;
   }).error(function(resp) {
     data[resp.tool_name] = "API failure!";
@@ -191,7 +191,7 @@ function showToolCounts(data) {
 }
 
 function revealResults() {
-  updateProgress(null);
+  WT.updateProgress(null);
   $(".loading").hide();
   $("form").addClass("hide");
   $(".output").show();
@@ -233,20 +233,5 @@ function insertContribs(resp) {
     $(".next-page").hide();
   } else {
     $(".next-page").show();
-  }
-}
-
-function updateProgress(value) {
-  if(value !== null) {
-    if(value >= 100) {
-      $("progress").val(100);
-      $(".progress-report").text("Complete!");
-    } else {
-      $("progress").val(value).show();
-      $(".progress-report").text(value + "%");
-    }
-  } else {
-    $("progress").val(0).hide();
-    $(".progress-report").text("");
   }
 }

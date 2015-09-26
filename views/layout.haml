@@ -3,13 +3,13 @@
   %head
     %meta{charset: "utf-8"}
     %link{href: "/musikanimal/application.css", rel: "stylesheet", type: "text/css"}
-    %link{href: "/musikanimal/#{request.path_info.split("/").last}.css", rel: "stylesheet", type: "text/css"}
+    %link{href: "/musikanimal/#{request.path_info.split("/")[2]}.css", rel: "stylesheet", type: "text/css"}
     %link{href: "https://fonts.googleapis.com/css?family=Roboto", rel: "stylesheet", type: "text/css"}
     %script{src: "/musikanimal/application.js"}
-    %script{src: "/musikanimal/#{request.path_info.split("/").last}.js"}
+    %script{src: "/musikanimal/#{request.path_info.split("/")[2]}.js"}
     %title #{app_name} from MusikAnimal
     %meta{name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"}
-  %body
+  %body{class: request.path_info.split("/").last}
     <!--[if lt IE 9]>
     %big Old versions of Internet Explorer not supported. Please update your browser.
     <![endif]-->
