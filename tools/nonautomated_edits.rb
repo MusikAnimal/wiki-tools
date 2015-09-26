@@ -77,6 +77,7 @@ class WikiTools < Sinatra::Application
           else
             offset = params['offset'].to_i || 0
             range_offset = offset % CONTRIBS_FETCH_SIZE
+            end_range_offset = range_offset + CONTRIBS_PAGE_SIZE - 1
 
             res[:contribs] = repl_call(:getEdits, {
               username: params['username'],
@@ -84,7 +85,7 @@ class WikiTools < Sinatra::Application
               nonAutomated: true,
               offset: (offset / CONTRIBS_FETCH_SIZE.to_f).floor * CONTRIBS_FETCH_SIZE,
               limit: CONTRIBS_FETCH_SIZE
-            })[range_offset..(range_offset + CONTRIBS_PAGE_SIZE - 1)]
+            })[range_offset.to_i..end_range_offset.to_i]
           end
         end
 

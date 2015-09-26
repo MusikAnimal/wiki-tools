@@ -11,7 +11,6 @@ group :web do
   gem 'pry'
   gem 'unicorn'
   gem 'redis'
-  gem 'rerun'
   gem 'unicode'
   gem 'mediawiki-gateway', github: 'MusikAnimal/mediawiki-gateway', branch: 'master'
 end
