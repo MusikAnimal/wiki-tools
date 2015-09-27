@@ -82,6 +82,17 @@ module Repl
       res
     end
 
+    def get_backlinks(filename)
+      get(
+        'SELECT page_title ' \
+        'FROM enwiki_p.imagelinks ' \
+        'JOIN enwiki_p.page ' \
+        "WHERE il_to = \"#{filename.gsub(/ /, '_')}\" " \
+        'AND page_id = il_from ' \
+        'AND il_from_namespace = 0'
+      )
+    end
+
     private
 
     def count(query)

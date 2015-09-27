@@ -30,7 +30,7 @@ WT.formSubmit = function(e) {
 
   history.pushState({}, composer + " - Sound Search from MusikAnimal", WT.path + "?" + this.params);
 
-  WT.api("", this.params).success(function(data) {
+  WT.api("", {composer: composer}).success(function(data) {
     data.listType = this.list.value;
     if(data.listType === "unused") {
       getBacklinksOfFiles(data, 0);
