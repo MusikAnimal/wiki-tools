@@ -24,7 +24,7 @@ WT.formSubmit = function(e) {
   var composer = this.composer.value;
 
   if(!composer) {
-    return alert('Composer is required!');
+    return alert("Composer is required!");
   }
 
   WT.updateProgress(0, "Fetching files...");
@@ -92,6 +92,7 @@ function revealData(data) {
 
   _.each(data.files, function(file, index) {
     file.index = index;
+    file.show_links = data.listType !== "unused";
     $(".sound-list").append(fileTemplate(file));
   });
 
@@ -8422,7 +8423,7 @@ module.exports = HandlebarsCompiler.template({"1":function(container,depth0,help
   return "<li class=\"sound-list-file\" data-index="
     + alias3(((helper = (helper = helpers.index || (depth0 != null ? depth0.index : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"index","hash":{},"data":data}) : helper)))
     + ">\n  <div>\n    (<span data-action=\"audio\" class=\"action-link\">Play</span> |\n    "
-    + ((stack1 = helpers["if"].call(depth0,(depth0 != null ? depth0.unused_count : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + ((stack1 = helpers["if"].call(depth0,(depth0 != null ? depth0.show_links : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "\n    <span data-action=\"info\" class=\"action-link\">Info</span>)\n    <a href=\"https://commons.wikimedia.org/wiki/"
     + alias3(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"title","hash":{},"data":data}) : helper)))
     + "\" class=\"link\">"

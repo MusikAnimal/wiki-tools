@@ -23,7 +23,7 @@ class WikiTools < Sinatra::Application
     get '/nonautomated_edits/about' do
       haml :'nonautomated_edits/about', locals: {
         app_name: 'Nonautomated edit counter',
-        tools: repl_client.getTools.to_a
+        tools: repl_client.tool_objects.to_a
       }
     end
 
@@ -41,7 +41,7 @@ class WikiTools < Sinatra::Application
         params['namespace'] = params['namespace'] == '' ? nil : params['namespace']
 
         unless params['totalCountOnly']
-          count_data = repl_call(:countEdits, {
+          count_data = repl_call(:count_edits, {
             username: params['username'],
             namespace: params['namespace'],
             nonAutomated: true,
@@ -50,12 +50,12 @@ class WikiTools < Sinatra::Application
         end
 
         if params['namespace']
-          total_edits = repl_call(:countEdits, {
+          total_edits = repl_call(:count_edits, {
             username: params['username'],
             namespace: params['namespace']
           }).to_i
         else
-          total_edits = repl_call(:countAllEdits, params['username']).to_i
+          total_edits = repl_call(:count_all_edits, params['username']).to_i
         end
 
         res = {
@@ -79,7 +79,7 @@ class WikiTools < Sinatra::Application
             range_offset = offset % CONTRIBS_FETCH_SIZE
             end_range_offset = range_offset + CONTRIBS_PAGE_SIZE - 1
 
-            res[:contribs] = repl_call(:getEdits, {
+            res[:contribs] = repl_call(:get_edits, {
               username: params['username'],
               namespace: params['namespace'],
               nonAutomated: true,
@@ -96,7 +96,7 @@ class WikiTools < Sinatra::Application
       get '/tools' do
         content_type :json
 
-        res = repl_client.getTools
+        res = repl_client.tool_objects
 
         status 200
         normalize_data(res)
@@ -107,7 +107,7 @@ class WikiTools < Sinatra::Application
 
         res = {
           tool_id: params['id'],
-          tool_name: repl_client.getTools[params['id'].to_i][:name]
+          tool_name: repl_client.tool_objects[params['id'].to_i][:name]
         }
 
         if params[:namespace]
@@ -117,7 +117,7 @@ class WikiTools < Sinatra::Application
 
         if params['username']
           res[:username] = params['username']
-          res[:count] = repl_client.countEdits(
+          res[:count] = repl_client.count_edits(
             username: params['username'],
             namespace: params['namespace'],
             nonAutomated: false,

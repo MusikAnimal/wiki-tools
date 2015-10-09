@@ -23,7 +23,7 @@ WT.formSubmit = function(e) {
   var composer = this.composer.value;
 
   if(!composer) {
-    return alert('Composer is required!');
+    return alert("Composer is required!");
   }
 
   WT.updateProgress(0, "Fetching files...");
@@ -91,6 +91,7 @@ function revealData(data) {
 
   _.each(data.files, function(file, index) {
     file.index = index;
+    file.show_links = data.listType !== "unused";
     $(".sound-list").append(fileTemplate(file));
   });
 

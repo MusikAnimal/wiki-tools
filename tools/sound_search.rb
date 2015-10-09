@@ -100,14 +100,14 @@ class WikiTools < Sinatra::Application
     repl_client.get_backlinks(filename).to_a.collect { |p| p['page_title'].gsub('_', ' ') }
   end
 
-  def get_sound_files(category)
+  def get_sound_files(category, category_names = [], i = 0)
     file_names = []
 
     params = {
       list: 'categorymembers',
       cmtitle: category,
       cmtype: 'file|subcat',
-      cmlimit: 500
+      cmlimit: 5000
     }
 
     # FIXME: might fail with empty categories
@@ -117,12 +117,12 @@ class WikiTools < Sinatra::Application
 
     category_members = data[0].to_a
     category_members = category_members.collect { |cf| cf.attributes['title'] }
-    file_names = category_members.select { |cf| cf.scan(/\.(?:ogg|flac|midi)$/i).any? }
+    file_names = category_members.select { |cf| cf.scan(/\.(?:ogg|flac|mid|midi)$/i).any? }
 
     category_members.select { |cm| cm =~ /^Category:/ }.each do |subcat|
-      if %w(composition audio flac midi ogg).any? { |keyword| subcat.downcase.include?(keyword) }
-        file_names.concat(get_sound_files(subcat))
-      end
+      next if category_names.include?(subcat)
+      #   puts "    circular category! #{subcat}"
+      file_names.concat(get_sound_files(subcat, category_names.push(subcat), i + 1))
     end
 
     file_names

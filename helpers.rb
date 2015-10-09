@@ -1,6 +1,6 @@
 module Helpers
   def repl_client
-    @repl_client ||= Auth.getRepl
+    @@repl_client ||= Auth.getRepl
   end
 
   def repl_call(method, params)
@@ -23,11 +23,13 @@ module Helpers
   end
 
   def api(db, method, params)
-    return api_call(db, method, params, 0)
+    api_call(db, method, params, 0)
   end
 
   def api_call(db, method, params, throttle)
     return nil if throttle > 3
+
+    params[:continue] = ''
 
     begin
       case db
@@ -37,8 +39,7 @@ module Helpers
         enwiki_mw.send(method, params)
       end
 
-    rescue => e
-      binding.pry
+    rescue
       sleep(((throttle + 2) * 2) + 1)
       api(method, params, throttle + 1)
     end
@@ -59,11 +60,23 @@ module Helpers
   end
 
   def commons_mw
-    @commons_mw ||= MediaWiki::Gateway.new('https://commons.wikimedia.org/w/api.php')
+    @@commons_mw ||= nil
+    return @@commons_mw if @@commons_mw
+
+    MediaWiki::Gateway.default_user_agent = 'MusikBot/1.1 (https://en.wikipedia.org/wiki/User:MusikBot/)'
+    @@commons_mw ||= MediaWiki::Gateway.new('https://commons.wikimedia.org/w/api.php', bot: true)
+    Auth.login(@@commons_mw)
+    @@commons_mw
   end
 
   def enwiki_mw
-    @enwiki_mw ||= MediaWiki::Gateway.new('https://en.wikipedia.org/w/api.php')
+    @@enwiki_mw ||= nil
+    return @enwiki_mw if @enwiki_mw
+
+    MediaWiki::Gateway.default_user_agent = 'MusikBot/1.1 (https://en.wikipedia.org/wiki/User:MusikBot/)'
+    @@enwiki_mw ||= MediaWiki::Gateway.new('https://en.wikipedia.org/w/api.php', bot: true)
+    Auth.login(@@enwiki_mw)
+    @@enwiki_mw
   end
 
   def normalize_data(data)
