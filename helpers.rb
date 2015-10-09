@@ -1,6 +1,6 @@
 module Helpers
   def repl_client
-    @@repl_client ||= Auth.getRepl
+    @@repl_client ||= Auth.get_repl
   end
 
   def repl_call(method, params)
@@ -46,7 +46,7 @@ module Helpers
   end
 
   def cache_response(req, &res)
-    @redis_client ||= Auth.getRedis
+    @redis_client ||= Auth.get_redis
 
     key = "ma-#{Digest::MD5.hexdigest(req.to_s)}"
 

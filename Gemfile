@@ -8,7 +8,7 @@ group :web do
   gem 'json'
   gem 'mysql2'
   gem 'pg'
-  gem 'pry'
+  gem 'pry-byebug'
   gem 'unicorn'
   gem 'redis'
   gem 'unicode'

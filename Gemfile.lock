@@ -10,7 +10,10 @@ GEM
   remote: https://rubygems.org/
   specs:
     backports (3.6.6)
+    byebug (5.0.0)
+      columnize (= 0.9.0)
     coderay (1.1.0)
+    columnize (0.9.0)
     domain_name (0.5.24)
       unf (>= 0.0.5, < 1.0.0)
     haml (4.0.6)
@@ -25,10 +28,13 @@ GEM
     mysql2 (0.3.19)
     netrc (0.10.3)
     pg (0.18.2)
-    pry (0.10.1)
+    pry (0.10.2)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
+    pry-byebug (3.2.0)
+      byebug (~> 5.0)
+      pry (~> 0.10)
     rack (1.6.4)
     rack-protection (1.5.3)
       rack
@@ -72,7 +78,7 @@ DEPENDENCIES
   mediawiki-gateway!
   mysql2
   pg
-  pry
+  pry-byebug
   redis
   sass
   sinatra

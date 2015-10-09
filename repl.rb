@@ -70,7 +70,7 @@ module Repl
     def get_edits(opts)
       opts = {
         namespace: nil,
-        nonAutomated: nil,
+        nonautomated: nil,
         tool: nil,
         limit: 50,
         offset: 0,
@@ -84,7 +84,7 @@ module Repl
         'JOIN enwiki_p.revision_userindex ON page_id = rev_page ' \
         "WHERE rev_user_text = \"#{opts[:username]}\" " +
         (opts[:namespace].to_s.empty? ? '' : "AND page_namespace = #{opts[:namespace]} ") +
-        (!opts[:nonAutomated].nil? ? "AND rev_comment #{'NOT ' if opts[:nonAutomated]}RLIKE \"#{[tool_regexes(opts[:tool], opts[:include_redirects])].join('|')}\" " : '') +
+        (!opts[:nonautomated].nil? ? "AND rev_comment #{'NOT ' if opts[:nonautomated]}RLIKE \"#{[tool_regexes(opts[:tool])].join('|')}\" " : '') +
         (!opts[:count] ? "ORDER BY rev_id DESC LIMIT #{opts[:limit]} OFFSET #{opts[:offset]}" : '')
 
       opts[:count] ? count(query) : get(query)
@@ -369,8 +369,8 @@ module Repl
       end
     end
 
-    def tool_regexes(index = nil, include_redirects = false)
-      regexes = tools(nil, include_redirects).collect { |t| t[:regex] }
+    def tool_regexes(index = nil)
+      regexes = tools(nil).collect { |t| t[:regex] }
 
       if index
         regexes[index.to_i]

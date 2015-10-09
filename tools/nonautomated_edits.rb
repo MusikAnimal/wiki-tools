@@ -44,7 +44,7 @@ class WikiTools < Sinatra::Application
           count_data = repl_call(:count_edits, {
             username: params['username'],
             namespace: params['namespace'],
-            nonAutomated: true,
+            nonautomated: true,
             includeRedirects: !!params['redirects']
           }).to_i
         end
@@ -82,7 +82,7 @@ class WikiTools < Sinatra::Application
             res[:contribs] = repl_call(:get_edits, {
               username: params['username'],
               namespace: params['namespace'],
-              nonAutomated: true,
+              nonautomated: true,
               offset: (offset / CONTRIBS_FETCH_SIZE.to_f).floor * CONTRIBS_FETCH_SIZE,
               limit: CONTRIBS_FETCH_SIZE
             })[range_offset..end_range_offset]
@@ -120,7 +120,7 @@ class WikiTools < Sinatra::Application
           res[:count] = repl_client.count_edits(
             username: params['username'],
             namespace: params['namespace'],
-            nonAutomated: false,
+            nonautomated: false,
             tool: params['id']
           )
         end
