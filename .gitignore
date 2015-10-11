@@ -8,3 +8,4 @@ env
 *.js.map
 *.scssc
 node_modules/
+.ruby-version

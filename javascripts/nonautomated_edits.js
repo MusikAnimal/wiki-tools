@@ -29,7 +29,11 @@ WT.formSubmit = function(e) {
     return alert('Username is required!');
   }
 
+  $("#username").blur();
+
   var username = this.username.value.charAt(0).toUpperCase() + this.username.value.slice(1);
+  this.username.value = username;
+  this.params.username = username;
 
   if(userData.contribs) {
     // moving page to page within contribs
@@ -42,7 +46,7 @@ WT.formSubmit = function(e) {
     WT.updateProgress(0);
   }
 
-  WT.api("", this.params).success(
+  WT.api("", $(this).serialize()).success(
     showData.bind(this)
   ).error(function(resp) {
     if(resp.status === 501) {
