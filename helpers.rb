@@ -7,7 +7,6 @@ module Helpers
     cache_response("#{method}#{params}") do
       res = repl_client.send(method, params)
       res = res.is_a?(Fixnum) ? res : res.to_a
-
       begin
         res.to_json
       rescue Encoding::UndefinedConversionError
@@ -46,17 +45,17 @@ module Helpers
   end
 
   def cache_response(req, &res)
-    @redis_client ||= Auth.get_redis
+    @@redis_client ||= Auth.get_redis
 
     key = "ma-#{Digest::MD5.hexdigest(req.to_s)}"
 
-    unless ret = @redis_client.get(key)
-      @redis_client.set(key, ret = res.call)
-      @redis_client.expire(key, $CACHE_TIME)
+    unless ret = @@redis_client.get(key)
+      @@redis_client.set(key, ret = res.call)
+      @@redis_client.expire(key, $CACHE_TIME)
     end
 
     # either a Hash or a Fixnum stored as a string
-    JSON.parse(ret) rescue ret.to_i
+    JSON.parse(ret, quirks_mode: true) rescue ret.to_i
   end
 
   def commons_mw
