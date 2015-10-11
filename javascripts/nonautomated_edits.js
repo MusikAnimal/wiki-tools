@@ -29,8 +29,7 @@ WT.formSubmit = function(e) {
     return alert('Username is required!');
   }
 
-  var username = this.username.value;
-  this.username.value = (username.charAt(0).toUpperCase() + username.slice(1));
+  var username = this.username.value.charAt(0).toUpperCase() + this.username.value.slice(1);
 
   if(userData.contribs) {
     // moving page to page within contribs

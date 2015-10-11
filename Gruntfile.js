@@ -66,20 +66,15 @@ module.exports = function(grunt) {
       },
       all: {
         files: {
-          'public/musikanimal/application.js': ['public/musikanimal/application.js']
+          'public/musikanimal/application.js': ['public/musikanimal/application.js'],
+          'public/musikanimal/nonautomated_edits.js' : ['public/musikanimal/nonautomated_edits.js'],
+          'public/musikanimal/sound_search.js' : ['public/musikanimal/sound_search.js']
         }
       }
     }
   });
 
-  var tasks = ['browserify', 'sass'];
-
-  var fs = require('fs');
-  fs.readFile('env', 'utf8', function(err, data) {
-    if(data.indexOf(':production') !== -1) {
-      tasks.push('uglify:all');
-    }
-  });
+  var tasks = ['browserify', 'sass', 'uglify:all'];
 
   grunt.registerTask('default', tasks);
 };
