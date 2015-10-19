@@ -29,5 +29,10 @@
         MusikAnimal
 
       - unless request.path == "/musikanimal"
-        %a.about-link{href: ""}
-          About this tool
+        %span.footer-links
+          - unless request.path.include?("/about")
+            %a.about-link{href: ""}
+              About this tool
+            &bullet;
+          %a.other-tools-link{href: "/musikanimal"}
+            Other tools
