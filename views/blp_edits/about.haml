@@ -1,0 +1,32 @@
+%a.another-query{href: "/musikanimal/blp_edits"} &larr; Do a query
+
+%section.description
+  This tool shows edits by users to <a href="#{project_path}/wiki/WP:BLP">biographes of living persons</a>. You can optionally exlcude <a href="/musikanimal/nonautomated_edits">nonautomated edits</a> in an attempt to show only edits that are prose, and may exemplify a users understanding of BLP policy.
+
+  A few important notes:
+  %ul
+    %li All data is approximate.
+    %li Deleted contributions are not currently accounted for.
+    %li It may take a while to generate data for users with a large edit count.
+    %li All data fetched is from the replication database, which my suffer from replication lag and be slightly behind production data. Furthermore, the tool caches responses for 30 minutes to improve performance.
+
+%section.api
+  An API is available for other services to use this tool's generated data. Documentation is as follows
+
+  %ul
+    %li
+      %h3 GET /musikanimal/blp_edits
+      %div.description
+        Fetch data about nonautomated contributions of a given user
+      %div
+        %span username
+        %span Escaped username (required)
+      %div
+        %span contribs
+        %span Whether to include contributions under filtered with given criteria. Anything other than blank
+      %div
+        %span nonautomated
+        %span Whether to exclude (semi-)automated edits from the contributions and edit count. Anything other than blank
+      %div
+        %span offset
+        %span Offset of contributions to fetch, if <tt>contribs</tt> is set

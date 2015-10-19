@@ -18,6 +18,13 @@ class WikiTools < Sinatra::Application
     $CACHE_TIME = 0
   end
 
+  get '/musikanimal' do
+    haml :index, locals: {
+      app_name: "MusikAnimal's tools",
+      project_path: 'https://en.wikipedia.org'
+    }
+  end
+
   not_found do
     unless request.path =~ %r{\/api\/}
       status 404
@@ -30,4 +37,5 @@ require_relative 'helpers'
 WikiTools.helpers Helpers
 
 require_relative 'tools/nonautomated_edits'
+require_relative 'tools/blp_edits'
 require_relative 'tools/sound_search'

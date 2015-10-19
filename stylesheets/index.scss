@@ -1,0 +1,47 @@
+@import 'mixins';
+@import 'colors';
+
+img {
+  @include prefix(filter, grayscale(100%));
+  bottom: 0;
+  height: 60vw;
+  max-height: 550px;
+  max-width: 550px;
+  min-height: 300px;
+  min-width: 300px;
+  opacity: .1;
+  position: absolute;
+  right: -45px;
+  width: 60vw;
+}
+
+.links {
+  ul {
+    font-size: 15px;
+    padding: 0;
+
+    li {
+      margin-left: 40px;
+      margin-top: 10px;
+    }
+  }
+
+  a {
+    color: $anchor;
+    text-decoration: none;
+
+    &:visited {
+      color: $visited;
+    }
+  }
+
+  .tool-link {
+    color: $black;
+    font-weight: bold;
+    text-decoration: none;
+
+    &:visited {
+      color: $black;
+    }
+  }
+}

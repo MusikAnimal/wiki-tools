@@ -13,7 +13,7 @@ module Helpers
         res.map! do |contrib|
           contrib.merge(
             'page_title' => contrib['page_title'].force_encoding('utf-8'),
-            'rev_comment' => contrib['rev_comment'].force_encoding('utf-8')
+            'rev_comment' => contrib['rev_comment'] ? contrib['rev_comment'].force_encoding('utf-8') : ''
           )
         end
         res.to_json

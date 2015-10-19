@@ -25,13 +25,23 @@ module Repl
       count("SELECT COUNT(*) FROM enwiki_p.revision_userindex WHERE rev_user_text=\"#{username}\";")
     end
 
-    def count_blp_edits(username)
-      get_blp_edits(username, count: true)
+    def count_blp_edits(opts)
+      get_blp_edits({
+        username: 'Example',
+        count: true,
+        nonautomated: false
+      }.merge(opts))
     end
 
     def count_edits(opts)
       opts[:count] = true
       get_edits(opts)
+    end
+
+    def count_namespace_edits(username, namespace = 0)
+      namespace_str = namespace.is_a?(Array) ? "IN (#{namespace.join(',')})" : "= #{namespace}"
+      count("SELECT count(*) FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " \
+        "WHERE rev_user_text = \"#{username}\" AND page_namespace #{namespace_str};")
     end
 
     # GETTERS
@@ -49,18 +59,24 @@ module Repl
       articles
     end
 
-    def get_blp_edits(username, opts)
+    def get_blp_edits(opts = {})
       opts = {
-        count: false
+        count: false,
+        nonautomated: nil,
+        limit: 50,
+        offset: 0
       }.merge(opts)
 
       query = 'SELECT ' +
-        (opts[:count] ? 'COUNT(*) ' : '* ') +
-        "FROM #{@db}.revision_userindex" \
-        'JOIN enwiki_p.categorylinks' \
-        "WHERE rev_user_text = '#{username}'" \
-        'AND cl_from = rev_page' \
-        "AND cl_to = 'Living_people';"
+        (opts[:count] ? 'COUNT(*) ' : 'rev_comment, rev_timestamp, rev_minor_edit, page_title ') +
+        "FROM #{@db}.revision_userindex " \
+        'JOIN enwiki_p.categorylinks JOIN enwiki_p.page ' \
+        "WHERE rev_user_text = '#{opts[:username]}' " \
+        'AND cl_from = rev_page ' \
+        "AND cl_to = 'Living_people' " \
+        'AND page_id = rev_page ' +
+        (opts[:nonautomated] ? "AND rev_comment NOT RLIKE \"#{[tool_regexes(opts[:tool])].join('|')}\" " : '') +
+        "ORDER BY rev_id DESC LIMIT #{opts[:limit]} OFFSET #{opts[:offset]}"
 
       opts[:count] ? count(query) : get(query)
     end

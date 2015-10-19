@@ -29,6 +29,10 @@ module.exports = function(grunt) {
           'public/musikanimal/sound_search.js': [
             'javascripts/sound_search.js',
             'views/sound_search/*.handlebars'
+          ],
+          'public/musikanimal/blp_edits.js': [
+            'javascripts/blp_edits.js',
+            'views/blp_edits/*.handlebars'
           ]
         }
       }
@@ -40,6 +44,12 @@ module.exports = function(grunt) {
           sourcemap: 'none'
         },
         files: [{
+          expand: true,
+          cwd: 'stylesheets',
+          src: ['index.scss'],
+          dest: 'public/musikanimal',
+          ext: '.css'
+        }, {
           expand: true,
           cwd: 'stylesheets',
           src: ['application.scss'],
@@ -55,7 +65,13 @@ module.exports = function(grunt) {
           expand: true,
           cwd: 'stylesheets/sound_search',
           src: ['sound_search.scss'],
-          dest: 'public/musikanimal/sound_search',
+          dest: 'public/musikanimal',
+          ext: '.css'
+        }, {
+          expand: true,
+          cwd: 'stylesheets/blp_edits',
+          src: ['blp_edits.scss'],
+          dest: 'public/musikanimal',
           ext: '.css'
         }]
       }
@@ -68,7 +84,8 @@ module.exports = function(grunt) {
         files: {
           'public/musikanimal/application.js': ['public/musikanimal/application.js'],
           'public/musikanimal/nonautomated_edits.js' : ['public/musikanimal/nonautomated_edits.js'],
-          'public/musikanimal/sound_search.js' : ['public/musikanimal/sound_search.js']
+          'public/musikanimal/sound_search.js' : ['public/musikanimal/sound_search.js'],
+          'public/musikanimal/blp_edits.js' : ['public/musikanimal/blp_edits.js']
         }
       }
     }

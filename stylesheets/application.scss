@@ -12,6 +12,7 @@ body {
   font-size: 14px;
   margin: 0;
   min-height: 100%;
+  overflow-x: hidden;
   padding: 10px 10px 57px;
   position: relative;
 }
@@ -257,14 +258,14 @@ form {
     height: 0;
     opacity: 0;
   }
-  // TODO: use &.hide + .notes {} to hide notes when form is submitted
 }
 
 .invisible {
   visibility: hidden;
 }
 
-.busy, .disabled {
+.busy,
+.disabled {
   opacity: .5;
   pointer-events: none;
 }

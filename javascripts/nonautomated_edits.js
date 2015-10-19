@@ -40,7 +40,7 @@ WT.formSubmit = function(e) {
     $("#contribs")[0].scrollIntoView();
   }
 
-  history.pushState({}, username + " - Nonautomated Counter from MusikAnimal", WT.path + "?" + this.params);
+  history.pushState({}, username + " - Nonautomated Edit Counter from MusikAnimal", WT.path + "?" + this.params);
 
   if(this.tools.checked && !toolsArray.length) {
     WT.updateProgress(0);
@@ -78,7 +78,7 @@ function startOver() {
   $("#dropdown_select").text("All"); // TODO: we can do better than this
   $("form").removeClass("busy hide");
   userData = {};
-  history.pushState({}, "Nonautomated Counter from MusikAnimal", WT.path);
+  history.pushState({}, "Nonautomated Edit Counter from MusikAnimal", WT.path);
 }
 
 function countTools(params) {
