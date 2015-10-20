@@ -8,6 +8,8 @@ require 'mediawiki-gateway'
 require 'auth.rb'
 
 class WikiTools < Sinatra::Application
+  before { request.path_info.sub! %r{/$}, '' }
+
   configure :production do
     set :haml, ugly: true
     set :clean_trace, true
