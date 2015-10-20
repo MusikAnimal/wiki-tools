@@ -100,6 +100,7 @@ function showTotalCount(data) {
     data.nonautomated = true;
     data.nonautomated_policy_percentage = data.nonautomated_policy_count / data.total_count;
     data.nonautomated_guideline_percentage = data.nonautomated_guideline_count / data.total_count;
+    data.pg_count = data.nonautomated_policy_count + data.nonautomated_guideline_count;
   }
 
   _.each(["policy_percentage", "nonautomated_policy_percentage", "guideline_percentage", "nonautomated_guideline_percentage"], function(attr) {
