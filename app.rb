@@ -17,7 +17,7 @@ class WikiTools < Sinatra::Application
   end
 
   configure :development do
-    $CACHE_TIME = 0
+    $CACHE_TIME = 100
   end
 
   get '/musikanimal' do

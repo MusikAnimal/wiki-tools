@@ -28,8 +28,11 @@
       %a{href: "https://en.wikipedia.org/wiki/User:MusikAnimal"}
         MusikAnimal
 
-      - unless request.path == "/musikanimal"
-        %span.footer-links
+      %span.footer-links
+        - if request.path == "/musikanimal"
+          %a{href: "https://commons.wikimedia.org/wiki/File:Tool_labs_logo.svg"}
+            Image attribution
+        - else
           - unless request.path.include?("/about")
             %a.about-link{href: ""}
               About this tool

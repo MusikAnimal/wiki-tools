@@ -7,7 +7,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     watch: {
       scripts: {
-        files: ['javascripts/*.js', 'views/**/*.handlebars'],
+        files: ['javascripts/**/*.js', 'views/**/*.handlebars'],
         tasks: ['browserify']
       },
       css: {
@@ -21,7 +21,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'public/musikanimal/application.js': ['javascripts/wt.js'],
+          'public/musikanimal/application.js': ['javascripts/shared/*.js'],
           'public/musikanimal/nonautomated_edits.js': [
             'javascripts/nonautomated_edits.js',
             'views/nonautomated_edits/*.handlebars'
@@ -102,7 +102,7 @@ module.exports = function(grunt) {
     }
   });
 
-  var tasks = ['browserify', 'sass', 'uglify:all'];
+  var tasks = ['browserify', 'sass'];//, 'uglify:all'];
 
   grunt.registerTask('default', tasks);
 };

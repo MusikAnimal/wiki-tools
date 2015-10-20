@@ -15,6 +15,8 @@ WT = {
   },
 
   updateProgress: function(value, message) {
+    if(!$("progress")[0]) return;
+
     if(value !== null) {
       if(value >= 100) {
         $("progress").val(100);
