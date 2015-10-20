@@ -33,6 +33,24 @@ module Repl
       }.merge(opts))
     end
 
+    def count_guideline_edits(opts)
+      get_pg_edits({
+        username: 'Example',
+        count: true,
+        nonautomated: false,
+        regex: 'guidelines'
+      }.merge(opts))
+    end
+
+    def count_policy_edits(opts)
+      get_pg_edits({
+        username: 'Example',
+        count: true,
+        nonautomated: false,
+        regex: 'policies'
+      }.merge(opts))
+    end
+
     def count_edits(opts)
       opts[:count] = true
       get_edits(opts)
@@ -60,7 +78,36 @@ module Repl
     end
 
     def get_blp_edits(opts = {})
+      get_edits_by_category(opts.merge(categories: 'Living_people'))
+    end
+
+    def get_pg_edits(opts = {})
       opts = {
+        count: false,
+        nonautomated: nil,
+        limit: 50,
+        offset: 0,
+        regex: 'policies|guidelines'
+      }.merge(opts)
+
+      query = 'SELECT ' +
+        (opts[:count] ? 'COUNT(*) ' : 'rev_comment, rev_timestamp, rev_minor_edit, page_title, cl_to ') +
+        "FROM #{@db}.revision_userindex " \
+        'JOIN enwiki_p.categorylinks JOIN enwiki_p.page ' \
+        "WHERE rev_user_text = '#{opts[:username]}' " \
+        'AND page_namespace = 4 ' \
+        'AND cl_from = rev_page ' \
+        "AND cl_to RLIKE \"#{opts[:regex]}\" " + # FIXME: make case insensitive!
+        'AND page_id = rev_page ' +
+        (opts[:nonautomated] ? "AND rev_comment NOT RLIKE \"#{[tool_regexes(opts[:tool])].join('|')}\" " : '') +
+        "ORDER BY rev_id DESC LIMIT #{opts[:limit]} OFFSET #{opts[:offset]}"
+
+      opts[:count] ? count(query) : get(query)
+    end
+
+    def get_edits_by_category(opts = {})
+      opts = {
+        categories: [],
         count: false,
         nonautomated: nil,
         limit: 50,
@@ -72,8 +119,8 @@ module Repl
         "FROM #{@db}.revision_userindex " \
         'JOIN enwiki_p.categorylinks JOIN enwiki_p.page ' \
         "WHERE rev_user_text = '#{opts[:username]}' " \
-        'AND cl_from = rev_page ' \
-        "AND cl_to = 'Living_people' " \
+        'AND cl_from = rev_page ' +
+        [opts[:categories]].flatten.map { |c| "AND cl_to = '#{c.gsub(' ', '_')}' " }.join +
         'AND page_id = rev_page ' +
         (opts[:nonautomated] ? "AND rev_comment NOT RLIKE \"#{[tool_regexes(opts[:tool])].join('|')}\" " : '') +
         "ORDER BY rev_id DESC LIMIT #{opts[:limit]} OFFSET #{opts[:offset]}"

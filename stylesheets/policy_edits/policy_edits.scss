@@ -1,0 +1,20 @@
+@import '../contribs';
+
+form {
+  height: 220px;
+}
+
+.nonautomated {
+  display: none;
+}
+
+.output {
+  dl {
+    width: 360px;
+
+    dt {
+      display: inline-block;
+      width: 235px;
+    }
+  }
+}

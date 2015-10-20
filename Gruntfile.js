@@ -33,6 +33,10 @@ module.exports = function(grunt) {
           'public/musikanimal/blp_edits.js': [
             'javascripts/blp_edits.js',
             'views/blp_edits/*.handlebars'
+          ],
+          'public/musikanimal/policy_edits.js': [
+            'javascripts/policy_edits.js',
+            'views/policy_edits/*.handlebars'
           ]
         }
       }
@@ -73,6 +77,12 @@ module.exports = function(grunt) {
           src: ['blp_edits.scss'],
           dest: 'public/musikanimal',
           ext: '.css'
+        }, {
+          expand: true,
+          cwd: 'stylesheets/policy_edits',
+          src: ['policy_edits.scss'],
+          dest: 'public/musikanimal',
+          ext: '.css'
         }]
       }
     },
@@ -85,7 +95,8 @@ module.exports = function(grunt) {
           'public/musikanimal/application.js': ['public/musikanimal/application.js'],
           'public/musikanimal/nonautomated_edits.js' : ['public/musikanimal/nonautomated_edits.js'],
           'public/musikanimal/sound_search.js' : ['public/musikanimal/sound_search.js'],
-          'public/musikanimal/blp_edits.js' : ['public/musikanimal/blp_edits.js']
+          'public/musikanimal/blp_edits.js' : ['public/musikanimal/blp_edits.js'],
+          'public/musikanimal/policy_edits.js' : ['public/musikanimal/policy_edits.js']
         }
       }
     }

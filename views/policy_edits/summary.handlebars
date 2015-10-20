@@ -1,0 +1,14 @@
+<a href="{{project_path}}/wiki/User:{{username}}">{{username}}</a> has approximently <b>{{pg_count}}</b> total {{#if nonautomated}}nonautomated{{/if}} edits to <a href="{{project_path}}/wiki/WP:POLICY">policies and guidelines</a>
+
+<dl>
+  <dt>Total edits</dt><dd>{{total_count}}</dd>
+  {{#if nonautomated}}
+  <dt>Nonautomated policy edits</dt><dd>{{nonautomated_policy_count}} ({{nonautomated_policy_percentage}}%)</dd>
+  <dt>Nonautomated guideline edits</dt><dd>{{nonautomated_guideline_count}} ({{nonautomated_guideline_percentage}}%)</dd>
+  {{else}}
+  <dt>Policy edits</dt><dd>{{policy_count}} ({{policy_percentage}}%)</dd>
+  <dt>Guideline edits</dt><dd>{{guideline_count}} ({{guideline_percentage}}%)</dd>
+  {{/if}}
+</dl>
+
+<small>Note: Edit counts do not include those of deleted pages. All data is approximate.</small>
