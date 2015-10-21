@@ -7,62 +7,6 @@ Contribs = function(opts) {
 
   var self = this;
 
-  WT.listeners = function() {
-    $(".another-query").on("click", this.startOver);
-
-    $(".next-page").on("click", function() {
-      $("#offset").val(parseInt($("#offset").val()) + 50);
-      $(".prev-page, .next-page").hide();
-      $(".contribs-output").addClass("busy");
-      $("form").trigger("submit");
-    });
-
-    $(".prev-page").on("click", function() {
-      $("#offset").val(parseInt($("#offset").val()) - 50);
-      $(".prev-page, .next-page").hide();
-      $(".contribs-output").addClass("busy");
-      $("form").trigger("submit");
-    });
-  };
-
-  WT.formSubmit = function(e) {
-    if(!this.username.value) {
-      return alert('Username is required!');
-    }
-
-    $("#username").blur();
-
-    var username = this.username.value.charAt(0).toUpperCase() + this.username.value.slice(1);
-    this.username.value = username;
-    this.params.username = username;
-
-    if(self.userData.contribs) {
-      // moving page to page within contribs
-      $("#contribs")[0].scrollIntoView();
-    }
-
-    history.pushState({}, username + " - " + self.appName + " from MusikAnimal", WT.path + "?" + this.params);
-
-    if(typeof self.preSubmit === "function") self.preSubmit.call(this);
-
-    WT.api("", $(this).serialize()).success(
-      self.showData.bind(this)
-    ).error(function(resp) {
-      if(resp.status === 501) {
-        var json = resp.responseJSON;
-
-        $(".contribs-output").html(
-          "<p class='error'>" + json.error + "</p>"
-        ).show();
-
-        self.showData.call(this, json);
-      } else {
-        alert("Something went wrong. Sorry.");
-        startOver();
-      }
-    }.bind(this));
-  };
-
   this.revealResults = function() {
     WT.updateProgress(null);
     $(".loading").hide();
@@ -119,9 +63,66 @@ Contribs = function(opts) {
     $("input[type=text]").val("");
     $("#offset").val(0);
     $("form").removeClass("busy hide");
-    this.userData = {};
+    self.userData = {};
     history.pushState({}, self.appName + " from MusikAnimal", WT.path);
   };
 
   this.userData = {};
+
+  // WT hooks
+  WT.listeners = function() {
+    $(".another-query").on("click", self.startOver);
+
+    $(".next-page").on("click", function() {
+      $("#offset").val(parseInt($("#offset").val()) + 50);
+      $(".prev-page, .next-page").hide();
+      $(".contribs-output").addClass("busy");
+      $("form").trigger("submit");
+    });
+
+    $(".prev-page").on("click", function() {
+      $("#offset").val(parseInt($("#offset").val()) - 50);
+      $(".prev-page, .next-page").hide();
+      $(".contribs-output").addClass("busy");
+      $("form").trigger("submit");
+    });
+  };
+
+  WT.formSubmit = function(e) {
+    if(!this.username.value) {
+      return alert('Username is required!');
+    }
+
+    $("#username").blur();
+
+    var username = this.username.value.charAt(0).toUpperCase() + this.username.value.slice(1);
+    this.username.value = username;
+    this.params.username = username;
+
+    if(self.userData.contribs) {
+      // moving page to page within contribs
+      $("#contribs")[0].scrollIntoView();
+    }
+
+    history.pushState({}, username + " - " + self.appName + " from MusikAnimal", WT.path + "?" + this.params);
+
+    if(typeof self.preSubmit === "function") self.preSubmit.call(this);
+
+    WT.api("", $(this).serialize()).success(
+      self.showData.bind(this)
+    ).error(function(resp) {
+      if(resp.status === 501) {
+        var json = resp.responseJSON;
+
+        $(".contribs-output").html(
+          "<p class='error'>" + json.error + "</p>"
+        ).show();
+
+        self.showData.call(this, json);
+      } else {
+        alert("Something went wrong. Sorry.");
+        self.startOver();
+      }
+    }.bind(this));
+  };
 };

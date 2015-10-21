@@ -102,7 +102,7 @@ module.exports = function(grunt) {
     }
   });
 
-  var tasks = ['browserify', 'sass'];//, 'uglify:all'];
+  var tasks = ['browserify', 'sass', 'uglify:all'];
 
   grunt.registerTask('default', tasks);
 };

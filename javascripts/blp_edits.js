@@ -1,5 +1,5 @@
 var Handlebars = require("handlebars");
-var summary = require("../views/nonautomated_edits/summary.handlebars");
+var summary = require("../views/blp_edits/summary.handlebars");
 
 var Revisions = new Contribs({
   appName: "BLP Edit Counter",
