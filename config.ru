@@ -3,6 +3,11 @@ require 'sinatra'
 require 'haml'
 require 'sass/plugin/rack'
 require 'mysql2'
+
+`stat app.rb`
+`stat repl.rb`
+`stat auth.rb`
+
 require './app'
 require './repl'
 require './auth'
