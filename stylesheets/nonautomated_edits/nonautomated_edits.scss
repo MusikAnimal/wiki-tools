@@ -1,14 +1,6 @@
 @import '../contribs';
 @import 'about';
 
-.summary-output::before {
-  content: 'Summary';
-}
-
 .counts-output::before {
   content: 'Tool counts';
-}
-
-.contribs-output::before {
-  content: 'Contributions';
 }

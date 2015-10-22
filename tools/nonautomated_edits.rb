@@ -1,6 +1,7 @@
 class WikiTools < Sinatra::Application
-  CONTRIBS_FETCH_SIZE = 500
-  CONTRIBS_PAGE_SIZE = 50
+  app_name = 'Nonautomated edit counter'
+  contribs_fetch_size = 500
+  contribs_page_size = 50
 
   namespace '/musikanimal' do
     before '/*' do
@@ -12,7 +13,7 @@ class WikiTools < Sinatra::Application
       namespace_text = namespaces[namespace_id] || 'All'
 
       haml :nonautomated_edits, locals: {
-        app_name: 'Nonautomated edit counter',
+        app_name: app_name,
         namespace: namespace_id,
         namespaces: namespaces,
         namespace_text: namespace_text,
@@ -22,7 +23,7 @@ class WikiTools < Sinatra::Application
 
     get '/nonautomated_edits/about' do
       haml :'nonautomated_edits/about', locals: {
-        app_name: 'Nonautomated edit counter',
+        app_name: app_name,
         tools: repl_client.tool_objects.to_a
       }
     end
@@ -31,7 +32,7 @@ class WikiTools < Sinatra::Application
       get '' do
         content_type :json
 
-        if params['username'].to_s.empty?
+        unless params['username'].present?
           status 400
           return {
             error: 'Bad request! username parameter is required'
@@ -40,16 +41,15 @@ class WikiTools < Sinatra::Application
 
         params['namespace'] = params['namespace'] == '' ? nil : params['namespace']
 
-        unless params['totalCountOnly']
+        unless params['totalCountOnly'].present?
           count_data = repl_call(:count_edits,
             username: params['username'],
             namespace: params['namespace'],
-            nonautomated: true,
-            includeRedirects: !!params['redirects']
+            nonautomated: true
           ).to_i
         end
 
-        if params['namespace']
+        if params['namespace'].present?
           total_edits = repl_call(:count_edits,
             username: params['username'],
             namespace: params['namespace']
@@ -67,7 +67,7 @@ class WikiTools < Sinatra::Application
           nonautomated_count: (count_data rescue nil)
         }
 
-        if params['contribs']
+        if params['contribs'].present?
           if total_edits > 50_000
             status 501
             return normalize_data(res.merge(
@@ -76,15 +76,15 @@ class WikiTools < Sinatra::Application
             ))
           else
             offset = params['offset'].to_i || 0
-            range_offset = offset % CONTRIBS_FETCH_SIZE
-            end_range_offset = range_offset + CONTRIBS_PAGE_SIZE - 1
+            range_offset = offset % contribs_fetch_size
+            end_range_offset = range_offset + contribs_page_size - 1
 
             res[:contribs] = repl_call(:get_edits,
               username: params['username'],
               namespace: params['namespace'],
               nonautomated: true,
-              offset: (offset / CONTRIBS_FETCH_SIZE.to_f).floor * CONTRIBS_FETCH_SIZE,
-              limit: CONTRIBS_FETCH_SIZE
+              offset: (offset / contribs_fetch_size.to_f).floor * contribs_fetch_size,
+              limit: contribs_fetch_size
             )[range_offset..end_range_offset]
           end
         end
@@ -110,12 +110,12 @@ class WikiTools < Sinatra::Application
           tool_name: repl_client.tool_objects[params['id'].to_i][:name]
         }
 
-        if params[:namespace]
+        if params[:namespace].present?
           res[:namespace] = params['namespace']
           res[:namespace_text] = namespaces[params['namespace']]
         end
 
-        if params['username']
+        if params['username'].present?
           res[:username] = params['username']
           res[:count] = repl_client.count_edits(
             username: params['username'],

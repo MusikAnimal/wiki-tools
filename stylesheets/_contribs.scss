@@ -55,6 +55,14 @@
   }
 }
 
+.summary-output::before {
+  content: 'Summary';
+}
+
+.contribs-output::before {
+  content: 'Contributions';
+}
+
 .prev-page {
   display: none;
   float: left;

@@ -7,6 +7,19 @@ Contribs = function(opts) {
 
   var self = this;
 
+  this.getPercentage = function(count, total) {
+    count = count || 0;
+    var quotient = (count / total) || 0;
+
+    if(quotient > 0 && quotient < 0.01) {
+      percentage = "< 1";
+    } else {
+      percentage = Math.round(quotient * 100);
+    }
+
+    return percentage + '%';
+  };
+
   this.revealResults = function() {
     WT.updateProgress(null);
     $(".loading").hide();

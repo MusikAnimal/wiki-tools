@@ -41,4 +41,5 @@ WikiTools.helpers Helpers
 require_relative 'tools/nonautomated_edits'
 require_relative 'tools/blp_edits'
 require_relative 'tools/policy_edits'
+require_relative 'tools/category_edits'
 require_relative 'tools/sound_search'

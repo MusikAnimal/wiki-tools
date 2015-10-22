@@ -82,6 +82,10 @@ module Helpers
     data.delete_if { |_k, v| v.nil? } if data.is_a?(Hash)
     data.to_json
   end
+
+  def wikipedias
+    %w(en sv de nl fr ru war ceb it es vi pl)
+  end
 end
 
 class Object

@@ -1,16 +1,20 @@
 @import '../contribs';
 
 form {
-  height: 220px;
+  height: 320px;
 }
 
 .output {
   dl {
-    width: 360px;
+    width: 400px;
 
     dt {
       display: inline-block;
-      width: 235px;
+      width: 275px;
+    }
+
+    dd {
+      width: 125px;
     }
   }
 }

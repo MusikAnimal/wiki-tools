@@ -56,6 +56,11 @@ module Repl
       get_edits(opts)
     end
 
+    def count_category_edits(opts)
+      opts[:count] = true
+      get_category_edits(opts)
+    end
+
     def count_namespace_edits(username, namespace = 0)
       namespace_str = namespace.is_a?(Array) ? "IN (#{namespace.join(',')})" : "= #{namespace}"
       count("SELECT count(*) FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " \
@@ -78,7 +83,7 @@ module Repl
     end
 
     def get_blp_edits(opts = {})
-      get_edits_by_category(opts.merge(categories: 'Living_people'))
+      get_category_edits(opts.merge(categories: 'Living_people'))
     end
 
     def get_pg_edits(opts = {})
@@ -105,7 +110,7 @@ module Repl
       opts[:count] ? count(query) : get(query)
     end
 
-    def get_edits_by_category(opts = {})
+    def get_category_edits(opts = {})
       opts = {
         categories: [],
         count: false,
@@ -119,8 +124,8 @@ module Repl
         "FROM #{@db}.revision_userindex " \
         'JOIN enwiki_p.categorylinks JOIN enwiki_p.page ' \
         "WHERE rev_user_text = '#{opts[:username]}' " \
-        'AND cl_from = rev_page ' +
-        [opts[:categories]].flatten.map { |c| "AND cl_to = '#{c.gsub(' ', '_')}' " }.join +
+        'AND cl_from = rev_page ' \
+        'AND (' + [opts[:categories]].flatten.map { |c| "cl_to = '#{c.gsub(' ', '_')}'" }.join(' OR ') + ') ' \
         'AND page_id = rev_page ' +
         (opts[:nonautomated] ? "AND rev_comment NOT RLIKE \"#{[tool_regexes(opts[:tool])].join('|')}\" " : '') +
         "ORDER BY rev_id DESC LIMIT #{opts[:limit]} OFFSET #{opts[:offset]}"
@@ -137,8 +142,7 @@ module Repl
         tool: nil,
         limit: 50,
         offset: 0,
-        count: false,
-        include_redirects: false
+        count: false
       }.merge(opts)
 
       query = 'SELECT ' +

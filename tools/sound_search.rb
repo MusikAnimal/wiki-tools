@@ -1,8 +1,10 @@
 class WikiTools < Sinatra::Application
+  app_name = 'Sound search'
+
   namespace '/musikanimal' do
     get '/sound_search' do
       haml :sound_search, locals: {
-        app_name: 'Sound search',
+        app_name: app_name,
         list: params[:list].present? ? params[:list] : 'all',
         soundlists: sound_list_pages,
         soundlist: sound_list_pages.include?(params[:soundlist]) ? params[:soundlist] : nil
@@ -11,7 +13,7 @@ class WikiTools < Sinatra::Application
 
     get '/sound_search/about' do
       haml :'sound_search/about', locals: {
-        app_name: 'Sound search'
+        app_name: app_name
       }
     end
 

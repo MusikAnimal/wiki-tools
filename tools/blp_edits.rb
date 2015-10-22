@@ -1,11 +1,12 @@
 class WikiTools < Sinatra::Application
-  CONTRIBS_FETCH_SIZE = 500
-  CONTRIBS_PAGE_SIZE = 50
+  app_name = 'BLP edit counter'
+  contribs_fetch_size = 500
+  contribs_page_size = 50
 
   namespace '/musikanimal' do
     get '/blp_edits' do
       haml :blp_edits, locals: {
-        app_name: 'BLP edit counter',
+        app_name: app_name,
         username: params[:username],
         contribs: params[:contribs] == '' ? false : true
       }
@@ -13,7 +14,7 @@ class WikiTools < Sinatra::Application
 
     get '/blp_edits/about' do
       haml :'blp_edits/about', locals: {
-        app_name: 'BLP edit counter',
+        app_name: app_name,
         project_path: 'https://en.wikipedia.org'
       }
     end
@@ -21,7 +22,7 @@ class WikiTools < Sinatra::Application
     get '/api/blp_edits' do
       content_type :json
 
-      if params['username'].to_s.empty?
+      unless params['username'].present?
         status 400
         return {
           error: 'Bad request! username parameter is required'
@@ -34,7 +35,7 @@ class WikiTools < Sinatra::Application
         blp_count: repl_call(:count_blp_edits, username: params['username']).to_i
       }
 
-      if !!params['nonautomated']
+      if params['nonautomated'].present?
         res[:nonautomated_blp_count] = repl_call(:count_blp_edits,
           username: params['username'],
           nonautomated: true
@@ -42,18 +43,18 @@ class WikiTools < Sinatra::Application
       end
 
       offset = params['offset'].to_i || 0
-      range_offset = offset % CONTRIBS_FETCH_SIZE
-      end_range_offset = range_offset + CONTRIBS_PAGE_SIZE - 1
+      range_offset = offset % contribs_fetch_size
+      end_range_offset = range_offset + contribs_page_size - 1
 
-      if params['contribs']
+      if params['contribs'].present?
         contribs = repl_call(:get_blp_edits,
           username: params['username'],
-          offset: (offset / CONTRIBS_FETCH_SIZE.to_f).floor * CONTRIBS_FETCH_SIZE,
-          limit: CONTRIBS_FETCH_SIZE,
-          nonautomated: !!params['nonautomated']
+          offset: (offset / contribs_fetch_size.to_f).floor * contribs_fetch_size,
+          limit: contribs_fetch_size,
+          nonautomated: params['nonautomated'].present?
         )[range_offset..end_range_offset]
 
-        if !!params['nonautomated']
+        if params['nonautomated'].present?
           res[:nonautomated_contribs] = contribs
         else
           res[:contribs] = contribs

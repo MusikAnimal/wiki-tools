@@ -1,8 +1,6 @@
 var Handlebars = require("handlebars");
 var summary = require("../views/nonautomated_edits/summary.handlebars");
 var tool = require("../views/nonautomated_edits/tool.handlebars");
-
-// TODO: make popstate do something
 var toolsArray = [];
 
 var Revisions = new Contribs({
@@ -18,8 +16,6 @@ var Revisions = new Contribs({
 function startOver() {
   Revisions.startOver();
   $("input[type=checkbox]").prop("checked", false);
-  $("#namespace").val("");
-  $("#dropdown_select").text("All"); // TODO: we can do better than this
   WT.updateProgress(null);
   history.pushState({}, "Nonautomated Edit Counter from MusikAnimal", WT.path);
 }

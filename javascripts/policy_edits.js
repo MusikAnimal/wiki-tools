@@ -22,26 +22,17 @@ function showData(data) {
 function showTotalCount(data) {
   data.project_path = WT.projectPath;
   data.pg_count = data.policy_count + data.guideline_count;
-  data.policy_percentage = data.policy_count / data.total_count;
-  data.guideline_percentage = data.guideline_count / data.total_count;
+  data.policy_percentage = Revisions.getPercentage(data.policy_count, data.total_count);
+  data.guideline_percentage = Revisions.getPercentage(data.guideline_count, data.total_count);
 
   if(data.nonautomated_policy_count) {
     data.nonautomated = true;
-    data.nonautomated_policy_percentage = data.nonautomated_policy_count / data.total_count;
-    data.nonautomated_guideline_percentage = data.nonautomated_guideline_count / data.total_count;
+    data.nonautomated_policy_percentage = Revisions.getPercentage(data.nonautomated_policy_count, data.total_count);
+    data.nonautomated_guideline_percentage = Revisions.getPercentage(data.nonautomated_guideline_count, data.total_count);
     data.pg_count = data.nonautomated_policy_count + data.nonautomated_guideline_count;
   }
-
-  _.each(["policy_percentage", "nonautomated_policy_percentage", "guideline_percentage", "nonautomated_guideline_percentage"], function(attr) {
-    if(data[attr] && data[attr] > 0 && data[attr] < 0.01) {
-      data[attr] = "< 1";
-    } else {
-      data[attr] = Math.round(data[attr] * 100);
-    }
-  });
 
   $(".summary-output").html(
     summary(data)
   ).show();
 }
-
