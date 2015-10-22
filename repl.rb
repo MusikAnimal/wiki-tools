@@ -229,7 +229,7 @@ module Repl
         },
         {
           name: 'Twinkle',
-          regex: 'WP:TW|WP:(TWINKLE|Twinkle)|WP:FRIENDLY',
+          regex: 'WP:TW|WP:(TWINKLE|Twinkle)|WP:FRIENDLY|Wikipedia:Twinkle',
           link: 'WP:TW'
         },
         {

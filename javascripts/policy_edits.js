@@ -25,7 +25,7 @@ function showTotalCount(data) {
   data.policy_percentage = Revisions.getPercentage(data.policy_count, data.total_count);
   data.guideline_percentage = Revisions.getPercentage(data.guideline_count, data.total_count);
 
-  if(data.nonautomated_policy_count) {
+  if(typeof data.nonautomated_policy_count === 'number') {
     data.nonautomated = true;
     data.nonautomated_policy_percentage = Revisions.getPercentage(data.nonautomated_policy_count, data.total_count);
     data.nonautomated_guideline_percentage = Revisions.getPercentage(data.nonautomated_guideline_count, data.total_count);

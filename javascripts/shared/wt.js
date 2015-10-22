@@ -100,6 +100,10 @@ $(document).ready(function() {
     $(".loading").show();
     $(this).addClass("busy");
 
+    $(this).find("[type=text]").each(function() {
+      this.value = this.value.trim();
+    });
+
     this.params = $(this).serialize();
 
     WT.formSubmit.call(this);
