@@ -96,7 +96,7 @@ module Repl
       }.merge(opts)
 
       query = 'SELECT ' +
-        (opts[:count] ? 'COUNT(*) ' : 'rev_comment, rev_timestamp, rev_minor_edit, page_title, cl_to ') +
+        (opts[:count] ? 'COUNT(*) ' : 'rev_id, rev_comment, rev_timestamp, rev_minor_edit, page_title, cl_to ') +
         "FROM #{@db}.revision_userindex " \
         'JOIN enwiki_p.categorylinks JOIN enwiki_p.page ' \
         "WHERE rev_user_text = '#{opts[:username]}' " \
@@ -120,7 +120,7 @@ module Repl
       }.merge(opts)
 
       query = 'SELECT ' +
-        (opts[:count] ? 'COUNT(*) ' : 'rev_comment, rev_timestamp, rev_minor_edit, page_title ') +
+        (opts[:count] ? 'COUNT(*) ' : 'rev_id, rev_comment, rev_timestamp, rev_minor_edit, page_title ') +
         "FROM #{@db}.revision_userindex " \
         'JOIN enwiki_p.categorylinks JOIN enwiki_p.page ' \
         "WHERE rev_user_text = '#{opts[:username]}' " \
