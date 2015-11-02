@@ -70,7 +70,7 @@ module Helpers
 
   def enwiki_mw
     @@enwiki_mw ||= nil
-    return @enwiki_mw if @enwiki_mw
+    return @@enwiki_mw if @@enwiki_mw
 
     MediaWiki::Gateway.default_user_agent = 'MusikBot/1.1 (https://en.wikipedia.org/wiki/User:MusikBot/)'
     @@enwiki_mw ||= MediaWiki::Gateway.new('https://en.wikipedia.org/w/api.php', bot: true)

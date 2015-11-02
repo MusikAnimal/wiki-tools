@@ -30,6 +30,9 @@
 
       %span.footer-links
         - if request.path == "/musikanimal"
+          Hosted with &hearts; on
+          %a{href: "https://tools.wmflabs.org"} Wikimedia Labs
+          &bullet;
           %a{href: "https://commons.wikimedia.org/wiki/File:Tool_labs_logo.svg"}
             Image attribution
         - else

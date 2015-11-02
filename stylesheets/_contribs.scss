@@ -55,6 +55,11 @@
   }
 }
 
+.click-me {
+  display: block;
+  margin-bottom: 10px;
+}
+
 .summary-output::before {
   content: 'Summary';
 }

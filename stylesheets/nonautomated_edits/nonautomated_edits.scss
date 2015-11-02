@@ -4,3 +4,12 @@
 .counts-output::before {
   content: 'Tool counts';
 }
+
+dl {
+  margin-bottom: 6px;
+}
+
+.note {
+  display: block;
+  margin-top: 15px;
+}

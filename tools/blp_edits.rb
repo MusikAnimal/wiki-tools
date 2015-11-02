@@ -8,7 +8,7 @@ class WikiTools < Sinatra::Application
       haml :blp_edits, locals: {
         app_name: app_name,
         username: params[:username],
-        contribs: params[:contribs] == '' ? false : true
+        contribs: params[:contribs]
       }
     end
 

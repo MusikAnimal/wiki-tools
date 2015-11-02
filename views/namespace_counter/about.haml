@@ -1,0 +1,40 @@
+%a.another-query{href: "/musikanimal/namespace_counter"} &larr; Do a query
+
+%section.description
+  This tool is a generic edit counter showing edits by namespace, but also allows you to exclude <a href="/musikanimal/nonautomated_edits">(semi-)automated</a> edits.
+
+  A few important notes:
+  %ul
+    %li All data is approximate.
+    %li Deleted contributions are not currently accounted for.
+    %li It may take a while to generate data for users with a large edit count.
+    %li All data fetched is from the replication database, which my suffer from replication lag and be slightly behind production data. Furthermore, the tool caches responses for 30 minutes to improve performance.
+
+%section.api
+  An API is available for other services to use this tool's generated data. Documentation is as follows
+
+  %ul
+    %li
+      %h3 GET /musikanimal/namespace_counter
+      %div.description
+        Fetch the number of contirubtions a user has made to each namespace
+      %div
+        %span username
+        %span Escaped username (required)
+      %div
+        %span nonautomated
+        %span Whether to exclude (semi-)automated edits from the edit count. Anything other than blank
+    %li
+      %h3 GET /musikanimal/namespace_counter/:id
+      %div.description
+        Fetch the number of edits a user has made to the given namespaces
+      %div
+        %span namespace
+        %span ID of namespace (see <a href="https://en.wikipedia.org/wiki/Wikipedia:Namespace">Wikipedia:Namespace</a>)
+      %div
+        %span nonautomated
+        %span Whether to exclude (semi-)automated edits from the edit count. Anything other than blank
+    %li
+      %h3 GET /musikanimal/namespace_counter/namespaces
+      %div.description
+        Fetch a map of all of the wiki's namespaces and their IDs

@@ -92,6 +92,7 @@ label {
 }
 
 input[type=text],
+input[type=date],
 button {
   @include prefix(box-sizing, border-box);
   display: block;
@@ -99,6 +100,13 @@ button {
   height: 40px;
   padding: 10px;
   vertical-align: top;
+}
+
+::-webkit-datetime-edit-text, /* this makes the slashes in dd/mm/yyyy grey */
+::-webkit-datetime-edit-day-field[aria-valuetext=blank],
+::-webkit-datetime-edit-month-field[aria-valuetext=blank],
+::-webkit-datetime-edit-year-field[aria-valuetext=blank] {
+  color: $outline;
 }
 
 .dropdown {
