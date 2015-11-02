@@ -1,0 +1,23 @@
+%form
+  %fieldset.basic
+    %label{for: "username"} Username
+    %input#username{type: "text", placeholder: "Example", name: "username", required: true, value: params[:username]}
+    %input#offset{type: "hidden", name: "offset", value: 0}
+
+  %fieldset.options
+    %div.checkbox
+      %input#nonautomated{type: "checkbox", name: "nonautomated", value: "on", checked: params[:nonautomated]}
+      %label{for: "nonautomated"} Exclude (semi-)automated edits
+
+  %button Submit
+
+%section.output
+  %span.another-query &larr; Do another query
+  %div.summary-output.result-block
+  %div.totals-output.result-block
+  %div#pie_chart.chart
+
+%section.loading
+  %div.loading-text Thinking...
+  %progress{max: "100", value: "0"}
+  %div.progress-report

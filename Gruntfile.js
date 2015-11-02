@@ -11,7 +11,7 @@ module.exports = function(grunt) {
         tasks: ['browserify']
       },
       css: {
-        files: 'stylesheets/*.scss',
+        files: 'stylesheets/**/*.scss',
         tasks: ['sass']
       }
     },
@@ -41,6 +41,10 @@ module.exports = function(grunt) {
           'public/musikanimal/category_edits.js': [
             'javascripts/category_edits.js',
             'views/category_edits/*.handlebars'
+          ],
+          'public/musikanimal/namespace_counter.js': [
+            'javascripts/namespace_counter.js',
+            'views/namespace_counter/*.handlebars'
           ]
         }
       }
@@ -93,6 +97,12 @@ module.exports = function(grunt) {
           src: ['category_edits.scss'],
           dest: 'public/musikanimal',
           ext: '.css'
+        }, {
+          expand: true,
+          cwd: 'stylesheets/namespace_counter',
+          src: ['namespace_counter.scss'],
+          dest: 'public/musikanimal',
+          ext: '.css'
         }]
       }
     },
@@ -107,7 +117,8 @@ module.exports = function(grunt) {
           'public/musikanimal/sound_search.js' : ['public/musikanimal/sound_search.js'],
           'public/musikanimal/blp_edits.js' : ['public/musikanimal/blp_edits.js'],
           'public/musikanimal/policy_edits.js' : ['public/musikanimal/policy_edits.js'],
-          'public/musikanimal/category_edits.js' : ['public/musikanimal/category_edits.js']
+          'public/musikanimal/category_edits.js' : ['public/musikanimal/category_edits.js'],
+          'public/musikanimal/namespace_counter.js' : ['public/musikanimal/namespace_counter.js']
         }
       }
     }
