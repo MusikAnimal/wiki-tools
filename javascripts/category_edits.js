@@ -31,7 +31,8 @@ function countCategory(i, data, categoryData) {
 
   WT.api("category/"+data.categories[i], {
     username: data.username,
-    nonautomated: !!data.nonautomated ? 'on' : ''
+    nonautomated: !!data.nonautomated ? 'on' : '',
+    noreplag: true
   }).success(function(resp) {
     var count = resp.count || resp.nonautomated_count || 0,
       percentage = Revisions.getPercentage(count, data.total_count);

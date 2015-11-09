@@ -48,7 +48,6 @@ function countNamespaces(i, data) {
     username: data.username,
     nonautomated: data.nonautomated
   };
-
   if(i > 0) opts.noreplag = true;
 
   WT.api(namespaceIds[i], opts).success(function(resp) {
@@ -61,6 +60,7 @@ function countNamespaces(i, data) {
     data.counts[namespaceIds[i]] = null;
   }).done(function(resp) {
     data.elapsed_time += resp.elapsed_time;
+    if(resp.replication_lag) data.replication_lag = WT.replag(resp.replication_lag);
     countNamespaces(i + 1, data);
   });
 }

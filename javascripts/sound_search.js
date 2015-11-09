@@ -26,6 +26,7 @@ WT.formSubmit = function(e) {
     return alert("Composer is required!");
   }
 
+  $("input").blur();
   $("button").blur();
 
   WT.updateProgress(0, "Fetching files...");

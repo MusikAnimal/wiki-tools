@@ -106,7 +106,7 @@ Contribs = function(opts) {
       return alert('Username is required!');
     }
 
-    $("#username").blur();
+    $("input").blur();
 
     var username = this.username.value.charAt(0).toUpperCase() + this.username.value.slice(1);
     this.username.value = username;

@@ -37,7 +37,7 @@ class WikiTools < Sinatra::Application
           respond_error(res, 500)
         end
 
-        respond(res)
+        respond(res, replag: false)
       end
 
       get '/info/:filenames' do
@@ -71,7 +71,7 @@ class WikiTools < Sinatra::Application
           end
         end
 
-        respond(res)
+        respond(res, replag: false)
       end
 
       get '/backlinks/:filename' do
@@ -82,7 +82,7 @@ class WikiTools < Sinatra::Application
           links: get_backlinks(params[:filename]).map { |l| l.force_encoding('utf-8') }
         }
 
-        respond(res)
+        respond(res, replag: false)
       end
     end
   end
