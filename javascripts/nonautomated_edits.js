@@ -6,7 +6,7 @@ var toolsArray = [];
 var Revisions = new Contribs({
   appName: "Nonautomated Edit Counter",
   preSubmit: function() {
-    if(this.tools.checked && !toolsArray.length) {
+    if(this.tools.checked) {
       WT.updateProgress(0);
     }
   },
@@ -28,7 +28,9 @@ function countTools(params) {
       return countTools(params);
     });
   } else {
-    countTool(0, params, {});
+    countTool(0, params, {
+      elapsed_time: params.elapsed_time
+    });
   }
 }
 
@@ -41,13 +43,15 @@ function countTool(id, params, data) {
 
   WT.api("tools/"+id, {
     username: params.username,
-    namespace: params.namespace
+    namespace: params.namespace,
+    noreplag: true
   }).success(function(resp) {
     WT.updateProgress(parseInt(((id / toolsArray.length - 1) + 1) * 100));
     data[resp.tool_name] = resp.count;
   }).error(function(resp) {
     data[resp.tool_name] = "API failure!";
-  }).done(function() {
+  }).done(function(resp) {
+    data.elapsed_time += resp.elapsed_time;
     countTool(id + 1, params, data);
   });
 }
@@ -77,6 +81,7 @@ function showTotalCount(data) {
   data.automated_percentage = Math.round((data.automated_count / data.total_count) * 100);
   data.nonautomated_percentage = Math.round((data.nonautomated_count / data.total_count) * 100);
   data.project_path = WT.projectPath;
+  data.replication_lag = WT.replag(data.replication_lag);
   $(".summary-output").html(
     summary(data)
   ).show();
@@ -89,6 +94,7 @@ function showToolCounts(data) {
   var newData = {};
 
   $.each(data, function(key, val) {
+    if(key === "elapsed_time") return;
     newData[key] = {
       name: key,
       count: val,
@@ -124,5 +130,6 @@ function showToolCounts(data) {
     ).show();
   }
 
+  $(".elapsed-time").text(+data.elapsed_time.toFixed(3));
   Revisions.revealResults();
 }

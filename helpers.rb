@@ -21,27 +21,19 @@ module Helpers
     end
   end
 
-  def api(db, method, params)
-    api_call(db, method, params, 0)
-  end
-
-  def api_call(db, method, params, throttle)
-    return nil if throttle > 3
+  def api(db, method, params, throttle = 0)
+    sleep throttle * 5
 
     params[:continue] = ''
-
-    begin
-      case db
-      when :commons
-        commons_mw.send(method, params)
-      when :enwiki
-        enwiki_mw.send(method, params)
-      end
-
-    rescue
-      sleep(((throttle + 2) * 2) + 1)
-      api(method, params, throttle + 1)
+    case db
+    when :commons
+      commons_mw.send(method, params)
+    when :enwiki
+      enwiki_mw.send(method, params)
     end
+  rescue MediaWiki::APIError
+    return nil if throttle > 5
+    api(method, params, throttle + 1)
   end
 
   def cache_response(req, &res)
@@ -78,13 +70,57 @@ module Helpers
     @@enwiki_mw
   end
 
-  def normalize_data(data)
+  def metadata_client
+    @@metadata_client ||= Auth.get_metadata
+  end
+
+  def respond(data, opts = {})
+    opts = {
+      replag: true,
+      status: 200,
+      timing: true
+    }.merge(opts || {})
+
     data.delete_if { |_k, v| v.nil? } if data.is_a?(Hash)
-    data.to_json
+
+    if opts[:replag]
+      lag = repl_client.replag
+      data[:replication_lag] = lag.to_i if lag > 100
+    end
+    data[:elapsed_time] = (Time.now.to_f - @t1).round(3) if @t1 && opts[:timing]
+
+    halt opts[:status], { 'Content-Type' => 'application/json' }, data.to_json
+  end
+
+  def respond_error(message, status = 400)
+    message = message.is_a?(String) ? { error: message } : message
+    halt status, { 'Content-Type' => 'application/json' }, message.to_json
   end
 
   def wikipedias
     %w(en sv de nl fr ru war ceb it es vi pl)
+  end
+
+  def record_use(tool, type)
+    metadata_client.query("UPDATE views SET #{type} = #{type} + 1 WHERE tool = '#{tool}';")
+  end
+
+  def user_info(username, groups = false, db = :enwiki)
+    opts = {
+      list: 'users',
+      ususers: username
+    }
+    opts[:usprop] = 'groups' if groups
+
+    data = api(db.to_sym, :custom_query, opts).elements['users'][0]
+
+    res = {
+      username: data.attributes['name'],
+      id: data.attributes['userid'],
+      anon: data.attributes['userid'].blank?
+    }
+    res[:groups] = ret.elements['groups'].collect { |ug| ug[0] } rescue [] if params['groups'].present?
+    res
   end
 end
 

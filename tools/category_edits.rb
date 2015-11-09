@@ -20,45 +20,38 @@ class WikiTools < Sinatra::Application
     end
 
     get '/api/category_edits' do
-      content_type :json
-
-      missing = %w(username category).select { |name| params[name].to_s.empty? }
-      if missing.any?
-        status 400
-        return {
-          error: "Bad request! Missing required parameters: #{missing.join(', ')}"
-        }.to_json
+      if @user_id.blank?
+        respond_error('Bad request! username or user_id parameter is required')
+      elsif params['category'].blank?
+        respond_error('Bad request! category parameter is required')
       end
 
       categories = params['category'].split('|')
 
-      res = {
-        username: params['username'],
-        total_count: repl_call(:count_all_edits, params['username']).to_i
-      }
+      @res[:total_count] = repl_call(:count_all_edits, @user_id).to_i
 
       prefix = params['nonautomated'].present? ? 'nonautomated_' : ''
 
       if params['counts'].present?
-        res[:categories] = []
+        @res[:categories] = []
         total_category_count = 0
 
         categories.each do |category|
           obj = { name: category }
           obj["#{prefix}count".to_sym] = repl_call(:count_category_edits,
-            username: params['username'],
+            user_id: @user_id,
             categories: category,
             nonautomated: params['nonautomated'].present?
           ).to_i
           total_category_count += obj["#{prefix}count".to_sym]
-          res[:categories] << obj
+          @res[:categories] << obj
         end
 
-        res["total_#{prefix}category_count".to_sym] = total_category_count
+        @res["total_#{prefix}category_count".to_sym] = total_category_count
       else
-        res[:categories] = categories
-        res["total_#{prefix}category_count".to_sym] = repl_call(:count_category_edits,
-          username: params['username'],
+        @res[:categories] = categories
+        @res["total_#{prefix}category_count".to_sym] = repl_call(:count_category_edits,
+          user_id: @user_id,
           categories: categories,
           nonautomated: params['nonautomated'].present?
         )
@@ -70,49 +63,39 @@ class WikiTools < Sinatra::Application
         end_range_offset = range_offset + contribs_page_size - 1
 
         contribs = repl_call(:get_category_edits,
-          username: params['username'],
+          user_id: @user_id,
           offset: (offset / contribs_fetch_size.to_f).floor * contribs_fetch_size,
           limit: contribs_fetch_size,
           categories: categories,
           nonautomated: params['nonautomated'].present?
         )[range_offset..end_range_offset]
 
-        res["#{prefix}contribs".to_sym] = contribs
+        @res["#{prefix}contribs".to_sym] = contribs
       end
 
-      status 200
-      normalize_data(res)
+      respond(@res)
     end
 
     get '/api/category_edits/category/:name' do
-      content_type :json
-
-      if params['username'].to_s.empty?
-        status 400
-        return {
-          error: 'Bad request! username parameter is required'
-        }.to_json
+      if @user_id.blank?
+        respond_error('Bad request! username or user_id parameter is required')
       end
 
-      res = {
-        username: params['username'],
-        category_name: params['name'].gsub(' ', '_')
-      }
+      @res[:category_name] = params['name'].gsub(' ', '_')
 
       count = repl_call(:count_category_edits,
-        username: params['username'],
+        user_id: @user_id,
         categories: params['name'],
         nonautomated: params['nonautomated'].present?
       )
 
       if params['nonautomated'].present?
-        res[:nonautomated_count] = count
+        @res[:nonautomated_count] = count
       else
-        res[:count] = count
+        @res[:count] = count
       end
 
-      status 200
-      normalize_data(res)
+      respond(@res, replag: params['noreplag'].blank?)
     end
   end
 end

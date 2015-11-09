@@ -2,10 +2,13 @@
   {{#if nonautomated}}Non-automated namespace{{else}}Namespace{{/if}} totals for <a href="{{project_path}}/wiki/User:{{username}}">{{username}}</a>
 </h3>
 
+{{#if replication_lag}}<p class='error'>High replication lag: Data newer than {{replication_lag}} seconds may not be shown</p>{{/if}}
 <dl class='namespaces'>
   <dt>Total edits</dt><dd>{{total_count}}</dd>
 </dl>
 
 {{#if nonautomated}}<div class="click-me">Click a link to see the non-automated contributions</div>{{/if}}
 
-<small>Note: Edit counts do not include those of deleted pages.<br/>All data is approximate.</small>
+<small class="note">Note: Edit counts do not include those of deleted pages.<br/>All data is approximate.</small>
+
+<small class="note">Elapsed time: <span class="elapsed-time">{{elapsed_time}}</span> seconds</small>

@@ -1,3 +1,4 @@
+{{#if replication_lag}}<p class='error'>High replication lag: Data newer than {{replication_lag}} may not be shown</p>{{/if}}
 <a href="{{project_path}}/wiki/User:{{username}}">{{username}}</a> has approximently <b>{{category_count}}</b> total {{#if nonautomated}}nonautomated{{/if}} edits to the given categories
 
 <dl>
@@ -8,3 +9,5 @@
 <dl class='category-counts'></dl>
 
 <small>Note: Edit counts do not include those of deleted pages. All data is approximate.</small>
+
+<small class="note">Elapsed time: <span class="elapsed-time">{{elapsed_time}}</span> seconds</small>

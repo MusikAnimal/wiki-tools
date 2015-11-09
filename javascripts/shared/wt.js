@@ -5,13 +5,36 @@ WT = {
   path: document.location.pathname.split("/").pop(),
   projectPath: "https://en.wikipedia.org",
 
-  api: function(endpoint, params) {
+  api: function(endpoint, params, noPath) {
+    if(typeof params === "object") {
+      params = _.extend(params, { norecord: true });
+    } else {
+      params = (params + "&norecord=1").replace(/^&/, '');
+    }
+
     return $.ajax({
-      url: "/musikanimal/api/" + WT.path + (endpoint ? "/" + endpoint : ""),
+      url: "/musikanimal/api" + (noPath ? '' : '/' + WT.path) + (endpoint ? "/" + endpoint : ""),
       method: "GET",
       data: params,
       dataType: "JSON"
     });
+  },
+
+  replag: function(replag) {
+    if(!replag) return;
+
+    var minutes = Math.round(replag / 60);
+
+    if(minutes >= 60) {
+      var hours = Math.floor(minutes / 60),
+        leftover = minutes % 60;
+      return hours + " hour" + (hours > 1 ? "s" : "") +
+        (leftover > 0 ? " and " + leftover + " minute" + (leftover > 1 ? "s" : "") : "");
+    } else if(minutes > 2) {
+      return minutes + " minutes";
+    } else {
+      return replag + " seconds";
+    }
   },
 
   updateProgress: function(value, message) {
@@ -105,6 +128,15 @@ $(document).ready(function() {
     });
 
     this.params = $(this).serialize();
+
+    $.ajax({
+      url: "/musikanimal/api/uses",
+      method: 'PATCH',
+      data : {
+        tool: WT.path,
+        type: 'form'
+      }
+    });
 
     WT.formSubmit.call(this);
   });

@@ -26,6 +26,8 @@ WT.formSubmit = function(e) {
     return alert("Composer is required!");
   }
 
+  $("button").blur();
+
   WT.updateProgress(0, "Fetching files...");
 
   history.pushState({}, composer + " - Sound Search from MusikAnimal", WT.path + "?" + this.params);

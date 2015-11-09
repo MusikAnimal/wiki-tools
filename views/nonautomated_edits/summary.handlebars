@@ -1,3 +1,4 @@
+{{#if replication_lag}}<p class='error'>High replication lag: Data newer than {{replication_lag}} seconds may not be shown</p>{{/if}}
 <a href="{{project_path}}/wiki/User:{{username}}">{{username}}</a> has approximently <b>{{nonautomated_count}}</b> non-automated edits {{{namespace_str}}}
 
 {{#if namespace_text}}<p>Totals for the <b>{{namespace_text}}</b> namespace:</p>{{/if}}
@@ -11,3 +12,5 @@
 <a href="/musikanimal/namespace_counter?username={{username}}&nonautomated=on">See non-automated counts by namespace</a>
 
 <small class="note">Note: Edit counts do not include those of deleted pages. All data is approximate.</small>
+
+<small class="note">Elapsed time: <span class="elapsed-time">{{elapsed_time}}</span> seconds</small>

@@ -20,55 +20,46 @@ class WikiTools < Sinatra::Application
     end
 
     get '/api/policy_edits' do
-      content_type :json
-
-      unless params['username'].present?
-        status 400
-        return {
-          error: 'Bad request! username parameter is required'
-        }.to_json
+      if @user_id.blank?
+        respond_error('Bad request! username or user_id parameter is required')
       end
 
-      res = {
-        username: params['username'],
-        total_count: repl_call(:count_all_edits, params['username']).to_i
-      }
+      @res[:total_count] = repl_call(:count_all_edits, @user_id).to_i
 
       if params['nonautomated'].present?
-        res[:nonautomated_policy_count] = repl_call(:count_policy_edits,
-          username: params['username'],
+        @res[:nonautomated_policy_count] = repl_call(:count_policy_edits,
+          user_id: @user_id,
           nonautomated: true
         )
-        res[:nonautomated_guideline_count] = repl_call(:count_guideline_edits,
-          username: params['username'],
+        @res[:nonautomated_guideline_count] = repl_call(:count_guideline_edits,
+          user_id: @user_id,
           nonautomated: true
         )
       else
-        res[:policy_count] = repl_call(:count_policy_edits, username: params['username']).to_i
-        res[:guideline_count] = repl_call(:count_guideline_edits, username: params['username']).to_i
+        @res[:policy_count] = repl_call(:count_policy_edits, user_id: @user_id).to_i
+        @res[:guideline_count] = repl_call(:count_guideline_edits, user_id: @user_id).to_i
       end
 
-      offset = params['offset'].to_i || 0
-      range_offset = offset % contribs_fetch_size
-      end_range_offset = range_offset + contribs_page_size - 1
-
       if params['contribs']
+        offset = params['offset'].to_i || 0
+        range_offset = offset % contribs_fetch_size
+        end_range_offset = range_offset + contribs_page_size - 1
+
         contribs = repl_call(:get_pg_edits,
-          username: params['username'],
+          user_id: @user_id,
           offset: (offset / contribs_fetch_size.to_f).floor * contribs_fetch_size,
           limit: contribs_fetch_size,
           nonautomated: params['nonautomated'].present?
         )[range_offset..end_range_offset]
 
         if params['nonautomated'].present?
-          res[:nonautomated_contribs] = contribs
+          @res[:nonautomated_contribs] = contribs
         else
-          res[:contribs] = contribs
+          @res[:contribs] = contribs
         end
       end
 
-      status 200
-      normalize_data(res)
+      respond(@res)
     end
   end
 end

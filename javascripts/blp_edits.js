@@ -22,6 +22,7 @@ function showData(data) {
 function showTotalCount(data) {
   data.project_path = WT.projectPath;
   data.blp_percentage = Revisions.getPercentage(data.blp_count, data.total_count);
+  data.replication_lag = WT.replag(data.replication_lag);
 
   if(data.nonautomated_blp_count) {
     data.nonautomated = true;

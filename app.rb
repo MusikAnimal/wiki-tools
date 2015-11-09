@@ -17,7 +17,30 @@ class WikiTools < Sinatra::Application
   end
 
   configure :development do
-    $CACHE_TIME = 100
+    $CACHE_TIME = 0
+  end
+
+  before do
+    if request.path_info.split('/')[2] == 'api'
+      @t1 = Time.now.to_f
+      if params['username'].present? && params['user_id'].blank?
+        @user_id = user_info(params['username'])[:id].to_i
+
+        if @user_id == 0
+          halt 400, { 'Content-Type' => 'application/json' }, { error: 'Bad request! Invalid username or user_id' }.to_json
+        end
+
+        @res = {
+          user_id: @user_id,
+          username: params['username']
+        }
+      elsif params['username'].present?
+        @res = { username: params['username'] }
+      elsif params['user_id'].present?
+        @user_id = params['user_id'].to_i
+        @res = { user_id: @user_id }
+      end
+    end
   end
 
   get '/musikanimal' do
@@ -25,6 +48,24 @@ class WikiTools < Sinatra::Application
       app_name: "MusikAnimal's tools",
       project_path: 'https://en.wikipedia.org'
     }
+  end
+
+  namespace '/musikanimal/api' do
+    after '/*' do
+      return if params['splat'].include?('uses')
+
+      tool = params['splat'].first.split('/').first rescue nil
+      record_use(tool, 'api') if tool && params['norecord'].blank?
+    end
+
+    patch '/uses' do
+      if params['tool'].present? && params['type'].present?
+        record_use(params['tool'], params['type'])
+        status 204
+      else
+        status 304
+      end
+    end
   end
 
   not_found do

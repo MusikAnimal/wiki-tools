@@ -17,80 +17,62 @@ class WikiTools < Sinatra::Application
     end
 
     get '/api/namespace_counter' do
-      content_type :json
-
-      unless params['username'].present?
-        status 400
-        return {
-          error: 'Bad request! username parameter is required'
-        }.to_json
+      unless @user_id.present?
+        return respond_error('Bad request! username parameter is required')
       end
 
-      res = {
-        username: params['username'],
-        namespaces: {}
-      }
+      @res[:namespaces] = {}
+      @t1 = Time.now.to_f
 
       # TODO: check namespaces for this wiki!
       namespaces.keys.each do |namespace_id|
         if params['nonautomated'].present?
-          res[:namespaces][namespaces[namespace_id]] = repl_client.count_edits(
-            username: params['username'],
+          @res[:namespaces][namespaces[namespace_id]] = repl_client.count_edits(
+            user_id: @user_id,
             namespace: namespace_id,
             nonautomated: true,
             count: true
           )
         else
-          res[:namespaces][namespaces[namespace_id]] = repl_client.count_namespace_edits(params['username'], namespace_id)
+          @res[:namespaces][namespaces[namespace_id]] = repl_client.count_namespace_edits(@user_id, namespace_id)
         end
       end
 
-      status 200
-      normalize_data(res)
+      respond(@res)
     end
 
     get '/api/namespace_counter/namespaces' do
-      content_type :json
-
-      status 200
-      normalize_data(namespaces)
+      respond(namespaces,
+        replag: false,
+        timing: false
+      )
     end
 
     get '/api/namespace_counter/:id' do
-      content_type :json
-
-      unless params['username'].present? && params['id'].present?
-        status 400
-        return {
-          error: 'Bad request! ID and username parameter are required'
-        }.to_json
+      unless @user_id.present? && params['id'].present?
+        return respond_error('Bad request! ID and username parameters are required')
       end
 
       unless namespaces[params['id'].to_i]
-        status 400
-        return {
-          error: 'Bad request! Invalid namespace ID'
-        }.to_json
+        return respond_error('Bad request! Invalid namespace ID')
       end
 
-      res = {
-        username: params['username'],
-        namespace: namespaces[params['id'].to_i]
-      }
+      @t1 = Time.now.to_f
+
+      @res[:namespace] = namespaces[params['id'].to_i]
 
       if params['nonautomated'].present?
-        res[:count] = repl_client.count_edits(
-          username: params['username'],
+        @res[:count] = repl_client.count_edits(
+          user_id: @user_id,
           namespace: params['id'].to_i,
           nonautomated: true,
           count: true
         )
       else
-        res[:count] = repl_client.count_namespace_edits(params['username'], params['id'].to_i)
+        @res[:count] = repl_client.count_namespace_edits(@user_id, params['id'].to_i)
       end
 
-      status 200
-      normalize_data(res)
+      respond(@res, replag: params['noreplag'].blank?)
     end
   end
 

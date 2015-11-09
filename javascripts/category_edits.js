@@ -1,6 +1,7 @@
 var Handlebars = require("handlebars");
 var category_entry = require("../views/category_edits/category.handlebars");
 var summary = require("../views/category_edits/summary.handlebars");
+var elapsedTime;
 
 var Revisions = new Contribs({
   appName: "Category Edit Counter",
@@ -47,7 +48,8 @@ function countCategory(i, data, categoryData) {
       count: 'API failure!',
       percentage: null
     });
-  }).done(function() {
+  }).done(function(resp) {
+    elapsedTime += resp.elapsed_time;
     countCategory(i + 1, data, categoryData);
   });
 }
@@ -65,6 +67,7 @@ function showData(data) {
   if(this.totals.checked && !Revisions.userData.categoryData) {
     data.nonautomated = this.nonautomated.checked;
     data.total_category_count = data.total_category_count || data.total_nonautomated_category_count || 0;
+    elapsedTime = data.elapsed_time;
     countCategory(0, data, []);
   } else {
     Revisions.revealResults();
@@ -75,6 +78,7 @@ function showTotalCount(data) {
   data.project_path = WT.projectPath;
   data.category_count = data.total_category_count || data.total_nonautomated_category_count || 0;
   data.category_percentage = Revisions.getPercentage(data.category_count, data.total_count);
+  data.replication_lag = WT.replag(data.replication_lag);
 
   if(data.total_nonautomated_category_count) {
     data.nonautomated = true;
@@ -90,6 +94,8 @@ function showCategoryCounts(categoryData) {
     category.project_path = WT.projectPath;
     $(".category-counts").append(category_entry(category));
   });
+
+  $(".elapsed-time").text(+elapsedTime.toFixed(3));
 
   Revisions.revealResults();
 }

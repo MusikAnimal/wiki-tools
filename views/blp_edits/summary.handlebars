@@ -1,3 +1,4 @@
+{{#if replication_lag}}<p class='error'>High replication lag: Data newer than {{replication_lag}} seconds may not be shown</p>{{/if}}
 <a href="{{project_path}}/wiki/User:{{username}}">{{username}}</a> has approximently <b>{{blp_count}}</b> {{#if nonautomated}}non-automated{{/if}} edits to <a href="{{project_path}}/wiki/WP:BLP">biographies of living persons</a>
 
 <dl>
@@ -8,4 +9,6 @@
 
 {{#unless nonautomated}}<a class="click-me" href="/musikanimal/blp_edits?username={{username}}&nonautomated=on&contribs=on">Show non-automated BLP contributions</a>{{/unless}}
 
-<small>Note: Edit counts do not include those of deleted pages. All data is approximate.</small>
+<small class="note">Note: Edit counts do not include those of deleted pages. All data is approximate.</small>
+
+<small class="note">Elapsed time: <span class="elapsed-time">{{elapsed_time}}</span> seconds</small>

@@ -6,15 +6,7 @@ var namespaces, namespaceIds,
   colors = ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#ffff33', '#a65628', '#f781bf'];
 
 WT.listeners = function() {
-  $(".another-query").on("click", function() {
-    $(".output").hide();
-    $(".loading").hide();
-    $("input[type=text]").val("");
-    $("form").removeClass("busy hide");
-    $(".pie-tip").hide();
-    $("#pie_chart").html("");
-    history.pushState({}, "Namespace counter from MusikAnimal", WT.path);
-  });
+  $(".another-query").on("click", startOver);
 };
 
 WT.formSubmit = function(e) {
@@ -35,7 +27,8 @@ WT.formSubmit = function(e) {
     countNamespaces(0, {
       username: username,
       nonautomated: this.nonautomated.checked ? 'on' : '',
-      counts: {}
+      counts: {},
+      elapsed_time: 0
     });
   }.bind(this)).error(function() {
     alert("Something went wrong. Sorry.");
@@ -51,12 +44,23 @@ function countNamespaces(i, data) {
 
   WT.updateProgress(parseInt(((i + 1) / (namespaceIds.length + 1)) * 100));
 
-  WT.api(namespaceIds[i], {
+  var opts = {
     username: data.username,
     nonautomated: data.nonautomated
-  }).success(function(resp) {
+  };
+
+  if(i > 0) opts.noreplag = true;
+
+  WT.api(namespaceIds[i], opts).success(function(resp) {
     data.counts[namespaceIds[i]] = resp.count || 0;
-  }).done(function() {
+  }).error(function(resp) {
+    if(resp.status === 400) {
+      alert(resp.responseJSON.error);
+      return startOver();
+    }
+    data.counts[namespaceIds[i]] = null;
+  }).done(function(resp) {
+    data.elapsed_time += resp.elapsed_time;
     countNamespaces(i + 1, data);
   });
 }
@@ -87,6 +91,8 @@ function showData(data) {
     if(data.totals[index].value > 0) chartable_totals.push(data.totals[index]);
   });
 
+  data.elapsed_time = +data.elapsed_time.toFixed(3);
+
   $(".totals-output").html(summary(data));
 
   _.each(data.totals, function(total) {
@@ -103,19 +109,15 @@ function showData(data) {
   $(".output").show();
 }
 
-// $(function(){
-//   $("#pieChart").drawPieChart([
-//     { title: "Tokyo",         value : 180,  color: "#02B3E7" },
-//     { title: "San Francisco", value:  60,   color: "#CFD3D6" },
-//     { title: "London",        value : 50,   color: "#736D79" },
-//     { title: "New York",      value:  30,   color: "#776068" },
-//     { title: "Sydney",        value : 20,   color: "#EB0D42" },
-//     { title: "Berlin",        value : 20,   color: "#FFEC62" },
-//     { title: "Osaka",         value : 7,    color: "#04374E" }
-//   ]);
-// });
-
-
+function startOver() {
+  $(".output").hide();
+  $(".loading").hide();
+  $("input[type=text]").val("");
+  $("form").removeClass("busy hide");
+  $(".pie-tip").hide();
+  $("#pie_chart").html("");
+  history.pushState({}, "Namespace counter from MusikAnimal", WT.path);
+}
 
 /*!
  * jquery.drawPieChart.js

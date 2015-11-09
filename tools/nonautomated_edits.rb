@@ -30,20 +30,15 @@ class WikiTools < Sinatra::Application
 
     namespace '/api/nonautomated_edits' do
       get '' do
-        content_type :json
-
-        unless params['username'].present?
-          status 400
-          return {
-            error: 'Bad request! username parameter is required'
-          }.to_json
+        if @user_id.blank?
+          return respond_error('Bad request! username or user_id parameter is required')
         end
 
         params['namespace'] = params['namespace'] == '' ? nil : params['namespace']
 
         unless params['totalCountOnly'].present?
           count_data = repl_call(:count_edits,
-            username: params['username'],
+            user_id: @user_id,
             namespace: params['namespace'],
             nonautomated: true
           ).to_i
@@ -51,35 +46,33 @@ class WikiTools < Sinatra::Application
 
         if params['namespace'].present?
           total_edits = repl_call(:count_edits,
-            username: params['username'],
+            user_id: @user_id,
             namespace: params['namespace']
           ).to_i
         else
-          total_edits = repl_call(:count_all_edits, params['username']).to_i
+          total_edits = repl_call(:count_all_edits, @user_id).to_i
         end
 
-        res = {
-          username: params['username'],
+        @res.merge!(
           namespace: params['namespace'],
           namespace_text: namespaces[params['namespace'].to_s.empty? ? nil : params['namespace'].to_i],
           total_count: total_edits,
           automated_count: ((total_edits - count_data) rescue nil),
           nonautomated_count: (count_data rescue nil)
-        }
+        )
 
         if params['contribs'].present?
           if total_edits > 50_000
-            status 501
-            return normalize_data(res.merge(
+            return respond(@res.merge(
               contribs: [],
               error: 'Query too large! Unable to retrieve non-automated contributions. User has over 50,000 edits. Batch querying will be implemented soon.'
-            ))
+            ), status: 501)
           else
             offset = params['offset'].to_i || 0
             range_offset = offset % contribs_fetch_size
             end_range_offset = range_offset + contribs_page_size - 1
 
-            res[:contribs] = repl_call(:get_edits,
+            @res[:contribs] = repl_call(:get_edits,
               username: params['username'],
               namespace: params['namespace'],
               nonautomated: true,
@@ -89,44 +82,48 @@ class WikiTools < Sinatra::Application
           end
         end
 
-        status 200
-        normalize_data(res)
+        respond(@res)
       end
 
       get '/tools' do
-        content_type :json
-
-        res = repl_client.tool_objects
-
-        status 200
-        normalize_data(res)
+        respond(repl_client.tool_objects,
+          replag: false,
+          timing: false
+        )
       end
 
       get '/tools/:id' do
-        content_type :json
+        res = @res || {}
+        res[:tool_id] = params['id']
+        res[:tool_name] = repl_client.tool_objects[params['id'].to_i][:name] rescue nil
 
-        res = {
-          tool_id: params['id'],
-          tool_name: repl_client.tool_objects[params['id'].to_i][:name]
-        }
+        respond_error('Bad request! Invalid tool ID') unless res[:tool_name]
 
         if params[:namespace].present?
+          unless namespaces[params['namespace'].to_i]
+            return respond_error('Bad request! Invalid namespace ID')
+          end
+
           res[:namespace] = params['namespace']
           res[:namespace_text] = namespaces[params['namespace']]
         end
 
-        if params['username'].present?
-          res[:username] = params['username']
+        if @user_id.present?
           res[:count] = repl_client.count_edits(
-            username: params['username'],
+            user_id: @user_id,
             namespace: params['namespace'],
             nonautomated: false,
             tool: params['id']
           )
+          opts = { replag: params['noreplag'].blank? }
+        else
+          opts = {
+            timing: false,
+            replag: false
+          }
         end
 
-        status 200
-        normalize_data(res)
+        respond(res, opts)
       end
     end
   end

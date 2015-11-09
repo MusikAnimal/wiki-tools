@@ -19,8 +19,6 @@ class WikiTools < Sinatra::Application
 
     namespace '/api/sound_search' do
       get '' do
-        content_type :json
-
         files = get_sound_files("Category:#{params[:composer]}").uniq.map { |sf| { title: sf } }
         total_file_count = files.length
 
@@ -35,18 +33,14 @@ class WikiTools < Sinatra::Application
         }
 
         if files.nil?
-          status 500
           res[:error] = 'API failure!'
-        else
-          status 200
+          respond_error(res, 500)
         end
 
-        normalize_data(res)
+        respond(res)
       end
 
       get '/info/:filenames' do
-        content_type :json
-
         filenames = params[:filenames].split('|').map { |fn| fn =~ /^File:/ ? fn : fn.prepend('File:') }
 
         data = commons_mw.custom_query(
@@ -60,7 +54,7 @@ class WikiTools < Sinatra::Application
 
         if data.nil?
           res[:error] = 'API failure!'
-          status 500
+          respond_error(res, 500)
         else
           data = data.elements['pages'][0]
 
@@ -71,19 +65,16 @@ class WikiTools < Sinatra::Application
             res[:description] = metadata.elements['ImageDescription'].attributes['value'] rescue ''
             res[:author] = metadata.elements['Artist'].attributes['value'] rescue ''
             res[:date] = metadata.elements['DateTimeOriginal'].attributes['value'] rescue ''
-            status 200
           else
             res[:error] = 'File not found'
-            status 404
+            respond_error(res, 404)
           end
         end
 
-        normalize_data(res)
+        respond(res)
       end
 
       get '/backlinks/:filename' do
-        content_type :json
-
         params[:filename].gsub(/^File:/, '')
 
         res = {
@@ -91,8 +82,7 @@ class WikiTools < Sinatra::Application
           links: get_backlinks(params[:filename]).map { |l| l.force_encoding('utf-8') }
         }
 
-        status 200
-        normalize_data(res)
+        respond(res)
       end
     end
   end

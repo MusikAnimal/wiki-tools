@@ -110,14 +110,13 @@ Contribs = function(opts) {
 
     var username = this.username.value.charAt(0).toUpperCase() + this.username.value.slice(1);
     this.username.value = username;
-    this.params.username = username;
 
     if(self.userData.contribs) {
       // moving page to page within contribs
       $("#contribs")[0].scrollIntoView();
     }
 
-    history.pushState({}, username + " - " + self.appName + " from MusikAnimal", WT.path + "?" + this.params);
+    history.pushState({}, username + " - " + self.appName + " from MusikAnimal", WT.path + "?" + $(this).serialize());
 
     if(typeof self.preSubmit === "function") self.preSubmit.call(this);
 
@@ -132,6 +131,9 @@ Contribs = function(opts) {
         ).show();
 
         self.showData.call(this, json);
+      } else if(resp.status === 400) {
+        alert(resp.responseJSON.error);
+        self.startOver();
       } else {
         alert("Something went wrong. Sorry.");
         self.startOver();
