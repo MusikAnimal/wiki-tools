@@ -17,24 +17,23 @@ class WikiTools < Sinatra::Application
     end
 
     get '/api/namespace_counter' do
-      unless @user_id.present?
+      unless @username
         return respond_error('Bad request! username parameter is required')
       end
 
       @res[:namespaces] = {}
-      @t1 = Time.now.to_f
 
       # TODO: check namespaces for this wiki!
       namespaces.keys.each do |namespace_id|
         if params['nonautomated'].present?
           @res[:namespaces][namespaces[namespace_id]] = repl_client.count_edits(
-            user_id: @user_id,
+            username: @username,
             namespace: namespace_id,
             nonautomated: true,
             count: true
           )
         else
-          @res[:namespaces][namespaces[namespace_id]] = repl_client.count_namespace_edits(@user_id, namespace_id)
+          @res[:namespaces][namespaces[namespace_id]] = repl_client.count_namespace_edits(@username, namespace_id)
         end
       end
 
@@ -49,7 +48,7 @@ class WikiTools < Sinatra::Application
     end
 
     get '/api/namespace_counter/:id' do
-      unless @user_id.present? && params['id'].present?
+      unless @username && params['id'].present?
         return respond_error('Bad request! ID and username parameters are required')
       end
 
@@ -63,13 +62,13 @@ class WikiTools < Sinatra::Application
 
       if params['nonautomated'].present?
         @res[:count] = repl_client.count_edits(
-          user_id: @user_id,
+          username: @username,
           namespace: params['id'].to_i,
           nonautomated: true,
           count: true
         )
       else
-        @res[:count] = repl_client.count_namespace_edits(@user_id, params['id'].to_i)
+        @res[:count] = repl_client.count_namespace_edits(@username, params['id'].to_i)
       end
 
       respond(@res, replag: params['noreplag'].blank?)

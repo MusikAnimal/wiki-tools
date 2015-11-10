@@ -20,18 +20,18 @@ class WikiTools < Sinatra::Application
     end
 
     get '/api/blp_edits' do
-      unless @user_id.present?
+      unless @username.present?
         respond_error('Bad request! username parameter is required')
       end
 
       @res.merge!(
-        total_count: repl_call(:count_all_edits, @user_id).to_i,
-        blp_count: repl_call(:count_blp_edits, user_id: @user_id).to_i
+        total_count: repl_call(:count_all_edits, @username).to_i,
+        blp_count: repl_call(:count_blp_edits, username: @username).to_i
       )
 
       if params['nonautomated'].present?
         @res[:nonautomated_blp_count] = repl_call(:count_blp_edits,
-          user_id: @user_id,
+          username: @username,
           nonautomated: true
         )
       end
@@ -42,7 +42,7 @@ class WikiTools < Sinatra::Application
         end_range_offset = range_offset + contribs_page_size - 1
 
         contribs = repl_call(:get_blp_edits,
-          user_id: @user_id,
+          username: @username,
           offset: (offset / contribs_fetch_size.to_f).floor * contribs_fetch_size,
           limit: contribs_fetch_size,
           nonautomated: params['nonautomated'].present?

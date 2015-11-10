@@ -23,22 +23,9 @@ class WikiTools < Sinatra::Application
   before do
     if request.path_info.split('/')[2] == 'api'
       @t1 = Time.now.to_f
-      if params['username'].present? && params['user_id'].blank?
-        @user_id = user_info(params['username'])[:id].to_i
-
-        if @user_id == 0
-          halt 400, { 'Content-Type' => 'application/json' }, { error: 'Bad request! Invalid username or user_id' }.to_json
-        end
-
-        @res = {
-          user_id: @user_id,
-          username: params['username']
-        }
-      elsif params['username'].present?
+      if params['username'].present?
+        @username = params['username']
         @res = { username: params['username'] }
-      elsif params['user_id'].present?
-        @user_id = params['user_id'].to_i
-        @res = { user_id: @user_id }
       end
     end
   end

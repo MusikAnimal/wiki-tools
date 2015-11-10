@@ -15,19 +15,19 @@ module Repl
     end
 
     # COUNTERS
-    def count_articles_created(user_id)
+    def count_articles_created(username)
       count("SELECT COUNT(*) FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " \
-        "WHERE #{user_where_clause(user_id)} AND rev_timestamp > 1 AND rev_parent_id = 0 " \
+        "WHERE #{user_where_clause(username)} AND rev_timestamp > 1 AND rev_parent_id = 0 " \
         'AND page_namespace = 0 AND page_is_redirect = 0;')
     end
 
-    def count_all_edits(user_id)
-      count("SELECT COUNT(*) FROM enwiki_p.revision_userindex WHERE #{user_where_clause(user_id)};")
+    def count_all_edits(username)
+      count("SELECT COUNT(*) FROM enwiki_p.revision_userindex WHERE #{user_where_clause(username)};")
     end
 
     def count_blp_edits(opts)
       get_blp_edits({
-        user_id: 'Example',
+        username: 'Example',
         count: true,
         nonautomated: false
       }.merge(opts))
@@ -35,7 +35,7 @@ module Repl
 
     def count_guideline_edits(opts)
       get_pg_edits({
-        user_id: 'Example',
+        username: 'Example',
         count: true,
         nonautomated: false,
         regex: 'guidelines'
@@ -44,7 +44,7 @@ module Repl
 
     def count_policy_edits(opts)
       get_pg_edits({
-        user_id: 'Example',
+        username: 'Example',
         count: true,
         nonautomated: false,
         regex: 'policies'
@@ -61,16 +61,16 @@ module Repl
       get_category_edits(opts)
     end
 
-    def count_namespace_edits(user_id, namespace = 0)
+    def count_namespace_edits(username, namespace = 0)
       namespace_str = namespace.is_a?(Array) ? "IN (#{namespace.join(',')})" : "= #{namespace}"
       count("SELECT COUNT(*) FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " \
-        "WHERE #{user_where_clause(user_id)} AND rev_timestamp > 1 AND page_namespace #{namespace_str};")
+        "WHERE #{user_where_clause(username)} AND rev_timestamp > 1 AND page_namespace #{namespace_str};")
     end
 
     # GETTERS
-    def get_articles_created(user_id)
+    def get_articles_created(username)
       query = "SELECT page_title, rev_timestamp AS timestamp FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " \
-        "WHERE #{user_where_clause(user_id)} AND rev_timestamp > 1 AND rev_parent_id = 0 " \
+        "WHERE #{user_where_clause(username)} AND rev_timestamp > 1 AND rev_parent_id = 0 " \
         'AND page_namespace = 0 AND page_is_redirect = 0;'
       puts query
       res = @client.query(query)
@@ -99,7 +99,7 @@ module Repl
         (opts[:count] ? 'COUNT(*) ' : 'rev_id, rev_comment, rev_timestamp, rev_minor_edit, page_title, cl_to ') +
         "FROM #{@db}.revision_userindex " \
         'JOIN enwiki_p.categorylinks JOIN enwiki_p.page ' \
-        "WHERE #{user_where_clause(opts[:user_id])} " \
+        "WHERE #{user_where_clause(opts[:username])} " \
         'AND rev_timestamp > 0 ' \
         'AND page_namespace = 4 ' \
         'AND cl_from = rev_page ' \
@@ -124,7 +124,7 @@ module Repl
         (opts[:count] ? 'COUNT(*) ' : 'rev_id, rev_comment, rev_timestamp, rev_minor_edit, page_title ') +
         "FROM #{@db}.revision_userindex " \
         'JOIN enwiki_p.categorylinks JOIN enwiki_p.page ' \
-        "WHERE #{user_where_clause(opts[:user_id])} " \
+        "WHERE #{user_where_clause(opts[:username])} " \
         'AND rev_timestamp > 0 ' \
         'AND cl_from = rev_page ' \
         'AND (' + [opts[:categories]].flatten.map { |c| "cl_to = '#{c.gsub(' ', '_')}'" }.join(' OR ') + ') ' \
@@ -151,7 +151,7 @@ module Repl
         (opts[:count] ? 'COUNT(*) ' : "#{rev_attrs} ") +
         "FROM #{@db}.page " \
         'JOIN enwiki_p.revision_userindex ON page_id = rev_page ' \
-        "WHERE #{user_where_clause(opts[:user_id])} " \
+        "WHERE #{user_where_clause(opts[:username])} " \
         'AND rev_timestamp > 0 ' +
         (opts[:namespace].to_s.empty? ? '' : "AND page_namespace = #{opts[:namespace]} ") +
         (!opts[:nonautomated].nil? ? "AND rev_comment #{'NOT ' if opts[:nonautomated]}RLIKE \"#{[tool_regexes(opts[:tool])].join('|')}\" " : '') +
@@ -208,11 +208,11 @@ module Repl
       @client.query(query)
     end
 
-    def user_where_clause(user_id)
-      if user_id.is_a?(Fixnum)
-        "rev_user = #{user_id}"
+    def user_where_clause(username)
+      if username.is_a?(Fixnum)
+        "rev_user = #{username}"
       else
-        "rev_user_text = \"#{user_id}\""
+        "rev_user_text = \"#{username}\""
       end
     end
 

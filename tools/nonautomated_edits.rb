@@ -30,15 +30,15 @@ class WikiTools < Sinatra::Application
 
     namespace '/api/nonautomated_edits' do
       get '' do
-        if @user_id.blank?
-          return respond_error('Bad request! username or user_id parameter is required')
+        if @username.blank?
+          return respond_error('Bad request! username parameter is required')
         end
 
         params['namespace'] = params['namespace'] == '' ? nil : params['namespace']
 
         unless params['totalCountOnly'].present?
           count_data = repl_call(:count_edits,
-            user_id: @user_id,
+            username: @username,
             namespace: params['namespace'],
             nonautomated: true
           ).to_i
@@ -46,11 +46,11 @@ class WikiTools < Sinatra::Application
 
         if params['namespace'].present?
           total_edits = repl_call(:count_edits,
-            user_id: @user_id,
+            username: @username,
             namespace: params['namespace']
           ).to_i
         else
-          total_edits = repl_call(:count_all_edits, @user_id).to_i
+          total_edits = repl_call(:count_all_edits, @username).to_i
         end
 
         @res.merge!(
@@ -73,7 +73,7 @@ class WikiTools < Sinatra::Application
             end_range_offset = range_offset + contribs_page_size - 1
 
             @res[:contribs] = repl_call(:get_edits,
-              username: params['username'],
+              username: @username,
               namespace: params['namespace'],
               nonautomated: true,
               offset: (offset / contribs_fetch_size.to_f).floor * contribs_fetch_size,
@@ -108,9 +108,9 @@ class WikiTools < Sinatra::Application
           res[:namespace_text] = namespaces[params['namespace']]
         end
 
-        if @user_id.present?
+        if @username
           res[:count] = repl_client.count_edits(
-            user_id: @user_id,
+            username: @username,
             namespace: params['namespace'],
             nonautomated: false,
             tool: params['id']

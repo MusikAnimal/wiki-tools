@@ -20,24 +20,24 @@ class WikiTools < Sinatra::Application
     end
 
     get '/api/policy_edits' do
-      if @user_id.blank?
-        respond_error('Bad request! username or user_id parameter is required')
+      unless @username
+        respond_error('Bad request! username parameter is required')
       end
 
-      @res[:total_count] = repl_call(:count_all_edits, @user_id).to_i
+      @res[:total_count] = repl_call(:count_all_edits, @username).to_i
 
       if params['nonautomated'].present?
         @res[:nonautomated_policy_count] = repl_call(:count_policy_edits,
-          user_id: @user_id,
+          username: @username,
           nonautomated: true
         )
         @res[:nonautomated_guideline_count] = repl_call(:count_guideline_edits,
-          user_id: @user_id,
+          username: @username,
           nonautomated: true
         )
       else
-        @res[:policy_count] = repl_call(:count_policy_edits, user_id: @user_id).to_i
-        @res[:guideline_count] = repl_call(:count_guideline_edits, user_id: @user_id).to_i
+        @res[:policy_count] = repl_call(:count_policy_edits, username: @username).to_i
+        @res[:guideline_count] = repl_call(:count_guideline_edits, username: @username).to_i
       end
 
       if params['contribs']
@@ -46,7 +46,7 @@ class WikiTools < Sinatra::Application
         end_range_offset = range_offset + contribs_page_size - 1
 
         contribs = repl_call(:get_pg_edits,
-          user_id: @user_id,
+          username: @username,
           offset: (offset / contribs_fetch_size.to_f).floor * contribs_fetch_size,
           limit: contribs_fetch_size,
           nonautomated: params['nonautomated'].present?

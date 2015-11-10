@@ -6,7 +6,7 @@ var elapsedTime;
 var Revisions = new Contribs({
   appName: "Category Edit Counter",
   preSubmit: function() {
-    if(this.totals.checked) {
+    if(this.totals.checked && !Revisions.userData.categoryData) {
       WT.updateProgress(0);
     }
   },

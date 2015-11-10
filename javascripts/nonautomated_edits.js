@@ -6,7 +6,7 @@ var toolsArray = [];
 var Revisions = new Contribs({
   appName: "Nonautomated Edit Counter",
   preSubmit: function() {
-    if(this.tools.checked) {
+    if(this.tools.checked && !toolsArray.length) {
       WT.updateProgress(0);
     }
   },

@@ -20,15 +20,15 @@ class WikiTools < Sinatra::Application
     end
 
     get '/api/category_edits' do
-      if @user_id.blank?
-        respond_error('Bad request! username or user_id parameter is required')
+      if @username.blank?
+        respond_error('Bad request! username parameter is required')
       elsif params['category'].blank?
         respond_error('Bad request! category parameter is required')
       end
 
       categories = params['category'].split('|')
 
-      @res[:total_count] = repl_call(:count_all_edits, @user_id).to_i
+      @res[:total_count] = repl_call(:count_all_edits, @username).to_i
 
       prefix = params['nonautomated'].present? ? 'nonautomated_' : ''
 
@@ -39,7 +39,7 @@ class WikiTools < Sinatra::Application
         categories.each do |category|
           obj = { name: category }
           obj["#{prefix}count".to_sym] = repl_call(:count_category_edits,
-            user_id: @user_id,
+            username: @username,
             categories: category,
             nonautomated: params['nonautomated'].present?
           ).to_i
@@ -51,7 +51,7 @@ class WikiTools < Sinatra::Application
       else
         @res[:categories] = categories
         @res["total_#{prefix}category_count".to_sym] = repl_call(:count_category_edits,
-          user_id: @user_id,
+          username: @username,
           categories: categories,
           nonautomated: params['nonautomated'].present?
         )
@@ -63,7 +63,7 @@ class WikiTools < Sinatra::Application
         end_range_offset = range_offset + contribs_page_size - 1
 
         contribs = repl_call(:get_category_edits,
-          user_id: @user_id,
+          username: @username,
           offset: (offset / contribs_fetch_size.to_f).floor * contribs_fetch_size,
           limit: contribs_fetch_size,
           categories: categories,
@@ -77,14 +77,14 @@ class WikiTools < Sinatra::Application
     end
 
     get '/api/category_edits/category/:name' do
-      if @user_id.blank?
-        respond_error('Bad request! username or user_id parameter is required')
+      unless @username
+        respond_error('Bad request! username parameter is required')
       end
 
       @res[:category_name] = params['name'].gsub(' ', '_')
 
       count = repl_call(:count_category_edits,
-        user_id: @user_id,
+        username: @username,
         categories: params['name'],
         nonautomated: params['nonautomated'].present?
       )
