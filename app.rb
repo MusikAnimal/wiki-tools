@@ -31,6 +31,7 @@ class WikiTools < Sinatra::Application
   end
 
   get '/musikanimal' do
+    record_use('index', 'form')
     haml :index, locals: {
       app_name: "MusikAnimal's tools",
       project_path: 'https://en.wikipedia.org'

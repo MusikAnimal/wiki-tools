@@ -307,7 +307,7 @@ module Repl
         },
         {
           name: 'Dab solver',
-          regex: 'using \\\\[\\\\[tools:~dispenser/view/Dab_solver\\\\|Dab solver',
+          regex: 'using \\\\[\\\\[tools:~dispenser/view/Dab_solver\\\\|Dab solver|Disambiguated:.*?→ \\\\[\\\\[|(Help needed|Unlinked): \\\\[\\\\[',
           link: 'WP:DABSOLVER'
         },
         {
