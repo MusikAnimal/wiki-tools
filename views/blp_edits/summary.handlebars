@@ -1,5 +1,5 @@
 {{#if replication_lag}}<p class='error'>High replication lag: Data newer than {{replication_lag}} seconds may not be shown</p>{{/if}}
-<a href="{{project_path}}/wiki/User:{{username}}">{{username}}</a> has approximently <b>{{blp_count}}</b> {{#if nonautomated}}non-automated{{/if}} edits to <a href="{{project_path}}/wiki/WP:BLP">biographies of living persons</a>
+<a href="{{project_path}}/wiki/User:{{username}}">{{username}}</a> has approximently {{#if nonautomated}}<b>{{nonautomated_blp_count}}</b> non-automated{{else}}<b>{{blp_count}}</b>{{/if}} edits to <a href="{{project_path}}/wiki/WP:BLP">biographies of living persons</a>
 
 <dl>
   <dt>Total edits</dt><dd>{{total_count}}</dd>
