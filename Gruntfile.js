@@ -45,6 +45,10 @@ module.exports = function(grunt) {
           'public/musikanimal/namespace_counter.js': [
             'javascripts/namespace_counter.js',
             'views/namespace_counter/*.handlebars'
+          ],
+          'public/musikanimal/prose_calculator.js': [
+            'javascripts/prose_calculator.js',
+            'views/prose_calculator/*.handlebars'
           ]
         }
       }
@@ -103,6 +107,12 @@ module.exports = function(grunt) {
           src: ['namespace_counter.scss'],
           dest: 'public/musikanimal',
           ext: '.css'
+        }, {
+          expand: true,
+          cwd: 'stylesheets/prose_calculator',
+          src: ['prose_calculator.scss'],
+          dest: 'public/musikanimal',
+          ext: '.css'
         }]
       }
     },
@@ -118,7 +128,8 @@ module.exports = function(grunt) {
           'public/musikanimal/blp_edits.js' : ['public/musikanimal/blp_edits.js'],
           'public/musikanimal/policy_edits.js' : ['public/musikanimal/policy_edits.js'],
           'public/musikanimal/category_edits.js' : ['public/musikanimal/category_edits.js'],
-          'public/musikanimal/namespace_counter.js' : ['public/musikanimal/namespace_counter.js']
+          'public/musikanimal/namespace_counter.js' : ['public/musikanimal/namespace_counter.js'],
+          'public/musikanimal/prose_calculator.js' : ['public/musikanimal/prose_calculator.js']
         }
       }
     }

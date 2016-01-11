@@ -6,6 +6,7 @@ group :web do
   gem 'sass'
   gem 'haml'
   gem 'json'
+  gem 'nokogiri'
   gem 'mysql2'
   gem 'pg'
   gem 'pry-byebug'

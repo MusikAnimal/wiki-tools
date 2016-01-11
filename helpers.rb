@@ -21,9 +21,7 @@ module Helpers
     end
   end
 
-  def api(db, method, params, throttle = 0)
-    sleep throttle * 5
-
+  def api(db, method, params)
     params[:continue] = ''
     case db
     when :commons
@@ -31,9 +29,6 @@ module Helpers
     when :enwiki
       enwiki_mw.send(method, params)
     end
-  rescue MediaWiki::APIError
-    return nil if throttle > 5
-    api(method, params, throttle + 1)
   end
 
   def cache_response(req, &res)
@@ -48,6 +43,21 @@ module Helpers
 
     # either a Hash or a Fixnum stored as a string
     JSON.parse(ret, quirks_mode: true) rescue ret.to_i
+  end
+
+  def disk_cache(filename, time = 3600, &res)
+    filename = "#{PROJECT_ROOT}/disk_cache/#{filename}"
+    if File.mtime(filename) < Time.now.utc - time
+      ret = res.call
+
+      cache_file = File.open(filename, 'r+')
+      cache_file.write(ret.inspect)
+      cache_file.close
+    else
+      ret = eval(File.open(filename).read)
+    end
+
+    ret
   end
 
   def commons_mw

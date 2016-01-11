@@ -27,6 +27,7 @@ GEM
     multi_json (1.11.2)
     mysql2 (0.3.19)
     netrc (0.10.3)
+    nokogiri (1.5.10)
     pg (0.18.2)
     pry (0.10.2)
       coderay (~> 1.1.0)
@@ -77,6 +78,7 @@ DEPENDENCIES
   json
   mediawiki-gateway!
   mysql2
+  nokogiri
   pg
   pry-byebug
   redis
