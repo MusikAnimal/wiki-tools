@@ -242,7 +242,7 @@ module Repl
         },
         {
           name: 'Page move',
-          regex: '^.*?moved page \\\\[\\\\[(?!.*?WP:AFCH)',
+          regex: '^.*?moved page \\\\[\\\\[(?!.*?WP:AFCH)|moved \\\\[\\\\[.*?\\\\]\\\\] to \\\\[\\\\[',
           link: 'Help:Move'
         },
         {
@@ -287,7 +287,7 @@ module Repl
         },
         {
           name: 'WPCleaner',
-          regex: 'WP:CLEANER|\\\\[\\\\[\\\\Wikipedia:DPL',
+          regex: 'WP:CLEANER|\\\\[\\\\[\\\\Wikipedia:DPL|\\\\[\\\\[WP:WCW\\\\]\\\\] project \\\\(',
           link: 'WP:CLEANER'
         },
         {
@@ -307,8 +307,15 @@ module Repl
         },
         {
           name: 'Dab solver',
-          regex: 'using \\\\[\\\\[tools:~dispenser/view/Dab_solver\\\\|Dab solver|Disambiguated:.*?→ \\\\[\\\\[|(Help needed|Unlinked): \\\\[\\\\[',
+          regex: 'using \\\\[\\\\[(tools:~dispenser/view/Dab_solver|WP:DABSOLVER)\\\\|Dab solver' \
+            '|(Disambiguated|Unlinked|Help needed): \\\\[\\\\[' \
+            '|Disambiguated \\\\d+ links',
           link: 'WP:DABSOLVER'
+        },
+        {
+          name: 'Dabfix',
+          regex: 'using \\\\[\\\\[tools:~dispenser/cgi-bin/dabfix.py',
+          link: 'toollabs:dispenser/cgi-bin/dabfix.py'
         },
         {
           name: 'Reflinks',
@@ -449,6 +456,11 @@ module Repl
           name: 'closemfd.js',
           regex: '\\\\(using \\\\[\\\\[User:Doug/closemfd.js',
           link: 'User:Doug/closemfd.js'
+        },
+        {
+          name: 'DisamAssist',
+          regex: 'using \\\\[\\\\[User:Qwertyytrewqqwerty/DisamAssist',
+          link: 'User:Qwertyytrewqqwerty/DisamAssist'
         }
       ]
 
