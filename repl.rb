@@ -309,7 +309,8 @@ module Repl
           name: 'Dab solver',
           regex: 'using \\\\[\\\\[(tools:~dispenser/view/Dab_solver|WP:DABSOLVER)\\\\|Dab solver' \
             '|(Disambiguated|Unlinked|Help needed): \\\\[\\\\[' \
-            '|Disambiguated \\\\d+ links',
+            '|Disambiguated \\\\d+ links' \
+            '|Repaired link.*?\\\\[\\\\[Wikipedia:WikiProject Disambiguation\\\\|please help',
           link: 'WP:DABSOLVER'
         },
         {
