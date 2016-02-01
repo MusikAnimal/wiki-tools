@@ -16,7 +16,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Pageview comparsion</title>
+    <title>Pageview Comparsion</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css"/>
@@ -125,6 +125,7 @@
         timestampFormat: 'YYYYMMDD00',
         daysAgo: 20
       };
+      var dontPushState = false;
 
       function getLanguageCode () {
         var project = $(config.projectSelector).val();
@@ -321,6 +322,7 @@
       }
 
       function pushParams() {
+        if(dontPushState) return;
         console.log("pushParams");
         var daterangepicker = $(config.dateRangeSelector).data('daterangepicker');
         var state = {
@@ -336,6 +338,7 @@
       function popParams() {
         console.log("popParams");
         var params = parseHashParams();
+        dontPushState = true;
 
         $(config.projectSelector).select2('val', (params.lang || 'en') + 'wiki');
 
@@ -353,7 +356,9 @@
           params.pages = ['Cat', 'Dog'];
         }
 
+        resetArticleSelector();
         setArticleSelectorDefaults(params.pages);
+        dontPushState = false;
       }
 
       function parseHashParams() {
@@ -389,7 +394,11 @@
         popParams();
 
         window.onpopstate = function() {
-          resetArticleSelector();
+          console.log("onpopstate");
+          // maybe the browser is putting the values back in the form field
+          // $(".select2-selection__rendered").html("")
+          // $(".select2-hidden-accessible").html("");
+          // resetArticleSelector();
           popParams();
         };
       });
