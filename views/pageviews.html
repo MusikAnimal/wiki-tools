@@ -346,7 +346,7 @@
 
         if(params.pages) {
           params.pages = $.map(params.pages, function(page) {
-            return page.replace(/ /g, '_');
+            return decodeURIComponent(page.replace(/ /g, '_'));
           });
         } else {
           params.pages = ['Cat', 'Dog'];
