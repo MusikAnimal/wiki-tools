@@ -38,6 +38,10 @@ class WikiTools < Sinatra::Application
     }
   end
 
+  get '/musikanimal/pageviews' do
+    send_file 'views/pageviews.html'
+  end
+
   namespace '/musikanimal/api' do
     after '/*' do
       return if params['splat'].include?('uses')
