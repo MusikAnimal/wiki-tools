@@ -35,14 +35,11 @@
           margin-left: -12px;
       }
 
-      /* Fix date range selector style */
-      .aqs-date-range-selector {
-          border-radius: 4px;
-          border-width: 1px;
-          border-style: solid;
-          border-color: rgb(170, 170, 170);
-          line-height: 25px;
-          padding: 0 10px 0 10px;
+      .select2-container--default.select2-container--focus .select2-selection--multiple,
+      .select2-container--default .select2-selection--multiple,
+      .select2-dropdown
+       {
+        border-color: #ccc;
       }
 
       /* Improve vertical spacing */
@@ -73,29 +70,24 @@
         </div>
       </div>
 
-      <!-- Project selector -->
       <div class="row aqs-row">
-        <div class="col-lg-1 col-lg-offset-2">Project</div>
-        <div class="col-lg-7">
-          <select class="aqs-project-selector">
-            <option value="enwiki" class="active">enwiki</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Date range selector -->
-      <div class="row aqs-row">
-        <div class="col-lg-1 col-lg-offset-2">Dates</div>
-        <div class="col-lg-7">
-          <input class="aqs-date-range-selector">
-        </div>
+        <!-- Date range selector -->
+        <span class="col-sm-6">
+          <label for="range-input">Dates</label>
+          <input id="range-input" class="form-control aqs-date-range-selector" />
+        </span>
+        <!-- Project selector -->
+        <span class="col-sm-6">
+          <label for="project-input">Project</label>
+          <input id="project-input" class="form-control aqs-project-input" placeholder="en.wikipedia.org" />
+        </span>
       </div>
 
       <!-- Article selector -->
       <div class="row aqs-row">
-        <div class="col-lg-1 col-lg-offset-2">Pages</div>
         <div class="col-lg-7">
-          <select class="aqs-article-selector col-lg-12" multiple="multiple"></select>
+          <label for="article-input">Pages</label>
+          <select id="article-input" class="aqs-article-selector col-lg-12" multiple="multiple"></select>
         </div>
       </div>
 
@@ -116,7 +108,7 @@
         // https://en.wikipedia.org/w/api.php?action=sitematrix&formatversion=2
         projects: ['aawiki', 'abwiki', 'acewiki', 'afwiki', 'akwiki', 'alswiki', 'amwiki', 'angwiki', 'anwiki', 'arcwiki', 'arwiki', 'arzwiki', 'astwiki', 'aswiki', 'avwiki', 'aywiki', 'azwiki', 'barwiki', 'bawiki', 'bclwiki', 'bewiki', 'bgwiki', 'bhwiki', 'biwiki', 'bjnwiki', 'bmwiki', 'bnwiki', 'bowiki', 'bpywiki', 'brwiki', 'bswiki', 'bugwiki', 'bxrwiki', 'cawiki', 'cdowiki', 'cebwiki', 'cewiki', 'chowiki', 'chrwiki', 'chwiki', 'chywiki', 'ckbwiki', 'cowiki', 'crhwiki', 'crwiki', 'csbwiki', 'cswiki', 'cuwiki', 'cvwiki', 'cywiki', 'dawiki', 'dewiki', 'diqwiki', 'dsbwiki', 'dvwiki', 'dzwiki', 'eewiki', 'elwiki', 'emlwiki', 'enwiki', 'eowiki', 'eswiki', 'etwiki', 'euwiki', 'extwiki', 'fawiki', 'ffwiki', 'fiwiki', 'fjwiki', 'fowiki', 'frpwiki', 'frrwiki', 'frwiki', 'furwiki', 'fywiki', 'gagwiki', 'ganwiki', 'gawiki', 'gdwiki', 'glkwiki', 'glwiki', 'gnwiki', 'gotwiki', 'guwiki', 'gvwiki', 'hakwiki', 'hawiki', 'hawwiki', 'hewiki', 'hifwiki', 'hiwiki', 'howiki', 'hrwiki', 'hsbwiki', 'htwiki', 'huwiki', 'hywiki', 'hzwiki', 'iawiki', 'idwiki', 'iewiki', 'igwiki', 'iiwiki', 'ikwiki', 'ilowiki', 'iowiki', 'iswiki', 'itwiki', 'iuwiki', 'jawiki', 'jbowiki', 'jvwiki', 'kaawiki', 'kabwiki', 'kawiki', 'kbdwiki', 'kgwiki', 'kiwiki', 'kjwiki', 'kkwiki', 'klwiki', 'kmwiki', 'knwiki', 'koiwiki', 'kowiki', 'krcwiki', 'krwiki', 'kshwiki', 'kswiki', 'kuwiki', 'kvwiki', 'kwwiki', 'kywiki', 'ladwiki', 'lawiki', 'lbewiki', 'lbwiki', 'lezwiki', 'lgwiki', 'lijwiki', 'liwiki', 'lmowiki', 'lnwiki', 'lowiki', 'ltgwiki', 'ltwiki', 'lvwiki', 'mdfwiki', 'mgwiki', 'mhrwiki', 'mhwiki', 'minwiki', 'miwiki', 'mkwiki', 'mlwiki', 'mnwiki', 'mowiki', 'mrjwiki', 'mrwiki', 'mswiki', 'mtwiki', 'muswiki', 'mwlwiki', 'myvwiki', 'mywiki', 'mznwiki', 'nahwiki', 'napwiki', 'nawiki', 'ndswiki', 'newiki', 'newwiki', 'ngwiki', 'nlwiki', 'nnwiki', 'novwiki', 'nowiki', 'nrmwiki', 'nsowiki', 'nvwiki', 'nywiki', 'ocwiki', 'omwiki', 'orwiki', 'oswiki', 'pagwiki', 'pamwiki', 'papwiki', 'pawiki', 'pcdwiki', 'pdcwiki', 'pflwiki', 'pihwiki', 'piwiki', 'plwiki', 'pmswiki', 'pnbwiki', 'pntwiki', 'pswiki', 'ptwiki', 'quwiki', 'rmwiki', 'rmywiki', 'rnwiki', 'rowiki', 'ruewiki', 'ruwiki', 'rwwiki', 'sahwiki', 'sawiki', 'scnwiki', 'scowiki', 'scwiki', 'sdwiki', 'sewiki', 'sgwiki', 'shwiki', 'siwiki', 'skwiki', 'slwiki', 'smwiki', 'snwiki', 'sowiki', 'sqwiki', 'srnwiki', 'srwiki', 'sswiki', 'stqwiki', 'stwiki', 'suwiki', 'svwiki', 'swwiki', 'szlwiki', 'tawiki', 'tenwiki', 'tetwiki', 'tewiki', 'tgwiki', 'thwiki', 'tiwiki', 'tkwiki', 'tlwiki', 'tnwiki', 'towiki', 'tpiwiki', 'trwiki', 'tswiki', 'ttwiki', 'tumwiki', 'twwiki', 'tyvwiki', 'tywiki', 'udmwiki', 'ugwiki', 'ukwiki', 'urwiki', 'uzwiki', 'vecwiki', 'vepwiki', 'vewiki', 'viwiki', 'vlswiki', 'vowiki', 'warwiki', 'wawiki', 'wowiki', 'wuuwiki', 'xalwiki', 'xhwiki', 'xmfwiki', 'yiwiki', 'yowiki', 'zawiki', 'zeawiki', 'zhwiki', 'zuwiki'],
         colors: ['rgba(188,203,218,1)', 'rgba(224,173,145,1)', 'rgba(193,170,120,1)', 'rgba(141,160,117,1)', 'rgba(153,138,111,1)'],
-        projectSelector: '.aqs-project-selector',
+        projectInput: '.aqs-project-input',
         dateRangeSelector: '.aqs-date-range-selector',
         articleSelector: '.aqs-article-selector',
         chart: '.aqs-chart',
@@ -126,21 +118,21 @@
         daysAgo: 20
       };
 
-      function getLanguageCode () {
-        var project = $(config.projectSelector).val();
-        // Remove the last 4 characters (wiki) from the project code to
-        // get the language code ('enwiki' -> 'en', 'cebwiki' -> 'ceb').
-        return project.substring(0, project.length - 4);
+      function getProject () {
+        var project = $(config.projectInput).val();
+        // Get the first 2 characters from the project code to get the language
+        return project.replace(/.org$/, '');
       }
 
-      function setupProjectSelector () {
-        var projectSelector = $(config.projectSelector);
-        var data = config.projects.map(function (elem) {
-          return {id: elem, text: elem};
-        });
-        projectSelector.select2({data: data});
+      function setupProjectInput () {
+        var projectInput = $(config.projectInput);
 
-        projectSelector.on('change', function () {
+        projectInput.on('change', function () {
+          if(!this.value) {
+            this.value = 'en.wikipedia.org';
+            return;
+          }
+
           resetArticleSelector(); // This will call updateChart() itself.
         });
       }
@@ -167,7 +159,7 @@
           // This ajax call queries the Mediawiki API for article name
           // suggestions given the search term inputed in the selector.
           ajax: {
-            url: 'https://' + getLanguageCode() + '.wikipedia.org/w/api.php',
+            url: 'https://' + getProject() + '.org/w/api.php',
             dataType: 'jsonp',
             delay: 200,
             jsonpCallback: 'articleSuggestionCallback',
@@ -231,7 +223,6 @@
       function updateChart () {
         pushParams();
         // Collect parameters from inputs.
-        var languageCode = getLanguageCode();
         var dateRangeSelector = $(config.dateRangeSelector);
         var startDate = dateRangeSelector.data('daterangepicker').startDate;
         var endDate = dateRangeSelector.data('daterangepicker').endDate;
@@ -252,7 +243,7 @@
           // Url to query the API.
           var url = (
             'https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/' +
-            languageCode + '.wikipedia/all-access/all-agents/' + uriEncodedArticle + '/daily/' +
+            getProject() + '/all-access/all-agents/' + uriEncodedArticle + '/daily/' +
             startDate.format(config.timestampFormat) + '/' + endDate.format(config.timestampFormat)
           );
 
@@ -285,10 +276,10 @@
               // When all article datasets have been collected,
               // initialize the chart.
               if (datasets.length == articles.length) {
-                var data = {labels: labels, datasets: datasets};
+                var lineData = {labels: labels, datasets: datasets};
                 var options = {bezierCurve: false};
                 var context = $(config.chart).get(0).getContext('2d');
-                config.articleComparisonChart = new Chart(context).Line(data, options);
+                config.articleComparisonChart = new Chart(context).Line(lineData, options);
               }
             }
           });
@@ -326,7 +317,7 @@
         var state = $.param({
           start: daterangepicker.startDate.format("YYYY-MM-DD"),
           end: daterangepicker.endDate.format("YYYY-MM-DD"),
-          lang: getLanguageCode()
+          project: $(config.projectInput).val()
         }) + '&pages=' + pages.join('|');
 
         window.history.pushState({}, 'Pageview comparsion', "#" + state);
@@ -335,7 +326,7 @@
       function popParams() {
         var params = parseHashParams();
 
-        $(config.projectSelector).select2('val', (params.lang || 'en') + 'wiki');
+        $(config.projectInput).val(params.project || 'en.wikipedia.org');
 
         var startDate = moment(params.start || moment().subtract(config.daysAgo, 'days')),
           endDate = moment(params.end || Date.now());
@@ -343,12 +334,12 @@
         $(config.dateRangeSelector).data('daterangepicker').setStartDate(startDate);
         $(config.dateRangeSelector).data('daterangepicker').setEndDate(endDate);
 
-        if(params.pages) {
+        if(params.pages.length === 1 && !params.pages[0]) {
+          params.pages = ['Cat', 'Dog'];
+        } else {
           params.pages = $.map(params.pages, function(page) {
             return decodeURIComponent(page.replace(/ /g, '_'));
           });
-        } else {
-          params.pages = ['Cat', 'Dog'];
         }
 
         resetArticleSelector();
@@ -376,7 +367,7 @@
       $(document).ready(function() {
         $.extend(Chart.defaults.global, {animation: false, responsive: true});
 
-        setupProjectSelector();
+        setupProjectInput();
         setupDateRangeSelector();
         setupArticleSelector();
 
