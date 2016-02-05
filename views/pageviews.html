@@ -125,7 +125,6 @@
         timestampFormat: 'YYYYMMDD00',
         daysAgo: 20
       };
-      var dontPushState = false;
 
       function getLanguageCode () {
         var project = $(config.projectSelector).val();
@@ -230,7 +229,6 @@
       }
 
       function updateChart () {
-        console.log("updateChart");
         pushParams();
         // Collect parameters from inputs.
         var languageCode = getLanguageCode();
@@ -322,23 +320,20 @@
       }
 
       function pushParams() {
-        if(dontPushState) return;
-        console.log("pushParams");
-        var daterangepicker = $(config.dateRangeSelector).data('daterangepicker');
-        var state = {
+        var daterangepicker = $(config.dateRangeSelector).data('daterangepicker'),
+          pages = $(config.articleSelector).select2('val') || [];
+
+        var state = $.param({
           start: daterangepicker.startDate.format("YYYY-MM-DD"),
           end: daterangepicker.endDate.format("YYYY-MM-DD"),
-          pages: $(config.articleSelector).select2('val'),
           lang: getLanguageCode()
-        };
+        }) + '&pages=' + pages.join('|');
 
-        window.history.pushState({}, 'Pageview comparsion', "#" + $.param(state));
+        window.history.pushState({}, 'Pageview comparsion', "#" + state);
       }
 
       function popParams() {
-        console.log("popParams");
         var params = parseHashParams();
-        dontPushState = true;
 
         $(config.projectSelector).select2('val', (params.lang || 'en') + 'wiki');
 
@@ -358,7 +353,6 @@
 
         resetArticleSelector();
         setArticleSelectorDefaults(params.pages);
-        dontPushState = false;
       }
 
       function parseHashParams() {
@@ -367,17 +361,12 @@
           params = {};
 
         for(var i=0; i < chunks.length ; i++) {
-          var chunk = chunks[i].split('='),
-            key = chunk[0].replace('[]', '');
+          var chunk = chunks[i].split('=');
 
-          if(chunk[0].search("\\[\\]") !== -1) {
-            if(typeof params[key] === 'undefined') {
-              params[key] = [chunk[1]];
-            } else {
-              params[key].push(chunk[1]);
-            }
+          if(chunk[0] === 'pages') {
+            params.pages = chunk[1].split('|');
           } else {
-            params[key] = chunk[1];
+            params[chunk[0]] = chunk[1];
           }
         }
 
@@ -393,14 +382,9 @@
 
         popParams();
 
-        window.onpopstate = function() {
-          console.log("onpopstate");
-          // maybe the browser is putting the values back in the form field
-          // $(".select2-selection__rendered").html("")
-          // $(".select2-hidden-accessible").html("");
-          // resetArticleSelector();
-          popParams();
-        };
+        // window.onpopstate = function() {
+        //   popParams();
+        // };
       });
     </script>
   </body>
