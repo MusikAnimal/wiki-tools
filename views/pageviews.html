@@ -105,7 +105,7 @@
         </div>
 
         <footer class="col-lg-10">
-          <a href="https://github.com/MusikAnimal/wiki-tools/blob/master/views/pageviews.html">Code</a> courtesy of <a href="https://gist.github.com/marcelrf/49738d14116fd547fe6d">marcelrf</a> and tweaked by <a href="https://en.wikipedia.org/wiki/User:MusikAnimal">MusikAnimal</a>. Distributed under the <a href="http://unlicense.org/">Unlicense</a>.
+          Brought to you by <a href="https://wikimediafoundation.org/wiki/User:Mforns_(WMF)">Marcel Ruiz Forns</a> and <a href="https://en.wikipedia.org/wiki/User:MusikAnimal">MusikAnimal</a>. <a href="https://github.com/MusikAnimal/wiki-tools/blob/master/views/pageviews.html">Code</a> distributed under the <a href="http://unlicense.org/">Unlicense</a>.
         </footer>
       </div>
     </div>
@@ -343,7 +343,7 @@
         $(config.dateRangeSelector).data('daterangepicker').setStartDate(startDate);
         $(config.dateRangeSelector).data('daterangepicker').setEndDate(endDate);
 
-        if(params.pages.length === 1 && !params.pages[0]) {
+        if(!params.pages || params.pages.length === 1 && !params.pages[0]) {
           params.pages = ['Cat', 'Dog'];
         } else {
           params.pages = $.map(params.pages, function(page) {
