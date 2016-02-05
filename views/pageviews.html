@@ -51,6 +51,13 @@
       .aqs-article-selector {
         width: 100% !important;
       }
+
+      footer {
+        font-family: sans-serif;
+        text-align: center;
+        margin-top: 40px;
+        display: block
+      }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
@@ -62,44 +69,46 @@
   </head>
 
   <body>
-    <div class="container"><br>
-      <!-- Header -->
-      <div class="row aqs-row">
-        <div class="col-lg-3 col-lg-offset-2">
-          <h4><strong>Pageview Comparison</strong></h4>
+    <div class="container">
+      <div class="col-lg-offset-2">
+        <!-- Header -->
+        <div class="row aqs-row">
+          <div class="col-lg-10 text-center">
+            <h4><strong>Pageview Comparison</strong></h4>
+          </div>
         </div>
-      </div>
 
-      <div class="row aqs-row">
-        <!-- Date range selector -->
-        <span class="col-sm-6">
-          <label for="range-input">Dates</label>
-          <input id="range-input" class="form-control aqs-date-range-selector" />
-        </span>
-        <!-- Project selector -->
-        <span class="col-sm-6">
-          <label for="project-input">Project</label>
-          <input id="project-input" class="form-control aqs-project-input" placeholder="en.wikipedia.org" />
-        </span>
-      </div>
-
-      <!-- Article selector -->
-      <div class="row aqs-row">
-        <div class="col-lg-7">
-          <label for="article-input">Pages</label>
-          <select id="article-input" class="aqs-article-selector col-lg-12" multiple="multiple"></select>
+        <div class="row aqs-row">
+          <!-- Date range selector -->
+          <div class="col-lg-5">
+            <label for="range-input">Dates</label>
+            <input id="range-input" class="form-control aqs-date-range-selector" />
+          </div>
+          <!-- Project selector -->
+          <div class="col-lg-5">
+            <label for="project-input">Project</label>
+            <input id="project-input" class="form-control aqs-project-input" placeholder="en.wikipedia.org" />
+          </div>
         </div>
-      </div>
 
-      <!-- Chart -->
-      <div class="col-lg-8 col-lg-offset-2">
-        <canvas class="aqs-chart"></canvas>
+        <!-- Article selector -->
+        <div class="row aqs-row">
+          <div class="col-lg-10">
+            <label for="article-input">Pages</label>
+            <select id="article-input" class="aqs-article-selector col-lg-12" multiple="multiple"></select>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="col-lg-10">
+          <canvas class="aqs-chart"></canvas>
+        </div>
+
+        <footer class="col-lg-10">
+          <a href="https://github.com/MusikAnimal/wiki-tools/blob/master/views/pageviews.html">Code</a> courtesy of <a href="https://gist.github.com/marcelrf/49738d14116fd547fe6d">marcelrf</a> and tweaked by <a href="https://en.wikipedia.org/wiki/User:MusikAnimal">MusikAnimal</a>. Distributed under the <a href="http://unlicense.org/">Unlicense</a>.
+        </footer>
       </div>
     </div>
-
-    <footer style="font-family:sans-serif; text-align:center; margin-top:20px">
-      <a href="https://github.com/MusikAnimal/wiki-tools/blob/master/views/pageviews.html">Code</a> courtesy of <a href="https://gist.github.com/marcelrf/49738d14116fd547fe6d">marcelrf</a> and tweaked by <a href="https://en.wikipedia.org/wiki/User:MusikAnimal">MusikAnimal</a>. Distributed under the <a href="http://unlicense.org/">Unlicense</a>.
-    </footer>
 
     <script>
       var config = {
