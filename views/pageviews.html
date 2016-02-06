@@ -85,6 +85,10 @@
         display: block
       }
 
+      .nowrap {
+        white-space: nowrap;
+      }
+
       .loading::after {
         content: '';
         border: 3px solid #ccc;
@@ -170,7 +174,8 @@
         <div class="col-lg-10" id="chart-legend"></div>
 
         <footer class="col-lg-10">
-          Brought to you by <a href="https://wikimediafoundation.org/wiki/User:Mforns_(WMF)">Marcel Ruiz Forns</a> and <a href="https://en.wikipedia.org/wiki/User:MusikAnimal">MusikAnimal</a>. Hosted with &hearts; on <a href="https://wikitech.wikimedia.org/wiki/Portal:Tool_Labs">Wikimedia Labs</a>.
+          <span class='nowrap'>Brought to you by <a href="https://wikimediafoundation.org/wiki/User:Mforns_(WMF)">Marcel Ruiz Forns</a> and <a href="https://en.wikipedia.org/wiki/User:MusikAnimal">MusikAnimal</a>.</span>
+          <span class='nowrap'>Hosted with &hearts; on <a href="https://wikitech.wikimedia.org/wiki/Portal:Tool_Labs">Wikimedia Labs</a>.</span>
         </footer>
       </div>
     </div>
@@ -313,7 +318,7 @@
         var articles = $(config.articleSelector).select2('val') || [];
 
         // Destroy previous chart, if needed.
-        if (config.articleComparisonChart) {
+        if(config.articleComparisonChart) {
           config.articleComparisonChart.destroy();
           delete config.articleComparisonChart;
         }
@@ -384,7 +389,9 @@
                   bezierCurve: false,
                   legendTemplate : template
                 };
-                var context = $(config.chart).get(0).getContext('2d');
+                $(".chart-container canvas").remove();
+                $(".chart-container").append("<canvas class='aqs-chart'>");
+                var context = $(config.chart)[0].getContext('2d');
                 config.articleComparisonChart = new Chart(context).Line(lineData, options);
                 $("#chart-legend").html(config.articleComparisonChart.generateLegend());
               }
