@@ -84,6 +84,33 @@
         margin-top: 40px;
         display: block
       }
+
+      .loading::after {
+        content: '';
+        border: 3px solid #ccc;
+        border-radius: 50%;
+        border-top-color: transparent;
+        bottom: 0;
+        left: 0;
+        margin: auto;
+        height: 60px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 60px;
+        animation-name: spin;
+        animation-duration: 0.75s;
+        animation-iteration-count: infinite;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
@@ -135,7 +162,7 @@
         </div>
 
         <!-- Chart -->
-        <div class="col-lg-10">
+        <div class="chart-container col-lg-10 loading">
           <canvas class="aqs-chart"></canvas>
         </div>
 
@@ -287,10 +314,9 @@
 
         // Destroy previous chart, if needed.
         if (config.articleComparisonChart) {
-          setTimeout(function() {
-            config.articleComparisonChart.destroy();
-            delete config.articleComparisonChart;
-          }, 10);
+          config.articleComparisonChart.destroy();
+          delete config.articleComparisonChart;
+          $(".chart-container").addClass("loading");
         }
 
         // Asynchronously collect the data from Analytics Query Service API,
@@ -345,6 +371,7 @@
               // When all article datasets have been collected,
               // initialize the chart.
               if (datasets.length == articles.length) {
+                $(".chart-container").removeClass("loading");
                 var lineData = {labels: labels, datasets: datasets};
                 var options = {
                   animation: true,
@@ -396,7 +423,9 @@
           project: $(config.projectInput).val()
         }) + '&pages=' + pages.join('|');
 
-        window.history.replaceState({}, 'Pageview comparsion', "#" + state);
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState({}, 'Pageview comparsion', "#" + state);
+        }
       }
 
       function popParams() {
