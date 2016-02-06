@@ -197,13 +197,17 @@
         daysAgo: 20
       };
 
-      function getProject () {
+      function getProject() {
         var project = $(config.projectInput).val();
         // Get the first 2 characters from the project code to get the language
         return project.replace(/.org$/, '');
       }
 
-      function setupProjectInput () {
+      function getPageURL(page) {
+        return "//" + getProject() + ".org/wiki/" + page;
+      }
+
+      function setupProjectInput() {
         var projectInput = $(config.projectInput);
 
         projectInput.on('change', function () {
@@ -216,7 +220,7 @@
         });
       }
 
-      function setupDateRangeSelector () {
+      function setupDateRangeSelector() {
         var dateRangeSelector = $(config.dateRangeSelector);
         dateRangeSelector.daterangepicker({
           startDate: moment().subtract(config.daysAgo, 'days'),
@@ -345,7 +349,7 @@
           $.ajax({
             url: url,
             dataType: 'json',
-            success: function (data) {
+            success: function(data) {
               fillInNulls(data, startDate, endDate);
 
               // Get the labels from the first call.
@@ -375,8 +379,8 @@
               var template = "<b>Totals:</b><ul class=\"<%=name.toLowerCase()%>-legend\">" +
                 "<% for (var i=0; i<datasets.length; i++){%>" +
                   "<li><span class=\"indic\" style=\"background-color:<%=datasets[i].strokeColor%>\">" +
-                  "<%=datasets[i].label%></span> <%= chartData[i].sum %>" +
-                  "</li><%}%></ul>";
+                  "<a href='<%= getPageURL(datasets[i].label) %>'><%=datasets[i].label%></a></span> " +
+                  "<%= chartData[i].sum %></li><%}%></ul>";
 
               // When all article datasets have been collected,
               // initialize the chart.
@@ -389,11 +393,20 @@
                   bezierCurve: false,
                   legendTemplate : template
                 };
-                $(".chart-container canvas").remove();
+                $(".chart-container").html("");
                 $(".chart-container").append("<canvas class='aqs-chart'>");
                 var context = $(config.chart)[0].getContext('2d');
                 config.articleComparisonChart = new Chart(context).Line(lineData, options);
                 $("#chart-legend").html(config.articleComparisonChart.generateLegend());
+              }
+            },
+            error: function(data) {
+              if(data.status === 404) {
+                $(".chart-container").html("");
+                $(".chart-container").removeClass("loading");
+                $(".chart-container").append(
+                  "<p>No data found for the page <a href='" + getPageURL(article) + "'>" + article + "</a></p>"
+                );
               }
             }
           });
