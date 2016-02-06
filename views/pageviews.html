@@ -26,6 +26,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.13/daterangepicker.min.css"/>
 
     <style>
+      body {
+        overflow-x: hidden;
+      }
+
       /* Add legend colors to article tags */
       .select2-selection__choice:nth-of-type(1) { background: #bccbda !important; }
       .select2-selection__choice:nth-of-type(2) { background: #e0ad91 !important; }
@@ -181,7 +185,7 @@
         <div class="col-lg-10" id="chart-legend"></div>
 
         <footer class="col-lg-10">
-          <span class='nowrap'>Brought to you by <a href="https://wikimediafoundation.org/wiki/User:Mforns_(WMF)">Marcel Ruiz Forns</a> and <a href="https://en.wikipedia.org/wiki/User:MusikAnimal">MusikAnimal</a>.</span>
+          <span>Brought to you by <a href="https://wikimediafoundation.org/wiki/User:Mforns_(WMF)">Marcel Ruiz Forns</a> and <a href="https://en.wikipedia.org/wiki/User:MusikAnimal">MusikAnimal</a>.</span>
           <span class='nowrap'>Hosted with &hearts; on <a href="https://wikitech.wikimedia.org/wiki/Portal:Tool_Labs">Wikimedia Labs</a>.</span>
         </footer>
       </div>
@@ -230,7 +234,11 @@
       function validateProject() {
         var project = $(config.projectInput).val();
         if(sites.indexOf(project) === -1) {
-          writeMessage("<a href='//" + project + "'>" + project + "</a> is not a valid project", 'validate', true);
+          writeMessage(
+            "<a href='//" + project + "'>" + project + "</a> is not a " +
+            "<a href='https://en.wikipedia.org/w/api.php?action=sitematrix&formatversion=2'>valid project</a>",
+            'validate', true
+          );
           resetArticleSelector();
           $(".select2-selection--multiple").addClass('disabled');
           return true;
