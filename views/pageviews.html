@@ -316,7 +316,12 @@
         if (config.articleComparisonChart) {
           config.articleComparisonChart.destroy();
           delete config.articleComparisonChart;
+        }
+
+        if(articles.length) {
           $(".chart-container").addClass("loading");
+        } else {
+          $("#chart-legend").html("");
         }
 
         // Asynchronously collect the data from Analytics Query Service API,
