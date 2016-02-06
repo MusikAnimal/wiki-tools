@@ -43,6 +43,7 @@
       .select2-dropdown
        {
         border-color: #ccc;
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
       }
 
       .date-latest {
@@ -89,6 +90,11 @@
         white-space: nowrap;
       }
 
+      .disabled {
+        pointer-events: none;
+        opacity: 0.5;
+      }
+
       .loading::after {
         content: '';
         border: 3px solid #ccc;
@@ -123,6 +129,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/2.1.13/daterangepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+    <script src="/musikanimal/sites.js"></script>
   </head>
 
   <body>
@@ -215,9 +222,22 @@
             this.value = 'en.wikipedia.org';
             return;
           }
-
+          if(validateProject()) return;
           resetArticleSelector(); // This will call updateChart() itself.
         });
+      }
+
+      function validateProject() {
+        var project = $(config.projectInput).val();
+        if(sites.indexOf(project) === -1) {
+          writeMessage("<a href='//" + project + "'>" + project + "</a> is not a valid project", 'validate', true);
+          resetArticleSelector();
+          $(".select2-selection--multiple").addClass('disabled');
+          return true;
+        } else {
+          $(".validate").remove();
+          $(".select2-selection--multiple").removeClass('disabled');
+        }
       }
 
       function setupDateRangeSelector() {
@@ -404,9 +424,7 @@
               if(data.status === 404) {
                 $(".chart-container").html("");
                 $(".chart-container").removeClass("loading");
-                $(".chart-container").append(
-                  "<p>No data found for the page <a href='" + getPageURL(article) + "'>" + article + "</a></p>"
-                );
+                writeMessage("No data found for the page <a href='" + getPageURL(article) + "'>" + article + "</a>");
               }
             }
           });
@@ -437,6 +455,16 @@
         }
       }
 
+      function writeMessage(message, className, clear) {
+        if(clear) {
+          $(".chart-container").removeClass("loading");
+          $(".chart-container").html("");
+        }
+        $(".chart-container").append(
+          "<p class='" + (className || '') + "'>" + message + "</p>"
+        );
+      }
+
       function pushParams() {
         console.log('pushParams');
         var daterangepicker = $(config.dateRangeSelector).data('daterangepicker'),
@@ -457,6 +485,7 @@
         var params = parseHashParams();
 
         $(config.projectInput).val(params.project || 'en.wikipedia.org');
+        if(validateProject()) return;
 
         var startDate = moment(params.start || moment().subtract(config.daysAgo, 'days')),
           endDate = moment(params.end || Date.now());
