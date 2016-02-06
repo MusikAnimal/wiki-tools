@@ -191,10 +191,7 @@
           minDate: config.minDate,
           maxDate: config.maxDate
         });
-
-        dateRangeSelector.on('change', function () {
-          updateChart();
-        });
+        dateRangeSelector.on('change', updateChart);
       }
 
       function setupArticleSelector () {
@@ -235,9 +232,21 @@
           }
         });
 
-        articleSelector.on('change', function () {
+        articleSelector.on('change', updateChart);
+      }
+
+      function bindListeners() {
+        $(config.dateRangeSelector).on('change', function () {
           updateChart();
         });
+        $(config.articleSelector).on('change', function () {
+          updateChart();
+        });
+      }
+
+      function unbindListeners() {
+        $(config.dateRangeSelector).off('change');
+        $(config.articleSelector).off('change');
       }
 
       // Select2 library prints "Uncaught TypeError: XYZ is not a function" errors
@@ -247,7 +256,7 @@
 
       function resetArticleSelector () {
         var articleSelector = $(config.articleSelector);
-        articleSelector.unbind('change');
+        articleSelector.off('change');
         articleSelector.select2('val', null);
         articleSelector.select2('data', null);
         articleSelector.select2('destroy');
@@ -268,6 +277,7 @@
       }
 
       function updateChart () {
+        console.log('updateChart');
         pushParams();
         // Collect parameters from inputs.
         var dateRangeSelector = $(config.dateRangeSelector);
@@ -376,6 +386,7 @@
       }
 
       function pushParams() {
+        console.log('pushParams');
         var daterangepicker = $(config.dateRangeSelector).data('daterangepicker'),
           pages = $(config.articleSelector).select2('val') || [];
 
@@ -385,7 +396,7 @@
           project: $(config.projectInput).val()
         }) + '&pages=' + pages.join('|');
 
-        window.history.pushState({}, 'Pageview comparsion', "#" + state);
+        window.history.replaceState({}, 'Pageview comparsion', "#" + state);
       }
 
       function popParams() {
