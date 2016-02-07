@@ -1,14 +1,10 @@
 <!--
-  This is a sample application that shows how to use the Pageview API.
-  Read more here: https://wikitech.wikimedia.org/wiki/Analytics/AQS/Pageview_API
-
-  The most important code is inside the updateChart function, towards the end of the file.
-  The rest of the code is just html, css and input setup.
-  Disclaimer: This is just sample code, it has not been tested in all browsers/devices.
+  Pageviews Comparison tool
 
   Forked by MusikAnimal from https://gist.github.com/marcelrf/49738d14116fd547fe6d courtesy of marcelrf
 
-  Distributed under the Unlicense: http://unlicense.org/
+  Copyright 2016 MusikAnimal
+  Redistributed under the MIT License: https://opensource.org/licenses/MIT
 -->
 
 <!doctype html>
@@ -19,113 +15,12 @@
     <meta content='yes' name='apple-mobile-web-app-capable'>
     <meta content='black-translucent' name='apple-mobile-web-app-status-bar-style'>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0' name='viewport'>
-    <title>Pageview Comparsion</title>
+    <title>Pageviews Comparsion</title>
 
     <link rel="stylesheet" href="/musikanimal/vendor/bootstrap.min.css">
     <link rel="stylesheet" href="/musikanimal/vendor/select2.min.css"/>
     <link rel="stylesheet" href="/musikanimal/vendor/daterangepicker.min.css"/>
-
-    <style>
-      body {
-        overflow-x: hidden;
-      }
-
-      /* Add legend colors to article tags */
-      .select2-selection__choice:nth-of-type(1) { background: #bccbda !important; }
-      .select2-selection__choice:nth-of-type(2) { background: #e0ad91 !important; }
-      .select2-selection__choice:nth-of-type(3) { background: #c1aa78 !important; }
-      .select2-selection__choice:nth-of-type(4) { background: #8da075 !important; }
-      .select2-selection__choice:nth-of-type(5) { background: #998a6f !important; }
-
-      /* Fix chart position */
-      .aqs-chart {
-          margin-left: -12px;
-      }
-
-      .select2-container--default.select2-container--focus .select2-selection--multiple,
-      .select2-container--default .select2-selection--multiple,
-      .select2-dropdown
-       {
-        border-color: #ccc;
-        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-      }
-
-      .date-latest {
-        float: right;
-      }
-
-      /* Improve vertical spacing */
-      .aqs-row {
-        padding-bottom: 10px;
-      }
-
-      /* Avoid select2 collapsing with narrow screens */
-      .aqs-article-selector {
-        width: 100% !important;
-      }
-
-      .line-legend {
-        display: inline-block;
-        padding: 0;
-        margin: 0 0 0 10px;
-        list-style: none;
-      }
-
-      .line-legend li {
-        display: inline-block;
-        margin-bottom: 3px;
-        margin-right: 15px;
-      }
-
-      .line-legend .indic {
-        border-radius: 3px;
-        display: inline-block;
-        padding: 0 5px;
-      }
-
-      footer {
-        font-family: sans-serif;
-        text-align: center;
-        margin-top: 40px;
-        display: block
-      }
-
-      .nowrap {
-        white-space: nowrap;
-      }
-
-      .disabled {
-        pointer-events: none;
-        opacity: 0.5;
-      }
-
-      .loading::after {
-        content: '';
-        border: 3px solid #ccc;
-        border-radius: 50%;
-        border-top-color: transparent;
-        bottom: 0;
-        left: 0;
-        margin: auto;
-        height: 60px;
-        position: absolute;
-        right: 0;
-        top: 0;
-        width: 60px;
-        animation-name: spin;
-        animation-duration: 0.75s;
-        animation-iteration-count: infinite;
-      }
-
-      @keyframes spin {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg);
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="/musikanimal/pageviews/application.css"/>
 
     <script src="/musikanimal/vendor/jquery.min.js"></script>
     <script src="/musikanimal/vendor/bootstrap.min.js"></script>
@@ -134,6 +29,7 @@
     <script src="/musikanimal/vendor/daterangepicker.min.js"></script>
     <script src="/musikanimal/vendor/Chart.min.js"></script>
     <script src="/musikanimal/sites.js"></script>
+    <script src="/musikanimal/pageviews/application.js"></script>
   </head>
 
   <body>
@@ -142,7 +38,7 @@
         <!-- Header -->
         <div class="row aqs-row">
           <div class="col-lg-10 text-center">
-            <h4><strong>Pageview Comparison</strong></h4>
+            <h4><strong>Pageviews Comparison</strong></h4>
           </div>
         </div>
 
@@ -184,382 +80,16 @@
         <!-- Legend -->
         <div class="col-lg-10" id="chart-legend"></div>
 
+        <!-- other links -->
+        <div class="col-lg-10 data-links">
+          <a href="#" class="download-csv">Download as CSV</a>
+        </div>
+
         <footer class="col-lg-10">
           <span>Brought to you by <a href="https://wikimediafoundation.org/wiki/User:Mforns_(WMF)">Marcel Ruiz Forns</a> and <a href="https://en.wikipedia.org/wiki/User:MusikAnimal">MusikAnimal</a>.</span>
-          <span class='nowrap'>Hosted with &hearts; on <a href="https://wikitech.wikimedia.org/wiki/Portal:Tool_Labs">Wikimedia Labs</a>.</span>
+          <span class='nowrap'>Hosted with <span class='heart'>&hearts;</span> on <a href="https://wikitech.wikimedia.org/wiki/Portal:Tool_Labs">Wikimedia Labs</a>.</span>
         </footer>
       </div>
     </div>
-
-    <script>
-      var config = {
-        // For more information on the list of all Wikimedia languages and projects, see:
-        // https://www.mediawiki.org/wiki/Extension:SiteMatrix
-        // https://en.wikipedia.org/w/api.php?action=sitematrix&formatversion=2
-        projects: ['aawiki', 'abwiki', 'acewiki', 'afwiki', 'akwiki', 'alswiki', 'amwiki', 'angwiki', 'anwiki', 'arcwiki', 'arwiki', 'arzwiki', 'astwiki', 'aswiki', 'avwiki', 'aywiki', 'azwiki', 'barwiki', 'bawiki', 'bclwiki', 'bewiki', 'bgwiki', 'bhwiki', 'biwiki', 'bjnwiki', 'bmwiki', 'bnwiki', 'bowiki', 'bpywiki', 'brwiki', 'bswiki', 'bugwiki', 'bxrwiki', 'cawiki', 'cdowiki', 'cebwiki', 'cewiki', 'chowiki', 'chrwiki', 'chwiki', 'chywiki', 'ckbwiki', 'cowiki', 'crhwiki', 'crwiki', 'csbwiki', 'cswiki', 'cuwiki', 'cvwiki', 'cywiki', 'dawiki', 'dewiki', 'diqwiki', 'dsbwiki', 'dvwiki', 'dzwiki', 'eewiki', 'elwiki', 'emlwiki', 'enwiki', 'eowiki', 'eswiki', 'etwiki', 'euwiki', 'extwiki', 'fawiki', 'ffwiki', 'fiwiki', 'fjwiki', 'fowiki', 'frpwiki', 'frrwiki', 'frwiki', 'furwiki', 'fywiki', 'gagwiki', 'ganwiki', 'gawiki', 'gdwiki', 'glkwiki', 'glwiki', 'gnwiki', 'gotwiki', 'guwiki', 'gvwiki', 'hakwiki', 'hawiki', 'hawwiki', 'hewiki', 'hifwiki', 'hiwiki', 'howiki', 'hrwiki', 'hsbwiki', 'htwiki', 'huwiki', 'hywiki', 'hzwiki', 'iawiki', 'idwiki', 'iewiki', 'igwiki', 'iiwiki', 'ikwiki', 'ilowiki', 'iowiki', 'iswiki', 'itwiki', 'iuwiki', 'jawiki', 'jbowiki', 'jvwiki', 'kaawiki', 'kabwiki', 'kawiki', 'kbdwiki', 'kgwiki', 'kiwiki', 'kjwiki', 'kkwiki', 'klwiki', 'kmwiki', 'knwiki', 'koiwiki', 'kowiki', 'krcwiki', 'krwiki', 'kshwiki', 'kswiki', 'kuwiki', 'kvwiki', 'kwwiki', 'kywiki', 'ladwiki', 'lawiki', 'lbewiki', 'lbwiki', 'lezwiki', 'lgwiki', 'lijwiki', 'liwiki', 'lmowiki', 'lnwiki', 'lowiki', 'ltgwiki', 'ltwiki', 'lvwiki', 'mdfwiki', 'mgwiki', 'mhrwiki', 'mhwiki', 'minwiki', 'miwiki', 'mkwiki', 'mlwiki', 'mnwiki', 'mowiki', 'mrjwiki', 'mrwiki', 'mswiki', 'mtwiki', 'muswiki', 'mwlwiki', 'myvwiki', 'mywiki', 'mznwiki', 'nahwiki', 'napwiki', 'nawiki', 'ndswiki', 'newiki', 'newwiki', 'ngwiki', 'nlwiki', 'nnwiki', 'novwiki', 'nowiki', 'nrmwiki', 'nsowiki', 'nvwiki', 'nywiki', 'ocwiki', 'omwiki', 'orwiki', 'oswiki', 'pagwiki', 'pamwiki', 'papwiki', 'pawiki', 'pcdwiki', 'pdcwiki', 'pflwiki', 'pihwiki', 'piwiki', 'plwiki', 'pmswiki', 'pnbwiki', 'pntwiki', 'pswiki', 'ptwiki', 'quwiki', 'rmwiki', 'rmywiki', 'rnwiki', 'rowiki', 'ruewiki', 'ruwiki', 'rwwiki', 'sahwiki', 'sawiki', 'scnwiki', 'scowiki', 'scwiki', 'sdwiki', 'sewiki', 'sgwiki', 'shwiki', 'siwiki', 'skwiki', 'slwiki', 'smwiki', 'snwiki', 'sowiki', 'sqwiki', 'srnwiki', 'srwiki', 'sswiki', 'stqwiki', 'stwiki', 'suwiki', 'svwiki', 'swwiki', 'szlwiki', 'tawiki', 'tenwiki', 'tetwiki', 'tewiki', 'tgwiki', 'thwiki', 'tiwiki', 'tkwiki', 'tlwiki', 'tnwiki', 'towiki', 'tpiwiki', 'trwiki', 'tswiki', 'ttwiki', 'tumwiki', 'twwiki', 'tyvwiki', 'tywiki', 'udmwiki', 'ugwiki', 'ukwiki', 'urwiki', 'uzwiki', 'vecwiki', 'vepwiki', 'vewiki', 'viwiki', 'vlswiki', 'vowiki', 'warwiki', 'wawiki', 'wowiki', 'wuuwiki', 'xalwiki', 'xhwiki', 'xmfwiki', 'yiwiki', 'yowiki', 'zawiki', 'zeawiki', 'zhwiki', 'zuwiki'],
-        colors: ['rgba(188,203,218,1)', 'rgba(224,173,145,1)', 'rgba(193,170,120,1)', 'rgba(141,160,117,1)', 'rgba(153,138,111,1)'],
-        projectInput: '.aqs-project-input',
-        dateRangeSelector: '.aqs-date-range-selector',
-        articleSelector: '.aqs-article-selector',
-        chart: '.aqs-chart',
-        minDate: moment('2015-10-01'),
-        maxDate: moment().subtract(1, 'days'),
-        timestampFormat: 'YYYYMMDD00',
-        daysAgo: 20
-      };
-
-      function getProject() {
-        var project = $(config.projectInput).val();
-        // Get the first 2 characters from the project code to get the language
-        return project.replace(/.org$/, '');
-      }
-
-      function getPageURL(page) {
-        return "//" + getProject() + ".org/wiki/" + page;
-      }
-
-      function setupProjectInput() {
-        var projectInput = $(config.projectInput);
-
-        projectInput.on('change', function () {
-          if(!this.value) {
-            this.value = 'en.wikipedia.org';
-            return;
-          }
-          if(validateProject()) return;
-          resetArticleSelector(); // This will call updateChart() itself.
-        });
-      }
-
-      function validateProject() {
-        var project = $(config.projectInput).val();
-        if(sites.indexOf(project) === -1) {
-          writeMessage(
-            "<a href='//" + project + "'>" + project + "</a> is not a " +
-            "<a href='https://en.wikipedia.org/w/api.php?action=sitematrix&formatversion=2'>valid project</a>",
-            'validate', true
-          );
-          resetArticleSelector();
-          $(".select2-selection--multiple").addClass('disabled');
-          return true;
-        } else {
-          $(".validate").remove();
-          $(".select2-selection--multiple").removeClass('disabled');
-        }
-      }
-
-      function setupDateRangeSelector() {
-        var dateRangeSelector = $(config.dateRangeSelector);
-        dateRangeSelector.daterangepicker({
-          startDate: moment().subtract(config.daysAgo, 'days'),
-          minDate: config.minDate,
-          maxDate: config.maxDate
-        });
-        dateRangeSelector.on('change', updateChart);
-      }
-
-      function setupArticleSelector () {
-        var articleSelector = $(config.articleSelector);
-
-        articleSelector.select2({
-          placeholder: 'Type article names...',
-          maximumSelectionLength: 5,
-          // This ajax call queries the Mediawiki API for article name
-          // suggestions given the search term inputed in the selector.
-          ajax: {
-            url: 'https://' + getProject() + '.org/w/api.php',
-            dataType: 'jsonp',
-            delay: 200,
-            jsonpCallback: 'articleSuggestionCallback',
-            data: function (search) {
-              return {
-                'action': 'opensearch',
-                'format': 'json',
-                'search': search.term,
-                'redirects': 'return'
-              };
-            },
-            processResults: function (data) {
-              // Processes Mediawiki API results into Select2 format.
-              var results = [];
-              if (data && data[1].length) {
-                results = data[1].map(function (elem) {
-                  return {
-                    id: elem.replace(/ /g, '_'),
-                    text: elem
-                  };
-                });
-              }
-              return {results: results};
-            },
-            cache: true
-          }
-        });
-
-        articleSelector.on('change', updateChart);
-      }
-
-      function bindListeners() {
-        $(config.dateRangeSelector).on('change', function () {
-          updateChart();
-        });
-        $(config.articleSelector).on('change', function () {
-          updateChart();
-        });
-      }
-
-      function unbindListeners() {
-        $(config.dateRangeSelector).off('change');
-        $(config.articleSelector).off('change');
-      }
-
-      // Select2 library prints "Uncaught TypeError: XYZ is not a function" errors
-      // caused by race conditions between consecutive ajax calls. They are actually
-      // not critical and can be avoided with this empty function.
-      function articleSuggestionCallback (data) {}
-
-      function resetArticleSelector () {
-        var articleSelector = $(config.articleSelector);
-        articleSelector.off('change');
-        articleSelector.select2('val', null);
-        articleSelector.select2('data', null);
-        articleSelector.select2('destroy');
-        setupArticleSelector();
-        updateChart();
-      }
-
-      function setArticleSelectorDefaults (defaults) {
-        // Caveat: This method only works with single-word article names.
-        var articleSelectorQuery = config.articleSelector;
-        defaults.forEach(function (elem) {
-          var escapedText = $('<div>').text(elem).html();
-          $('<option>' + escapedText + '</option>').appendTo(articleSelectorQuery);
-        });
-        var articleSelector = $(articleSelectorQuery);
-        articleSelector.select2('val', defaults);
-        articleSelector.select2('close');
-      }
-
-      function updateChart () {
-        pushParams();
-        // Collect parameters from inputs.
-        var dateRangeSelector = $(config.dateRangeSelector);
-        var startDate = dateRangeSelector.data('daterangepicker').startDate;
-        var endDate = dateRangeSelector.data('daterangepicker').endDate;
-        var articles = $(config.articleSelector).select2('val') || [];
-
-        // Destroy previous chart, if needed.
-        if(config.articleComparisonChart) {
-          config.articleComparisonChart.destroy();
-          delete config.articleComparisonChart;
-        }
-
-        if(articles.length) {
-          $(".chart-container").addClass("loading");
-        } else {
-          $("#chart-legend").html("");
-        }
-
-        // Asynchronously collect the data from Analytics Query Service API,
-        // process it to Chart.js format and initialize the chart.
-        var labels = []; // Labels (dates) for the x-axis.
-        var datasets = []; // Data for each article timeseries.
-        articles.forEach(function (article, index) {
-          var uriEncodedArticle = encodeURIComponent(article);
-          // Url to query the API.
-          var url = (
-            'https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/' +
-            getProject() + '/all-access/all-agents/' + uriEncodedArticle + '/daily/' +
-            startDate.format(config.timestampFormat) + '/' + endDate.format(config.timestampFormat)
-          );
-
-          $.ajax({
-            url: url,
-            dataType: 'json',
-            success: function(data) {
-              fillInNulls(data, startDate, endDate);
-
-              // Get the labels from the first call.
-              if (labels.length === 0) {
-                labels = data.items.map(function (elem) {
-                  return moment(elem.timestamp, config.timestampFormat).format('YYYY-MM-DD');
-                });
-              }
-
-              // Build the article's dataset.
-              var values = data.items.map(function (elem) { return elem.views; });
-              var color = config.colors[index];
-              datasets.push({
-                label: article.replace(/_/g, ' '),
-                fillColor: 'rgba(0,0,0,0)',
-                strokeColor: color,
-                pointColor: color,
-                pointStrokeColor: '#fff',
-                pointHighlightFill: '#fff',
-                pointHighlightStroke: color,
-                data: values,
-                sum: values.reduce(function(a, b){return a+b;})
-              });
-
-              window.chartData = datasets;
-
-              var template = "<b>Totals:</b><ul class=\"<%=name.toLowerCase()%>-legend\">" +
-                "<% for (var i=0; i<datasets.length; i++){%>" +
-                  "<li><span class=\"indic\" style=\"background-color:<%=datasets[i].strokeColor%>\">" +
-                  "<a href='<%= getPageURL(datasets[i].label) %>'><%=datasets[i].label%></a></span> " +
-                  "<%= chartData[i].sum %></li><%}%></ul>";
-
-              // When all article datasets have been collected,
-              // initialize the chart.
-              if (datasets.length == articles.length) {
-                $(".chart-container").removeClass("loading");
-                var lineData = {labels: labels, datasets: datasets};
-                var options = {
-                  animation: true,
-                  animationEasing: "easeInOutQuart",
-                  bezierCurve: false,
-                  legendTemplate : template
-                };
-                $(".chart-container").html("");
-                $(".chart-container").append("<canvas class='aqs-chart'>");
-                var context = $(config.chart)[0].getContext('2d');
-                config.articleComparisonChart = new Chart(context).Line(lineData, options);
-                $("#chart-legend").html(config.articleComparisonChart.generateLegend());
-              }
-            },
-            error: function(data) {
-              if(data.status === 404) {
-                $(".chart-container").html("");
-                $(".chart-container").removeClass("loading");
-                writeMessage("No data found for the page <a href='" + getPageURL(article) + "'>" + article + "</a>");
-              }
-            }
-          });
-        });
-      }
-
-      // Fills in null values to a timeseries, see:
-      // https://wikitech.wikimedia.org/wiki/Analytics/AQS/Pageview_API#Gotchas
-      function fillInNulls (data, startDate, endDate) {
-        // Extract the dates that are already in the timeseries
-        var alreadyThere = {};
-        data.items.forEach(function (elem) {
-          var date = moment(elem.timestamp, config.timestampFormat);
-          alreadyThere[date] = elem;
-        });
-        data.items = [];
-        // Reconstruct the timeseries adding nulls
-        // for the dates that are not in the timeseries
-        for (var date = moment(startDate); date.isBefore(endDate); date.add(1, 'd')) {
-          if (alreadyThere[date]) {
-            data.items.push(alreadyThere[date]);
-          } else if (date != endDate) {
-            data.items.push({
-              timestamp: date.format(config.timestampFormat),
-              views: null
-            });
-          }
-        }
-      }
-
-      function writeMessage(message, className, clear) {
-        if(clear) {
-          $(".chart-container").removeClass("loading");
-          $(".chart-container").html("");
-        }
-        $(".chart-container").append(
-          "<p class='" + (className || '') + "'>" + message + "</p>"
-        );
-      }
-
-      function pushParams() {
-        var daterangepicker = $(config.dateRangeSelector).data('daterangepicker'),
-          pages = $(config.articleSelector).select2('val') || [];
-
-        var state = $.param({
-          start: daterangepicker.startDate.format("YYYY-MM-DD"),
-          end: daterangepicker.endDate.format("YYYY-MM-DD"),
-          project: $(config.projectInput).val()
-        }) + '&pages=' + pages.join('|');
-
-        if (window.history && window.history.replaceState) {
-          window.history.replaceState({}, 'Pageview comparsion', "#" + state);
-        }
-      }
-
-      function popParams() {
-        var params = parseHashParams();
-
-        $(config.projectInput).val(params.project || 'en.wikipedia.org');
-        if(validateProject()) return;
-
-        var startDate = moment(params.start || moment().subtract(config.daysAgo, 'days')),
-          endDate = moment(params.end || Date.now());
-
-        $(config.dateRangeSelector).data('daterangepicker').setStartDate(startDate);
-        $(config.dateRangeSelector).data('daterangepicker').setEndDate(endDate);
-
-        if(!params.pages || params.pages.length === 1 && !params.pages[0]) {
-          params.pages = ['Cat', 'Dog'];
-        } else {
-          params.pages = $.map(params.pages, function(page) {
-            page = page.charAt(0).toUpperCase() + page.slice(1);
-            return decodeURIComponent(page.replace(/ /g, '_'));
-          });
-        }
-
-        resetArticleSelector();
-        setArticleSelectorDefaults(params.pages);
-      }
-
-      function parseHashParams() {
-        var uri = decodeURI(location.hash.slice(1)),
-          chunks = uri.split('&'),
-          params = {};
-
-        for(var i=0; i < chunks.length ; i++) {
-          var chunk = chunks[i].split('=');
-
-          if(chunk[0] === 'pages') {
-            params.pages = chunk[1].split('|');
-          } else {
-            params[chunk[0]] = chunk[1];
-          }
-        }
-
-        return params;
-      }
-
-      $(document).ready(function() {
-        $.extend(Chart.defaults.global, {animation: false, responsive: true});
-
-        setupProjectInput();
-        setupDateRangeSelector();
-        setupArticleSelector();
-
-        popParams();
-
-        // simple metric to see how many use it (pageviews of the pageview, a meta-pageview, if you will :)
-        $.ajax({
-          url: "/musikanimal/api/uses",
-          method: 'PATCH',
-          data : {
-            tool: 'pageviews',
-            type: 'form'
-          }
-        });
-
-        $('.date-latest a').on('click', function(e) {
-          var daterangepicker = $(config.dateRangeSelector).data('daterangepicker');
-          daterangepicker.setStartDate(moment().subtract($(this).data('value'), 'days'));
-          daterangepicker.setEndDate(moment());
-          e.preventDefault();
-        });
-
-        // window.onpopstate = function() {
-        //   popParams();
-        // };
-      });
-    </script>
   </body>
 </html>
