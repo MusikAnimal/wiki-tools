@@ -892,5 +892,6 @@ sites = [
   'wikimania2016.wikimedia.org',
   'wikimania2017.wikimedia.org',
   'wikimaniateam.wikimedia.org',
-  'zero.wikimedia.org'
-]
+  'zero.wikimedia.org',
+  'mediawiki.org'
+];
