@@ -322,7 +322,7 @@ function popParams() {
   $(config.dateRangeSelector).data('daterangepicker').setStartDate(startDate);
   $(config.dateRangeSelector).data('daterangepicker').setEndDate(endDate);
   $('#platform-select').val(params.platform || 'all-access');
-  $('#agent-select').val(params.agent || 'all-agents');
+  $('#agent-select').val(params.agent || 'user');
 
   resetArticleSelector();
 
