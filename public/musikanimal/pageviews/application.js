@@ -49,9 +49,7 @@ function setupProjectInput() {
 
 function validateProject() {
   var project = $(config.projectInput).val();
-  if(/^www\./.test(project)) {
-    $(config.projectInput).val(project.substring(4));
-  } else if(sites.indexOf(project) === -1) {
+  if(sites.indexOf(project) === -1) {
     writeMessage(
       "<a href='//" + project + "'>" + project + "</a> is not a " +
       "<a href='https://en.wikipedia.org/w/api.php?action=sitematrix&formatversion=2'>valid project</a>",
@@ -261,7 +259,7 @@ function updateChart () {
 
 // Fills in null values to a timeseries, see:
 // https://wikitech.wikimedia.org/wiki/Analytics/AQS/Pageview_API#Gotchas
-function fillInNulls (data, startDate, endDate) {
+function fillInNulls(data, startDate, endDate) {
   // Extract the dates that are already in the timeseries
   var alreadyThere = {};
   data.items.forEach(function (elem) {
@@ -271,10 +269,11 @@ function fillInNulls (data, startDate, endDate) {
   data.items = [];
   // Reconstruct the timeseries adding nulls
   // for the dates that are not in the timeseries
+  // FIXME: use this implementation for getDateHeadings()
   for (var date = moment(startDate); date.isBefore(endDate); date.add(1, 'd')) {
     if (alreadyThere[date]) {
       data.items.push(alreadyThere[date]);
-    } else if (date != endDate) {
+    } else if (date !== endDate) {
       data.items.push({
         timestamp: date.format(config.timestampFormat),
         views: null
