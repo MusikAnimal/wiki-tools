@@ -364,7 +364,6 @@ function normalizePageNames(pages) {
 
 function underscorePageNames(pages) {
   return $.map(pages, function(page) {
-    page = page.charAt(0).toUpperCase() + page.slice(1);
     return decodeURIComponent(page.replace(/ /g, '_'));
   });
 }
