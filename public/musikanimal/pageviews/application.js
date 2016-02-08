@@ -330,7 +330,7 @@ function popParams() {
       normalizePageNames(params.pages).then(function(data) {
         normalized = true;
         var pages = $.map(data.query.pages, function(page) {
-          return page.displaytitle;
+          return page.title;
         });
         pages = underscorePageNames(pages);
         setArticleSelectorDefaults(pages);
@@ -341,7 +341,7 @@ function popParams() {
 
 function normalizePageNames(pages) {
   return $.ajax({
-    url: 'https://' + getProject() + '.org/w/api.php?action=query&prop=info&inprop=displaytitle&format=json&titles='+pages.join('|'),
+    url: 'https://' + getProject() + '.org/w/api.php?action=query&prop=info&format=json&titles='+pages.join('|'),
     dataType: 'jsonp'
   });
 }
