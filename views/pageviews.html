@@ -89,6 +89,10 @@
         <div class="row aqs-row">
           <div class="col-lg-10">
             <label for="article-input">Pages</label>
+            <!-- Button trigger modal -->
+            <a href="#" class="pull-right" data-toggle="modal" data-target="#import-modal">
+              Import
+            </a>
             <select id="article-input" class="aqs-article-selector col-lg-12" multiple="multiple"></select>
           </div>
         </div>
@@ -103,6 +107,8 @@
 
         <!-- other links -->
         <div class="col-lg-10 data-links">
+          <a href="#" data-toggle="modal" data-target="#chart-type-modal">Change chart type</a>
+          &bullet;
           Download as <a href="#" class="download-csv">CSV</a> &middot; <a href="#" class="download-json">JSON</a>
         </div>
 
@@ -110,6 +116,48 @@
           <span>Brought to you by <a href="https://en.wikipedia.org/wiki/User:MusikAnimal">MusikAnimal</a> and <a href="https://wikimediafoundation.org/wiki/User:Mforns_(WMF)">Marcel Ruiz Forns</a>.</span>
           <span class='nowrap'>Hosted with <span class='heart'>&hearts;</span> on <a href="https://wikitech.wikimedia.org/wiki/Portal:Tool_Labs">Tool Labs</a>.</span>
         </footer>
+
+        <!-- modals -->
+        <div id="import-modal" class="modal fade" tabindex="-1" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Import list</h4>
+              </div>
+              <div class="modal-body">
+                <p>You can import a list of articles defined on a wiki page or copy and paste them here.</p>
+                <label>Wiki page</label>
+                <input class="form-control" placeholder="Enter page name or URL" />
+                <hr/>
+                <label>List of pages</label>
+                <textarea class="form-control" placeholder="Enter page names or URLs, one per line"></textarea>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Import</button>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <div id="chart-type-modal" class="modal fade" tabindex="-1" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Chart types</h4>
+              </div>
+              <div class="modal-body">
+                <p>...table of chart previews...</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Import</button>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
       </div>
     </div>
   </body>
