@@ -40,6 +40,11 @@ body {
   float: right;
 }
 
+.options select {
+  display: block;
+  width: 100%;
+}
+
 /* Improve vertical spacing */
 .aqs-row {
   padding-bottom: 10px;

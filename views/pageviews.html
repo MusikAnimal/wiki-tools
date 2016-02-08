@@ -42,9 +42,9 @@
           </div>
         </header>
 
-        <div class="row aqs-row">
+        <div class="row aqs-row options">
           <!-- Date range selector -->
-          <div class="col-lg-5">
+          <div class="col-lg-4">
             <label for="range-input">Dates</label>
             <span class="date-latest">
               Latest
@@ -58,9 +58,30 @@
             <input id="range-input" class="form-control aqs-date-range-selector" />
           </div>
           <!-- Project selector -->
-          <div class="col-lg-5">
+          <div class="col-lg-2">
             <label for="project-input">Project</label>
             <input id="project-input" class="form-control aqs-project-input" placeholder="en.wikipedia.org" />
+          </div>
+
+          <!-- advanced options -->
+          <div class="col-lg-2">
+            <label for="platform-select">Platform</label>
+            <select id="platform-select" class="form-control">
+              <option value="all-access">All</option>
+              <option value="desktop">Desktop</option>
+              <option value="mobile-app">Mobile app</option>
+              <option value="mobile-web">Mobile web</option>
+            </select>
+          </div>
+
+          <div class="col-lg-2">
+            <label for="agent-select">Agent</label>
+            <select id="agent-select" class="form-control">
+              <option value="all-agents">All</option>
+              <option value="user" selected="selected">User</option>
+              <option value="spider">Spider</option>
+              <option value="bot">Bot</option>
+            </select>
           </div>
         </div>
 

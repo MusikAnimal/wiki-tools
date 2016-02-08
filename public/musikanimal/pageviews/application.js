@@ -188,7 +188,7 @@ function updateChart () {
     // Url to query the API.
     var url = (
       'https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/' +
-      getProject() + '/all-access/all-agents/' + uriEncodedArticle + '/daily/' +
+      getProject() + '/' + $('#platform-select').val() + '/' + $('#agent-select').val() + '/' + uriEncodedArticle + '/daily/' +
       startDate.format(config.timestampFormat) + '/' + endDate.format(config.timestampFormat)
     );
 
@@ -300,7 +300,9 @@ function pushParams() {
   var state = $.param({
     start: daterangepicker.startDate.format("YYYY-MM-DD"),
     end: daterangepicker.endDate.format("YYYY-MM-DD"),
-    project: $(config.projectInput).val()
+    project: $(config.projectInput).val(),
+    platform: $('#platform-select').val(),
+    agent: $('#agent-select').val()
   }) + '&pages=' + pages.join('|');
 
   if (window.history && window.history.replaceState) {
@@ -319,6 +321,8 @@ function popParams() {
 
   $(config.dateRangeSelector).data('daterangepicker').setStartDate(startDate);
   $(config.dateRangeSelector).data('daterangepicker').setEndDate(endDate);
+  $('#platform-select').val(params.platform || 'all-access');
+  $('#agent-select').val(params.agent || 'all-agents');
 
   resetArticleSelector();
 
@@ -480,6 +484,7 @@ $(document).ready(function() {
 
   $('.download-csv').on('click', exportCSV);
   $('.download-json').on('click', exportJSON);
+  $('#platform-select, #agent-select').on('change', updateChart);
 
   // window.onpopstate = function() {
   //   popParams();
