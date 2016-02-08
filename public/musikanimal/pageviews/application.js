@@ -22,6 +22,8 @@ var config = {
   daysAgo: 20
 };
 
+var normalized = false;
+
 function getProject() {
   var project = $(config.projectInput).val();
   // Get the first 2 characters from the project code to get the language
@@ -315,17 +317,40 @@ function popParams() {
   $(config.dateRangeSelector).data('daterangepicker').setStartDate(startDate);
   $(config.dateRangeSelector).data('daterangepicker').setEndDate(endDate);
 
+  resetArticleSelector();
+
   if(!params.pages || params.pages.length === 1 && !params.pages[0]) {
     params.pages = ['Cat', 'Dog'];
+    setArticleSelectorDefaults(params.pages);
   } else {
-    params.pages = $.map(params.pages, function(page) {
-      page = page.charAt(0).toUpperCase() + page.slice(1);
-      return decodeURIComponent(page.replace(/ /g, '_'));
-    });
+    if(normalized) {
+      params.pages = underscorePageNames(params.pages);
+      setArticleSelectorDefaults(params.pages);
+    } else {
+      normalizePageNames(params.pages).then(function(data) {
+        normalized = true;
+        var pages = $.map(data.query.pages, function(page) {
+          return page.displaytitle;
+        });
+        pages = underscorePageNames(pages);
+        setArticleSelectorDefaults(pages);
+      });
+    }
   }
+}
 
-  resetArticleSelector();
-  setArticleSelectorDefaults(params.pages);
+function normalizePageNames(pages) {
+  return $.ajax({
+    url: 'https://' + getProject() + '.org/w/api.php?action=query&prop=info&inprop=displaytitle&format=json&titles='+pages.join('|'),
+    dataType: 'jsonp'
+  });
+}
+
+function underscorePageNames(pages) {
+  return $.map(pages, function(page) {
+    page = page.charAt(0).toUpperCase() + page.slice(1);
+    return decodeURIComponent(page.replace(/ /g, '_'));
+  });
 }
 
 function parseHashParams() {
@@ -381,7 +406,6 @@ $(document).ready(function() {
   setupProjectInput();
   setupDateRangeSelector();
   setupArticleSelector();
-
   popParams();
 
   // simple metric to see how many use it (pageviews of the pageview, a meta-pageview, if you will :)
