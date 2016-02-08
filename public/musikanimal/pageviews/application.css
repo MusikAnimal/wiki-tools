@@ -99,6 +99,14 @@ footer {
   color: #fe875e;
 }
 
+.ad-block-notice {
+  margin-top: 20px;
+}
+
+.mono {
+  font-family: Consolas, Lucida Console, monospace;
+}
+
 .data-links {
   margin-top: 20px;
 }
