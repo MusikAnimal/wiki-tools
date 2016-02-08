@@ -349,7 +349,6 @@ function popParams() {
             });
           });
         }
-
         setArticleSelectorDefaults(underscorePageNames(params.pages));
       });
     }
@@ -410,8 +409,7 @@ function sanitizeData(data) {
   });
 }
 
-function exportCSV(e) {
-  e.preventDefault();
+function exportCSV() {
   var csvContent = "data:text/csv;charset=utf-8,Page,Color,Sum,Daily average,";
 
   dataRows = [];
@@ -431,9 +429,7 @@ function exportCSV(e) {
   window.open(encodedUri);
 }
 
-function exportJSON(e) {
-  e.preventDefault();
-
+function exportJSON() {
   var data = [];
 
   $.each(chartData, function(index, page) {
@@ -475,10 +471,13 @@ $(document).ready(function() {
     }
   });
 
-  $('.date-latest a').on('click', function(e) {
+  $('.date-latest a').on('click', function() {
     var daterangepicker = $(config.dateRangeSelector).data('daterangepicker');
     daterangepicker.setStartDate(moment().subtract($(this).data('value'), 'days'));
     daterangepicker.setEndDate(moment());
+  });
+
+  $('a').on('click', function(e) {
     e.preventDefault();
   });
 
