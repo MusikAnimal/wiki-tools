@@ -142,6 +142,7 @@ function resetArticleSelector () {
   articleSelector.select2('val', null);
   articleSelector.select2('data', null);
   articleSelector.select2('destroy');
+  $('.data-links').hide();
   setupArticleSelector();
   updateChart();
 }
@@ -244,6 +245,7 @@ function updateChart () {
           var context = $(config.chart)[0].getContext('2d');
           config.articleComparisonChart = new Chart(context).Line(lineData, options);
           $("#chart-legend").html(config.articleComparisonChart.generateLegend());
+          $('.data-links').show();
         }
       },
       error: function(data) {
@@ -369,6 +371,17 @@ function numDaysInRange() {
   return daterangepicker.endDate.diff(daterangepicker.startDate, 'days') + 1;
 }
 
+function getDateHeadings() {
+  var daterangepicker = $(config.dateRangeSelector).data('daterangepicker'),
+    startMoment = moment(daterangepicker.startDate),
+    dateHeadings = [];
+  for(var i=0; i<numDaysInRange(); i++) {
+    dateHeadings.push(startMoment.format("YYYY-MM-DD"));
+    startMoment.add(1, 'day');
+  }
+  return dateHeadings;
+}
+
 function parseHashParams() {
   var uri = decodeURI(location.hash.slice(1)),
     chunks = uri.split('&'),
@@ -387,31 +400,56 @@ function parseHashParams() {
   return params;
 }
 
+function sanitizeData(data) {
+  return $.map(data, function(entry) {
+    return entry || 0;
+  });
+}
+
 function exportCSV(e) {
   e.preventDefault();
-  var csvContent = "data:text/csv;charset=utf-8,Page,Color,Sum,";
-
-  var daterangepicker = $(config.dateRangeSelector).data('daterangepicker'),
-    startMoment = moment(daterangepicker.startDate),
-    dateHeadings = [];
-  for(var i=0; i<numDaysInRange(); i++) {
-    dateHeadings.push(startMoment.format("YYYY-MM-DD"));
-    startMoment.add(1, 'day');
-  }
+  var csvContent = "data:text/csv;charset=utf-8,Page,Color,Sum,Daily average,";
 
   dataRows = [];
   $.each(chartData, function(index, page) {
     var dataString = [
-      '"' + page.label + '"',
+      '"' + page.label.replace(/"/g, '""').replace(/'/g, "''") + '"',
       page.strokeColor,
-      page.sum
-    ].concat(page.data).join(',');
+      page.sum,
+      Math.round(page.sum / numDaysInRange())
+    ].concat(sanitizeData(page.data)).join(',');
     dataRows.push(dataString);
   });
 
-  csvContent = csvContent + dateHeadings.join(',') + '\n' + dataRows.join('\n');
+  csvContent = csvContent + getDateHeadings().join(',') + '\n' + dataRows.join('\n');
 
   var encodedUri = encodeURI(csvContent);
+  window.open(encodedUri);
+}
+
+function exportJSON(e) {
+  e.preventDefault();
+
+  var data = [];
+
+  $.each(chartData, function(index, page) {
+    var entry = {
+      page: page.label.replace(/"/g, "\"").replace(/'/g, "\'"),
+      color: page.strokeColor,
+      sum: page.sum,
+      daily_average: Math.round(page.sum / numDaysInRange())
+    };
+    page.data = sanitizeData(page.data);
+
+    getDateHeadings().forEach(function(heading, index) {
+      entry[heading.replace(/\\/,'')] = page.data[index];
+    });
+
+    data.push(entry);
+  });
+
+  var jsonContent = "data:text/json;charset=utf-8," + JSON.stringify(data),
+    encodedUri = encodeURI(jsonContent);
   window.open(encodedUri);
 }
 
@@ -441,6 +479,7 @@ $(document).ready(function() {
   });
 
   $('.download-csv').on('click', exportCSV);
+  $('.download-json').on('click', exportJSON);
 
   // window.onpopstate = function() {
   //   popParams();
