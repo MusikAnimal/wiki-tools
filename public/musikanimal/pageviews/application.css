@@ -69,6 +69,11 @@ body {
   padding: 0 5px;
 }
 
+header {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
 footer {
   font-family: sans-serif;
   text-align: center;
