@@ -221,11 +221,12 @@ function updateChart () {
 
         window.chartData = datasets;
 
+        // FIXME: add per-day averages!
         var template = "<b>Totals:</b><ul class=\"<%=name.toLowerCase()%>-legend\">" +
           "<% for (var i=0; i<datasets.length; i++){%>" +
             "<li><span class=\"indic\" style=\"background-color:<%=datasets[i].strokeColor%>\">" +
             "<a href='<%= getPageURL(datasets[i].label) %>'><%=datasets[i].label%></a></span> " +
-            "<%= chartData[i].sum %></li><%}%></ul>";
+            "<%= chartData[i].sum %> (<%= Math.round(chartData[i].sum / numDaysInRange()) %>/day)</li><%}%></ul>";
 
         // When all article datasets have been collected,
         // initialize the chart.
@@ -329,11 +330,21 @@ function popParams() {
     } else {
       normalizePageNames(params.pages).then(function(data) {
         normalized = true;
-        var pages = $.map(data.query.pages, function(page) {
-          return page.title;
-        });
-        pages = underscorePageNames(pages);
-        setArticleSelectorDefaults(pages);
+
+        if(data.query.normalized) {
+          data.query.normalized.forEach(function(normalPage) {
+            // do it this way to preserve ordering of pages
+            params.pages = $.map(params.pages, function(page) {
+              if(normalPage.from === page) {
+                return normalPage.to;
+              } else {
+                return page;
+              }
+            });
+          });
+        }
+
+        setArticleSelectorDefaults(underscorePageNames(params.pages));
       });
     }
   }
@@ -351,6 +362,11 @@ function underscorePageNames(pages) {
     page = page.charAt(0).toUpperCase() + page.slice(1);
     return decodeURIComponent(page.replace(/ /g, '_'));
   });
+}
+
+function numDaysInRange() {
+  var daterangepicker = $(config.dateRangeSelector).data('daterangepicker');
+  return daterangepicker.endDate.diff(daterangepicker.startDate, 'days') + 1;
 }
 
 function parseHashParams() {
@@ -376,10 +392,9 @@ function exportCSV(e) {
   var csvContent = "data:text/csv;charset=utf-8,Page,Color,Sum,";
 
   var daterangepicker = $(config.dateRangeSelector).data('daterangepicker'),
-    startMoment = jQuery.extend({}, daterangepicker.startDate),
-    max = daterangepicker.endDate.diff(startMoment, 'days'),
+    startMoment = moment(daterangepicker.startDate),
     dateHeadings = [];
-  for(var i=0; i<=max; i++) {
+  for(var i=0; i<numDaysInRange(); i++) {
     dateHeadings.push(startMoment.format("YYYY-MM-DD"));
     startMoment.add(1, 'day');
   }
@@ -387,7 +402,7 @@ function exportCSV(e) {
   dataRows = [];
   $.each(chartData, function(index, page) {
     var dataString = [
-      page.label,
+      '"' + page.label + '"',
       page.strokeColor,
       page.sum
     ].concat(page.data).join(',');
