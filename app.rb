@@ -39,7 +39,7 @@ class WikiTools < Sinatra::Application
   end
 
   get '/musikanimal/pageviews' do
-    send_file 'views/pageviews.html'
+    redirect 'https://tools.wmflabs.org/pageviews?redirected=true'
   end
 
   namespace '/musikanimal/api' do
