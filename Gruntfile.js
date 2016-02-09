@@ -3,6 +3,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-sass');
+  grunt.loadNpmTasks('grunt-babel');
 
   grunt.initConfig({
     watch: {
@@ -15,9 +16,24 @@ module.exports = function(grunt) {
         tasks: ['sass']
       }
     },
+    babel: {
+      options: {
+        presets: ['es2015']
+      },
+      pageviews: {
+        files: {
+          'public/musikanimal/pageviews.js': 'javascripts/pageviews.js'
+        }
+      },
+    },
     browserify: {
       options: {
-        transform: ['hbsfy']
+        transform: [
+          ['hbsfy'],
+          ['babelify', {
+            presets: ['es2015']
+          }]
+        ],
       },
       dist: {
         files: {
@@ -45,11 +61,26 @@ module.exports = function(grunt) {
           'public/musikanimal/namespace_counter.js': [
             'javascripts/namespace_counter.js',
             'views/namespace_counter/*.handlebars'
+          ],
+          'public/musikanimal/pageviews.js': [
+            'javascripts/pageviews.js'
           ]
         }
       }
     },
     sass: {
+      pageviews: {
+        options: {
+          sourcemap: 'none'
+        },
+        files: [{
+          expand: true,
+          cwd: 'stylesheets/pageviews',
+          src: ['pageviews.scss'],
+          dest: 'public/musikanimal',
+          ext: '.css'
+        }]
+      },
       dist: {
         options: {
           style: 'compressed',
@@ -103,6 +134,12 @@ module.exports = function(grunt) {
           src: ['namespace_counter.scss'],
           dest: 'public/musikanimal',
           ext: '.css'
+        }, {
+          expand: true,
+          cwd: 'stylesheets/pageviews',
+          src: ['pageviews.scss'],
+          dest: 'public/musikanimal',
+          ext: '.css'
         }]
       }
     },
@@ -118,13 +155,14 @@ module.exports = function(grunt) {
           'public/musikanimal/blp_edits.js' : ['public/musikanimal/blp_edits.js'],
           'public/musikanimal/policy_edits.js' : ['public/musikanimal/policy_edits.js'],
           'public/musikanimal/category_edits.js' : ['public/musikanimal/category_edits.js'],
-          'public/musikanimal/namespace_counter.js' : ['public/musikanimal/namespace_counter.js']
+          'public/musikanimal/namespace_counter.js' : ['public/musikanimal/namespace_counter.js'],
+          'public/musikanimal/pageviews.js' : ['public/musikanimal/pageviews.js']
         }
       }
     }
   });
 
-  var tasks = ['browserify', 'sass', 'uglify:all'];
-
-  grunt.registerTask('default', tasks);
+  grunt.registerTask('production', ['browserify:dist', 'sass:dist', 'uglify:all']);
+  grunt.registerTask('pageviews', ['babel:pageviews', 'sass:pageviews']);
+  grunt.registerTask('default', ['browserify:dist', 'sass:dist']);
 };

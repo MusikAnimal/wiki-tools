@@ -7,7 +7,7 @@
   Redistributed under the MIT License: https://opensource.org/licenses/MIT
 */
 
-var config = {
+const config = {
   // For more information on the list of all Wikimedia languages and projects, see:
   // https://www.mediawiki.org/wiki/Extension:SiteMatrix
   // https://en.wikipedia.org/w/api.php?action=sitematrix&formatversion=2
@@ -22,22 +22,22 @@ var config = {
   daysAgo: 20
 };
 
-var normalized = false;
+let normalized = false;
 
 function getProject() {
-  var project = $(config.projectInput).val();
+  let project = $(config.projectInput).val();
   // Get the first 2 characters from the project code to get the language
   return project.replace(/.org$/, '');
 }
 
 function getPageURL(page) {
-  return "//" + getProject() + ".org/wiki/" + page;
+  return `//${getProject()}.org/wiki/${page}`;
 }
+// must be exported to global scope for Chart template
+window.getPageURL = getPageURL;
 
 function setupProjectInput() {
-  var projectInput = $(config.projectInput);
-
-  projectInput.on('change', function () {
+  $(config.projectInput).on('change', function () {
     if(!this.value) {
       this.value = 'en.wikipedia.org';
       return;
@@ -48,7 +48,7 @@ function setupProjectInput() {
 }
 
 function validateProject() {
-  var project = $(config.projectInput).val();
+  const project = $(config.projectInput).val();
   if(sites.indexOf(project) === -1) {
     writeMessage(
       "<a href='//" + project + "'>" + project + "</a> is not a " +
@@ -65,7 +65,7 @@ function validateProject() {
 }
 
 function setupDateRangeSelector() {
-  var dateRangeSelector = $(config.dateRangeSelector);
+  const dateRangeSelector = $(config.dateRangeSelector);
   dateRangeSelector.daterangepicker({
     startDate: moment().subtract(config.daysAgo, 'days'),
     minDate: config.minDate,
@@ -75,7 +75,7 @@ function setupDateRangeSelector() {
 }
 
 function setupArticleSelector () {
-  var articleSelector = $(config.articleSelector);
+  const articleSelector = $(config.articleSelector);
 
   articleSelector.select2({
     placeholder: 'Type article names...',
@@ -89,20 +89,21 @@ function setupArticleSelector () {
       jsonpCallback: 'articleSuggestionCallback',
       data: function (search) {
         return {
-          'action': 'opensearch',
+          'action': 'query',
+          'list': 'prefixsearch',
           'format': 'json',
-          'search': search.term,
-          'redirects': 'return'
+          'pssearch': search.term || '',
+          'cirrusUseCompletionSuggester': 'yes'
         };
       },
       processResults: function (data) {
         // Processes Mediawiki API results into Select2 format.
-        var results = [];
-        if (data && data[1].length) {
-          results = data[1].map(function (elem) {
+        let results = [];
+        if (data && data.query && data.query.prefixsearch.length) {
+          results = data.query.prefixsearch.map(function (elem) {
             return {
-              id: elem.replace(/ /g, '_'),
-              text: elem
+              id: elem.title.replace(/ /g, '_'),
+              text: elem.title
             };
           });
         }
@@ -115,18 +116,11 @@ function setupArticleSelector () {
   articleSelector.on('change', updateChart);
 }
 
-function bindListeners() {
-  $(config.dateRangeSelector).on('change', function () {
-    updateChart();
-  });
-  $(config.articleSelector).on('change', function () {
-    updateChart();
-  });
-}
-
-function unbindListeners() {
-  $(config.dateRangeSelector).off('change');
-  $(config.articleSelector).off('change');
+function setupListeners() {
+  $('.download-csv').on('click', exportCSV);
+  $('.download-json').on('click', exportJSON);
+  $('#platform-select, #agent-select').on('change', updateChart);
+  // window.onpopstate = popParams();
 }
 
 // Select2 library prints "Uncaught TypeError: XYZ is not a function" errors
@@ -135,7 +129,7 @@ function unbindListeners() {
 function articleSuggestionCallback (data) {}
 
 function resetArticleSelector () {
-  var articleSelector = $(config.articleSelector);
+  const articleSelector = $(config.articleSelector);
   articleSelector.off('change');
   articleSelector.select2('val', null);
   articleSelector.select2('data', null);
@@ -147,12 +141,12 @@ function resetArticleSelector () {
 
 function setArticleSelectorDefaults (defaults) {
   // Caveat: This method only works with single-word article names.
-  var articleSelectorQuery = config.articleSelector;
+  const articleSelectorQuery = config.articleSelector;
   defaults.forEach(function (elem) {
-    var escapedText = $('<div>').text(elem).html();
+    const escapedText = $('<div>').text(elem).html();
     $('<option>' + escapedText + '</option>').appendTo(articleSelectorQuery);
   });
-  var articleSelector = $(articleSelectorQuery);
+  const articleSelector = $(articleSelectorQuery);
   articleSelector.select2('val', defaults);
   articleSelector.select2('close');
 }
@@ -160,10 +154,10 @@ function setArticleSelectorDefaults (defaults) {
 function updateChart () {
   pushParams();
   // Collect parameters from inputs.
-  var dateRangeSelector = $(config.dateRangeSelector);
-  var startDate = dateRangeSelector.data('daterangepicker').startDate;
-  var endDate = dateRangeSelector.data('daterangepicker').endDate;
-  var articles = $(config.articleSelector).select2('val') || [];
+  const dateRangeSelector = $(config.dateRangeSelector),
+    startDate = dateRangeSelector.data('daterangepicker').startDate,
+    endDate = dateRangeSelector.data('daterangepicker').endDate,
+    articles = $(config.articleSelector).select2('val') || [];
 
   // Destroy previous chart, if needed.
   if(config.articleComparisonChart) {
@@ -179,21 +173,21 @@ function updateChart () {
 
   // Asynchronously collect the data from Analytics Query Service API,
   // process it to Chart.js format and initialize the chart.
-  var labels = []; // Labels (dates) for the x-axis.
-  var datasets = []; // Data for each article timeseries.
+  let labels = []; // Labels (dates) for the x-axis.
+  let datasets = []; // Data for each article timeseries.
   articles.forEach(function (article, index) {
-    var uriEncodedArticle = encodeURIComponent(article);
+    const uriEncodedArticle = encodeURIComponent(article);
     // Url to query the API.
-    var url = (
-      'https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/' +
-      getProject() + '/' + $('#platform-select').val() + '/' + $('#agent-select').val() + '/' + uriEncodedArticle + '/daily/' +
-      startDate.format(config.timestampFormat) + '/' + endDate.format(config.timestampFormat)
+    const url = (
+      `https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/${getProject()}` +
+      `/${$('#platform-select').val()}/${$('#agent-select').val()}/${uriEncodedArticle}/daily` +
+      `/${startDate.format(config.timestampFormat)}/${endDate.format(config.timestampFormat)}`
     );
 
     $.ajax({
       url: url,
       dataType: 'json',
-      success: function(data) {
+      success: (data)=> {
         fillInNulls(data, startDate, endDate);
 
         // Get the labels from the first call.
@@ -204,8 +198,8 @@ function updateChart () {
         }
 
         // Build the article's dataset.
-        var values = data.items.map(function (elem) { return elem.views; });
-        var color = config.colors[index];
+        let values = data.items.map(function (elem) { return elem.views; });
+        let color = config.colors[index];
         datasets.push({
           label: article.replace(/_/g, ' '),
           fillColor: 'rgba(0,0,0,0)',
@@ -220,8 +214,7 @@ function updateChart () {
 
         window.chartData = datasets;
 
-        // FIXME: add per-day averages!
-        var template = "<b>Totals:</b><ul class=\"<%=name.toLowerCase()%>-legend\">" +
+        const template = "<b>Totals:</b><ul class=\"<%=name.toLowerCase()%>-legend\">" +
           "<% for (var i=0; i<datasets.length; i++){%>" +
             "<li><span class=\"indic\" style=\"background-color:<%=datasets[i].strokeColor%>\">" +
             "<a href='<%= getPageURL(datasets[i].label) %>'><%=datasets[i].label%></a></span> " +
@@ -229,10 +222,10 @@ function updateChart () {
 
         // When all article datasets have been collected,
         // initialize the chart.
-        if (datasets.length == articles.length) {
+        if (datasets.length === articles.length) {
           $(".chart-container").removeClass("loading");
-          var lineData = {labels: labels, datasets: datasets};
-          var options = {
+          const lineData = {labels: labels, datasets: datasets};
+          const options = {
             animation: true,
             animationEasing: "easeInOutQuart",
             bezierCurve: false,
@@ -240,13 +233,13 @@ function updateChart () {
           };
           $(".chart-container").html("");
           $(".chart-container").append("<canvas class='aqs-chart'>");
-          var context = $(config.chart)[0].getContext('2d');
+          const context = $(config.chart)[0].getContext('2d');
           config.articleComparisonChart = new Chart(context).Line(lineData, options);
           $("#chart-legend").html(config.articleComparisonChart.generateLegend());
           $('.data-links').show();
         }
       },
-      error: function(data) {
+      error: (data)=> {
         if(data.status === 404) {
           $(".chart-container").html("");
           $(".chart-container").removeClass("loading");
@@ -261,16 +254,16 @@ function updateChart () {
 // https://wikitech.wikimedia.org/wiki/Analytics/AQS/Pageview_API#Gotchas
 function fillInNulls(data, startDate, endDate) {
   // Extract the dates that are already in the timeseries
-  var alreadyThere = {};
+  let alreadyThere = {};
   data.items.forEach(function (elem) {
-    var date = moment(elem.timestamp, config.timestampFormat);
+    let date = moment(elem.timestamp, config.timestampFormat);
     alreadyThere[date] = elem;
   });
   data.items = [];
   // Reconstruct the timeseries adding nulls
   // for the dates that are not in the timeseries
   // FIXME: use this implementation for getDateHeadings()
-  for (var date = moment(startDate); date.isBefore(endDate); date.add(1, 'd')) {
+  for (let date = moment(startDate); date.isBefore(endDate); date.add(1, 'd')) {
     if (alreadyThere[date]) {
       data.items.push(alreadyThere[date]);
     } else if (date !== endDate) {
@@ -288,15 +281,15 @@ function writeMessage(message, className, clear) {
     $(".chart-container").html("");
   }
   $(".chart-container").append(
-    "<p class='" + (className || '') + "'>" + message + "</p>"
+    `<p class='${className || ''}'>${message}</p>`
   );
 }
 
 function pushParams() {
-  var daterangepicker = $(config.dateRangeSelector).data('daterangepicker'),
+  const daterangepicker = $(config.dateRangeSelector).data('daterangepicker'),
     pages = $(config.articleSelector).select2('val') || [];
 
-  var state = $.param({
+  const state = $.param({
     start: daterangepicker.startDate.format("YYYY-MM-DD"),
     end: daterangepicker.endDate.format("YYYY-MM-DD"),
     project: $(config.projectInput).val(),
@@ -310,12 +303,12 @@ function pushParams() {
 }
 
 function popParams() {
-  var params = parseHashParams();
+  let params = parseHashParams();
 
   $(config.projectInput).val(params.project || 'en.wikipedia.org');
   if(validateProject()) return;
 
-  var startDate = moment(params.start || moment().subtract(config.daysAgo, 'days')),
+  const startDate = moment(params.start || moment().subtract(config.daysAgo, 'days')),
     endDate = moment(params.end || Date.now());
 
   $(config.dateRangeSelector).data('daterangepicker').setStartDate(startDate);
@@ -339,7 +332,7 @@ function popParams() {
         if(data.query.normalized) {
           data.query.normalized.forEach(function(normalPage) {
             // do it this way to preserve ordering of pages
-            params.pages = $.map(params.pages, function(page) {
+            params.pages = params.pages.map((page)=> {
               if(normalPage.from === page) {
                 return normalPage.to;
               } else {
@@ -357,27 +350,28 @@ function popParams() {
 
 function normalizePageNames(pages) {
   return $.ajax({
-    url: 'https://' + getProject() + '.org/w/api.php?action=query&prop=info&format=json&titles='+pages.join('|'),
+    url: `https://${getProject()}.org/w/api.php?action=query&prop=info&format=json&titles=${pages.join('|')}`,
     dataType: 'jsonp'
   });
 }
 
 function underscorePageNames(pages) {
-  return $.map(pages, function(page) {
+  return pages.map((page)=> {
     return decodeURIComponent(page.replace(/ /g, '_'));
   });
 }
 
 function numDaysInRange() {
-  var daterangepicker = $(config.dateRangeSelector).data('daterangepicker');
+  const daterangepicker = $(config.dateRangeSelector).data('daterangepicker');
   return daterangepicker.endDate.diff(daterangepicker.startDate, 'days') + 1;
 }
+window.numDaysInRange = numDaysInRange;
 
 function getDateHeadings() {
-  var daterangepicker = $(config.dateRangeSelector).data('daterangepicker'),
+  const daterangepicker = $(config.dateRangeSelector).data('daterangepicker'),
     startMoment = moment(daterangepicker.startDate),
     dateHeadings = [];
-  for(var i=0; i<numDaysInRange(); i++) {
+  for(let i=0; i<numDaysInRange(); i++) {
     dateHeadings.push(startMoment.format("YYYY-MM-DD"));
     startMoment.add(1, 'day');
   }
@@ -385,12 +379,12 @@ function getDateHeadings() {
 }
 
 function parseHashParams() {
-  var uri = decodeURI(location.hash.slice(1)),
-    chunks = uri.split('&'),
-    params = {};
+  const uri = decodeURI(location.hash.slice(1)),
+    chunks = uri.split('&');
+  let params = {};
 
-  for(var i=0; i < chunks.length ; i++) {
-    var chunk = chunks[i].split('=');
+  for(let i=0; i < chunks.length ; i++) {
+    let chunk = chunks[i].split('=');
 
     if(chunk[0] === 'pages') {
       params.pages = chunk[1].split('|');
@@ -403,18 +397,18 @@ function parseHashParams() {
 }
 
 function sanitizeData(data) {
-  return $.map(data, function(entry) {
+  return data.map((entry)=> {
     return entry || 0;
   });
 }
 
 function exportCSV(e) {
   e.preventDefault();
-  var csvContent = "data:text/csv;charset=utf-8,Page,Color,Sum,Daily average,";
+  let csvContent = "data:text/csv;charset=utf-8,Page,Color,Sum,Daily average,";
 
-  dataRows = [];
-  $.each(chartData, function(index, page) {
-    var dataString = [
+  let dataRows = [];
+  chartData.forEach((page, index)=> {
+    let dataString = [
       '"' + page.label.replace(/"/g, '""').replace(/'/g, "''") + '"',
       page.strokeColor,
       page.sum,
@@ -425,17 +419,17 @@ function exportCSV(e) {
 
   csvContent = csvContent + getDateHeadings().join(',') + '\n' + dataRows.join('\n');
 
-  var encodedUri = encodeURI(csvContent);
+  const encodedUri = encodeURI(csvContent);
   window.open(encodedUri);
 }
 
 function exportJSON(e) {
   e.preventDefault();
 
-  var data = [];
+  let data = [];
 
-  $.each(chartData, function(index, page) {
-    var entry = {
+  chartData.forEach(function(page, index) {
+    let entry = {
       page: page.label.replace(/"/g, "\"").replace(/'/g, "\'"),
       color: page.strokeColor,
       sum: page.sum,
@@ -450,7 +444,7 @@ function exportJSON(e) {
     data.push(entry);
   });
 
-  var jsonContent = "data:text/json;charset=utf-8," + JSON.stringify(data),
+  const jsonContent = "data:text/json;charset=utf-8," + JSON.stringify(data),
     encodedUri = encodeURI(jsonContent);
   window.open(encodedUri);
 }
@@ -474,17 +468,11 @@ $(document).ready(function() {
   });
 
   $('.date-latest a').on('click', function(e) {
-    var daterangepicker = $(config.dateRangeSelector).data('daterangepicker');
+    let daterangepicker = $(config.dateRangeSelector).data('daterangepicker');
     daterangepicker.setStartDate(moment().subtract($(this).data('value'), 'days'));
     daterangepicker.setEndDate(moment());
     e.preventDefault();
   });
 
-  $('.download-csv').on('click', exportCSV);
-  $('.download-json').on('click', exportJSON);
-  $('#platform-select, #agent-select').on('change', updateChart);
-
-  // window.onpopstate = function() {
-  //   popParams();
-  // };
+  setupListeners();
 });

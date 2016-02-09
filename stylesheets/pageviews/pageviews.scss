@@ -25,7 +25,7 @@ body {
 
 /* Fix chart position */
 .aqs-chart {
-    margin-left: -12px;
+  margin-left: -12px;
 }
 
 .select2-container--default.select2-container--focus .select2-selection--multiple,
@@ -33,7 +33,7 @@ body {
 .select2-dropdown
  {
   border-color: #ccc;
-  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
 }
 
 .date-latest {
@@ -60,30 +60,30 @@ body {
   padding: 0;
   margin: 0 0 0 10px;
   list-style: none;
-}
 
-.line-legend li {
-  display: inline-block;
-  margin-bottom: 3px;
-  margin-right: 15px;
-}
+  li {
+    display: inline-block;
+    margin-bottom: 3px;
+    margin-right: 15px;
+  }
 
-.line-legend .indic {
-  border-radius: 3px;
-  display: inline-block;
-  padding: 0 5px;
+  .indic {
+    border-radius: 3px;
+    display: inline-block;
+    padding: 0 5px;
+  }
 }
 
 header {
-  margin-top: 10px;
   margin-bottom: 20px;
+  margin-top: 10px;
 }
 
 footer {
+  display: block;
   font-family: sans-serif;
-  text-align: center;
   margin: 40px 0 20px;
-  display: block
+  text-align: center;
 }
 
 .nowrap {
@@ -91,8 +91,8 @@ footer {
 }
 
 .disabled {
+  opacity: .5;
   pointer-events: none;
-  opacity: 0.5;
 }
 
 .heart {
@@ -112,11 +112,11 @@ footer {
 }
 
 .loading::after {
-  content: '';
   border: 3px solid #ccc;
   border-radius: 50%;
   border-top-color: transparent;
   bottom: 0;
+  content: '';
   left: 0;
   margin: auto;
   height: 60px;
@@ -124,8 +124,8 @@ footer {
   right: 0;
   top: 0;
   width: 60px;
+  animation-duration: .75s;
   animation-name: spin;
-  animation-duration: 0.75s;
   animation-iteration-count: infinite;
 }
 
@@ -133,6 +133,7 @@ footer {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
