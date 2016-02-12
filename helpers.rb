@@ -65,7 +65,10 @@ module Helpers
     return @@commons_mw if @@commons_mw
 
     MediaWiki::Gateway.default_user_agent = 'MusikBot/1.1 (https://en.wikipedia.org/wiki/User:MusikBot/)'
-    @@commons_mw ||= MediaWiki::Gateway.new('https://commons.wikimedia.org/w/api.php', bot: true)
+    @@commons_mw ||= MediaWiki::Gateway.new('https://commons.wikimedia.org/w/api.php',
+      bot: true,
+      ignorewarnings: true
+    )
     Auth.login(@@commons_mw)
     @@commons_mw
   end
@@ -75,7 +78,10 @@ module Helpers
     return @@enwiki_mw if @@enwiki_mw
 
     MediaWiki::Gateway.default_user_agent = 'MusikBot/1.1 (https://en.wikipedia.org/wiki/User:MusikBot/)'
-    @@enwiki_mw ||= MediaWiki::Gateway.new('https://en.wikipedia.org/w/api.php', bot: true)
+    @@enwiki_mw ||= MediaWiki::Gateway.new('https://en.wikipedia.org/w/api.php',
+      bot: true,
+      ignorewarnings: true
+    )
     Auth.login(@@enwiki_mw)
     @@enwiki_mw
   end
