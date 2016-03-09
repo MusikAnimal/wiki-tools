@@ -44,7 +44,7 @@ class WikiTools < Sinatra::Application
 
   namespace '/musikanimal/api' do
     after '/*' do
-      return if params['splat'].include?('uses')
+      return if params['splat'].join.include?('uses')
 
       tool = params['splat'].first.split('/').first rescue nil
       record_use(tool, 'api') if tool && params['norecord'].blank?
@@ -57,6 +57,10 @@ class WikiTools < Sinatra::Application
       else
         status 304
       end
+    end
+
+    patch '/pv_uses/:project' do
+      record_pageviews_use(params['project'])
     end
   end
 

@@ -355,7 +355,7 @@ module Repl
         },
         {
           name: 'AutoEd',
-          regex: 'using \\\\[\\\\[WP:AutoEd\\\\|AutoEd',
+          regex: 'using \\\\[\\\\[(Wikipedia|WP):AutoEd\\\\|AutoEd',
           link: 'WP:AutoEd'
         },
         {
@@ -462,6 +462,11 @@ module Repl
           name: 'DisamAssist',
           regex: 'using \\\\[\\\\[User:Qwertyytrewqqwerty/DisamAssist',
           link: 'User:Qwertyytrewqqwerty/DisamAssist'
+        },
+        {
+          name: 'Vada',
+          regex: '\\\\(\\\\[\\\\[WP:Vada\\\\]\\\\]\\\\)',
+          link: 'WP:Vada'
         }
       ]
 

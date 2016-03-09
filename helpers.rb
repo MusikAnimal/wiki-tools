@@ -121,6 +121,18 @@ module Helpers
     metadata_client.query("UPDATE views SET #{type} = #{type} + 1 WHERE tool = '#{tool}';")
   end
 
+  def record_pageviews_use(project)
+    if query('SELECT * FROM pageviews_projects WHERE project = ?', project).to_a.empty?
+      query('INSERT INTO pageviews_projects VALUES(NULL, ?, 0)', project)
+    end
+    query('UPDATE pageviews_projects SET count = count + 1 WHERE project = ?;', project)
+  end
+
+  def query(sql, *values)
+    statement = metadata_client.prepare(sql)
+    statement.execute(*values)
+  end
+
   def user_info(username, groups = false, db = :enwiki)
     opts = {
       list: 'users',
