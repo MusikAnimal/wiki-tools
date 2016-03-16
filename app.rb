@@ -5,6 +5,7 @@ require 'haml'
 require 'json'
 require 'pry'
 require 'mediawiki-gateway'
+require 'httparty'
 require 'auth.rb'
 
 class WikiTools < Sinatra::Application
@@ -22,6 +23,7 @@ class WikiTools < Sinatra::Application
 
   before do
     if request.path_info.split('/')[2] == 'api'
+      response.headers['Cache-Control'] = 'public, max-age=300'
       @t1 = Time.now.to_f
       if params['username'].present?
         @username = params['username']
@@ -36,6 +38,16 @@ class WikiTools < Sinatra::Application
       app_name: "MusikAnimal's tools",
       project_path: 'https://en.wikipedia.org'
     }
+  end
+
+  get '/musikanimal/pv' do
+    base_uri = 'https://wikimedia.org/api/rest_v1/metrics/pageviews/'
+    data = HTTParty.get(base_uri + params[:query])
+    halt 200, {
+      'Access-Control-Allow-Origin' => '*',
+      'Cache-Control' => 's-maxage=86400, max-age=86400',
+      'Content-Type' => 'application/json'
+    }, data.to_json
   end
 
   get '/musikanimal/pageviews' do
