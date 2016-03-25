@@ -430,7 +430,7 @@ module Repl
         },
         {
           name: 'autoFormatter',
-          regex: 'using \\\\[\\\\[:meta:User:TMg/autoFormatter',
+          regex: 'using (\\\\[\\\\[:meta:User:TMg/autoFormatter|autoFormatter)',
           link: 'meta:User:TMg/autoFormatter'
         },
         {
@@ -467,6 +467,11 @@ module Repl
           name: 'Vada',
           regex: '\\\\(\\\\[\\\\[WP:Vada\\\\]\\\\]\\\\)',
           link: 'WP:Vada'
+        },
+        {
+          name: 'stubtagtab.js',
+          regex: 'using \\\\[\\\\[User:MC10/stubtagtab.js',
+          link: 'User:MC10/stubtagtab.js'
         }
       ]
 
