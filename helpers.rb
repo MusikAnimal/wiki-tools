@@ -128,6 +128,20 @@ module Helpers
     query('UPDATE pageviews_projects SET count = count + 1 WHERE project = ?;', project)
   end
 
+  def record_topviews_use(project)
+    if query('SELECT * FROM topviews_projects WHERE project = ?', project).to_a.empty?
+      query('INSERT INTO topviews_projects VALUES(NULL, ?, 0)', project)
+    end
+    query('UPDATE topviews_projects SET count = count + 1 WHERE project = ?;', project)
+  end
+
+  def record_langviews_use(project)
+    if query('SELECT * FROM langviews_projects WHERE project = ?', project).to_a.empty?
+      query('INSERT INTO langviews_projects VALUES(NULL, ?, 0)', project)
+    end
+    query('UPDATE langviews_projects SET count = count + 1 WHERE project = ?;', project)
+  end
+
   def query(sql, *values)
     statement = metadata_client.prepare(sql)
     statement.execute(*values)

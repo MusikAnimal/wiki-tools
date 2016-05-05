@@ -74,6 +74,14 @@ class WikiTools < Sinatra::Application
     patch '/pv_uses/:project' do
       record_pageviews_use(params['project'])
     end
+
+    patch '/tv_uses/:project' do
+      record_topviews_use(params['project'])
+    end
+
+    patch '/lv_uses/:project' do
+      record_langviews_use(params['project'])
+    end
   end
 
   not_found do
