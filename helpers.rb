@@ -142,6 +142,13 @@ module Helpers
     query('UPDATE langviews_projects SET count = count + 1 WHERE project = ?;', project)
   end
 
+  def record_siteviews_use(project)
+    if query('SELECT * FROM siteviews_projects WHERE project = ?', project).to_a.empty?
+      query('INSERT INTO siteviews_projects VALUES(NULL, ?, 0)', project)
+    end
+    query('UPDATE siteviews_projects SET count = count + 1 WHERE project = ?;', project)
+  end
+
   def query(sql, *values)
     statement = metadata_client.prepare(sql)
     statement.execute(*values)
