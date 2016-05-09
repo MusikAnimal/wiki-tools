@@ -17,9 +17,10 @@ class WikiTools < Sinatra::Application
         return respond_error('Bad request! page parameter is required')
       end
 
+      escaped_page = URI.escape(params[:page])
       project = params[:project].present? ? params[:project] : 'en.wikipedia.org'
 
-      chars, words = calculate_prose("https://#{project}/wiki/#{params[:page]}")
+      chars, words = calculate_prose("https://#{project}/w/index.php?title=#{escaped_page}")
 
       res = {
         page: params[:page],
@@ -28,7 +29,7 @@ class WikiTools < Sinatra::Application
       }
 
       if params[:revision].present?
-        url = "https://#{project}/w/index.php?title=#{params[:page]}&oldid=#{params[:revision]}"
+        url = "https://#{project}/w/index.php?title=#{escaped_page}&oldid=#{params[:revision]}"
         chars, words = calculate_prose(url)
         res[:revision] = {
           id: params[:revision].to_i,
