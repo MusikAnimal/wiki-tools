@@ -24,6 +24,7 @@ function showTotalCount(data) {
   data.pg_count = data.policy_count + data.guideline_count;
   data.policy_percentage = Revisions.getPercentage(data.policy_count, data.total_count);
   data.guideline_percentage = Revisions.getPercentage(data.guideline_count, data.total_count);
+  data.replication_lag = WT.replag(data.replication_lag);
 
   if(typeof data.nonautomated_policy_count === 'number') {
     data.nonautomated = true;

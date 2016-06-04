@@ -1,1 +1,468 @@
-!function a(b,c,d){function e(g,h){if(!c[g]){if(!b[g]){var i="function"==typeof require&&require;if(!h&&i)return i(g,!0);if(f)return f(g,!0);var j=new Error("Cannot find module '"+g+"'");throw j.code="MODULE_NOT_FOUND",j}var k=c[g]={exports:{}};b[g][0].call(k.exports,function(a){var c=b[g][1][a];return e(c?c:a)},k,k.exports,a,b,c,d)}return c[g].exports}for(var f="function"==typeof require&&require,g=0;g<d.length;g++)e(d[g]);return e}({1:[function(a,b,c){"use strict";function d(){var a=$(z.projectInput).val();return a.replace(/.org$/,"")}function e(a){return"//"+d()+".org/wiki/"+a}function f(){$(z.projectInput).on("change",function(){return this.value?void(g()||k()):void(this.value="en.wikipedia.org")})}function g(){var a=$(z.projectInput).val();return-1===sites.indexOf(a)?(o("<a href='//"+a+"'>"+a+"</a> is not a <a href='https://en.wikipedia.org/w/api.php?action=sitematrix&formatversion=2'>valid project</a>","validate",!0),k(),$(".select2-selection--multiple").addClass("disabled"),!0):($(".validate").remove(),void $(".select2-selection--multiple").removeClass("disabled"))}function h(){var a=$(z.dateRangeSelector);a.daterangepicker({startDate:moment().subtract(z.daysAgo,"days"),minDate:z.minDate,maxDate:z.maxDate}),a.on("change",m)}function i(){var a=$(z.articleSelector);a.select2({placeholder:"Type article names...",maximumSelectionLength:10,ajax:{url:"https://"+d()+".org/w/api.php",dataType:"jsonp",delay:200,jsonpCallback:"articleSuggestionCallback",data:function(a){return{action:"query",list:"prefixsearch",format:"json",pssearch:a.term||"",cirrusUseCompletionSuggester:"yes"}},processResults:function(a){var b=[];return a&&a.query&&a.query.prefixsearch.length&&(b=a.query.prefixsearch.map(function(a){return{id:a.title.replace(/ /g,"_"),text:a.title}})),{results:b}},cache:!0}}),a.on("change",m)}function j(){$(".download-csv").on("click",x),$(".download-json").on("click",y),$("#platform-select, #agent-select").on("change",m)}function k(){var a=$(z.articleSelector);a.off("change"),a.select2("val",null),a.select2("data",null),a.select2("destroy"),$(".data-links").hide(),i(),m()}function l(a){var b=z.articleSelector;a.forEach(function(a){var c=$("<div>").text(a).html();$("<option>"+c+"</option>").appendTo(b)});var c=$(b);c.select2("val",a),c.select2("close")}function m(){p();var a=$(z.dateRangeSelector),b=a.data("daterangepicker").startDate,c=a.data("daterangepicker").endDate,f=$(z.articleSelector).select2("val")||[];z.articleComparisonChart&&(z.articleComparisonChart.destroy(),delete z.articleComparisonChart),f.length?$(".chart-container").addClass("loading"):$("#chart-legend").html("");var g=[],h=[];f.forEach(function(a,i){var j=encodeURIComponent(a),k="https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/"+d()+("/"+$("#platform-select").val()+"/"+$("#agent-select").val()+"/"+j+"/daily")+("/"+b.format(z.timestampFormat)+"/"+c.format(z.timestampFormat));$.ajax({url:k,dataType:"json",success:function(d){n(d,b,c),0===g.length&&(g=d.items.map(function(a){return moment(a.timestamp,z.timestampFormat).format("YYYY-MM-DD")}));var e=d.items.map(function(a){return a.views}),j=z.colors[i];h.push({label:a.replace(/_/g," "),fillColor:"rgba(0,0,0,0)",strokeColor:j,pointColor:j,pointStrokeColor:"#fff",pointHighlightFill:"#fff",pointHighlightStroke:j,data:e,sum:e.reduce(function(a,b){return a+b})}),window.chartData=h;var k='<b>Totals:</b><ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span class="indic" style="background-color:<%=datasets[i].strokeColor%>"><a href=\'<%= getPageURL(datasets[i].label) %>\'><%=datasets[i].label%></a></span> <%= chartData[i].sum %> (<%= Math.round(chartData[i].sum / numDaysInRange()) %>/day)</li><%}%></ul>';if(h.length===f.length){$(".chart-container").removeClass("loading");var l={labels:g,datasets:h},m={animation:!0,animationEasing:"easeInOutQuart",bezierCurve:!1,legendTemplate:k};$(".chart-container").html(""),$(".chart-container").append("<canvas class='aqs-chart'>");var o=$(z.chart)[0].getContext("2d");z.articleComparisonChart=new Chart(o).Line(l,m),$("#chart-legend").html(z.articleComparisonChart.generateLegend()),$(".data-links").show()}},error:function(b){404===b.status&&($(".chart-container").html(""),$(".chart-container").removeClass("loading"),o("No data found for the page <a href='"+e(a)+"'>"+a+"</a>"))}})})}function n(a,b,c){var d={};a.items.forEach(function(a){var b=moment(a.timestamp,z.timestampFormat);d[b]=a}),a.items=[];for(var e=moment(b);e.isBefore(c);e.add(1,"d"))d[e]?a.items.push(d[e]):e!==c&&a.items.push({timestamp:e.format(z.timestampFormat),views:null})}function o(a,b,c){c&&($(".chart-container").removeClass("loading"),$(".chart-container").html("")),$(".chart-container").append("<p class='"+(b||"")+"'>"+a+"</p>")}function p(){var a=$(z.dateRangeSelector).data("daterangepicker"),b=$(z.articleSelector).select2("val")||[],c=$.param({start:a.startDate.format("YYYY-MM-DD"),end:a.endDate.format("YYYY-MM-DD"),project:$(z.projectInput).val(),platform:$("#platform-select").val(),agent:$("#agent-select").val()})+"&pages="+b.join("|");window.history&&window.history.replaceState&&window.history.replaceState({},"Pageview comparsion","#"+c)}function q(){var a=v();if($(z.projectInput).val(a.project||"en.wikipedia.org"),!g()){var b=moment(a.start||moment().subtract(z.daysAgo,"days")),c=moment(a.end||Date.now());$(z.dateRangeSelector).data("daterangepicker").setStartDate(b),$(z.dateRangeSelector).data("daterangepicker").setEndDate(c),$("#platform-select").val(a.platform||"all-access"),$("#agent-select").val(a.agent||"user"),k(),!a.pages||1===a.pages.length&&!a.pages[0]?(a.pages=["Cat","Dog"],l(a.pages)):A?(a.pages=s(a.pages),l(a.pages)):r(a.pages).then(function(b){A=!0,b.query.normalized&&b.query.normalized.forEach(function(b){a.pages=a.pages.map(function(a){return b.from===a?b.to:a})}),l(s(a.pages))})}}function r(a){return $.ajax({url:"https://"+d()+".org/w/api.php?action=query&prop=info&format=json&titles="+a.join("|"),dataType:"jsonp"})}function s(a){return a.map(function(a){return decodeURIComponent(a.replace(/ /g,"_"))})}function t(){var a=$(z.dateRangeSelector).data("daterangepicker");return a.endDate.diff(a.startDate,"days")+1}function u(){for(var a=$(z.dateRangeSelector).data("daterangepicker"),b=moment(a.startDate),c=[],d=0;d<t();d++)c.push(b.format("YYYY-MM-DD")),b.add(1,"day");return c}function v(){for(var a=decodeURI(location.hash.slice(1)),b=a.split("&"),c={},d=0;d<b.length;d++){var e=b[d].split("=");"pages"===e[0]?c.pages=e[1].split("|"):c[e[0]]=e[1]}return c}function w(a){return a.map(function(a){return a||0})}function x(a){a.preventDefault();var b="data:text/csv;charset=utf-8,Page,Color,Sum,Daily average,",c=[];chartData.forEach(function(a,b){var d=['"'+a.label.replace(/"/g,'""').replace(/'/g,"''")+'"',a.strokeColor,a.sum,Math.round(a.sum/t())].concat(w(a.data)).join(",");c.push(d)}),b=b+u().join(",")+"\n"+c.join("\n");var d=encodeURI(b);window.open(d)}function y(a){a.preventDefault();var b=[];chartData.forEach(function(a,c){var d={page:a.label.replace(/"/g,'"').replace(/'/g,"'"),color:a.strokeColor,sum:a.sum,daily_average:Math.round(a.sum/t())};a.data=w(a.data),u().forEach(function(b,c){d[b.replace(/\\/,"")]=a.data[c]}),b.push(d)});var c="data:text/json;charset=utf-8,"+JSON.stringify(b),d=encodeURI(c);window.open(d)}var z={colors:["#bccbda","#e0ad91","#c1aa78","#8da075","#998a6f","#F24236","#F5F749","#EFBDEB","#2E86AB","#565554"],projectInput:".aqs-project-input",dateRangeSelector:".aqs-date-range-selector",articleSelector:".aqs-article-selector",chart:".aqs-chart",minDate:moment("2015-10-01"),maxDate:moment().subtract(1,"days"),timestampFormat:"YYYYMMDD00",daysAgo:20},A=!1;window.getPageURL=e,window.numDaysInRange=t,$(document).ready(function(){$.extend(Chart.defaults.global,{animation:!1,responsive:!0}),f(),h(),i(),q(),$.ajax({url:"/musikanimal/api/uses",method:"PATCH",data:{tool:"pageviews",type:"form"}}),$(".date-latest a").on("click",function(a){var b=$(z.dateRangeSelector).data("daterangepicker");b.setStartDate(moment().subtract($(this).data("value"),"days")),b.setEndDate(moment()),a.preventDefault()}),j()})},{}]},{},[1]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
+/*
+  Pageviews Comparison tool
+
+  Forked by MusikAnimal from https://gist.github.com/marcelrf/49738d14116fd547fe6d courtesy of marcelrf
+
+  Copyright 2016 MusikAnimal
+  Redistributed under the MIT License: https://opensource.org/licenses/MIT
+*/
+
+var config = {
+  // For more information on the list of all Wikimedia languages and projects, see:
+  // https://www.mediawiki.org/wiki/Extension:SiteMatrix
+  // https://en.wikipedia.org/w/api.php?action=sitematrix&formatversion=2
+  colors: ['#bccbda', '#e0ad91', '#c1aa78', '#8da075', '#998a6f', '#F24236', '#F5F749', '#EFBDEB', '#2E86AB', '#565554'],
+  projectInput: '.aqs-project-input',
+  dateRangeSelector: '.aqs-date-range-selector',
+  articleSelector: '.aqs-article-selector',
+  chart: '.aqs-chart',
+  minDate: moment('2015-10-01'),
+  maxDate: moment().subtract(1, 'days'),
+  timestampFormat: 'YYYYMMDD00',
+  daysAgo: 20
+};
+
+var normalized = false;
+
+function getProject() {
+  var project = $(config.projectInput).val();
+  // Get the first 2 characters from the project code to get the language
+  return project.replace(/.org$/, '');
+}
+
+function getPageURL(page) {
+  return '//' + getProject() + '.org/wiki/' + page;
+}
+// must be exported to global scope for Chart template
+window.getPageURL = getPageURL;
+
+function setupProjectInput() {
+  $(config.projectInput).on('change', function () {
+    if (!this.value) {
+      this.value = 'en.wikipedia.org';
+      return;
+    }
+    if (validateProject()) return;
+    resetArticleSelector(); // This will call updateChart() itself.
+  });
+}
+
+function validateProject() {
+  var project = $(config.projectInput).val();
+  if (sites.indexOf(project) === -1) {
+    writeMessage("<a href='//" + project + "'>" + project + "</a> is not a " + "<a href='https://en.wikipedia.org/w/api.php?action=sitematrix&formatversion=2'>valid project</a>", 'validate', true);
+    resetArticleSelector();
+    $(".select2-selection--multiple").addClass('disabled');
+    return true;
+  } else {
+    $(".validate").remove();
+    $(".select2-selection--multiple").removeClass('disabled');
+  }
+}
+
+function setupDateRangeSelector() {
+  var dateRangeSelector = $(config.dateRangeSelector);
+  dateRangeSelector.daterangepicker({
+    startDate: moment().subtract(config.daysAgo, 'days'),
+    minDate: config.minDate,
+    maxDate: config.maxDate
+  });
+  dateRangeSelector.on('change', updateChart);
+}
+
+function setupArticleSelector() {
+  var articleSelector = $(config.articleSelector);
+
+  articleSelector.select2({
+    placeholder: 'Type article names...',
+    maximumSelectionLength: 10,
+    // This ajax call queries the Mediawiki API for article name
+    // suggestions given the search term inputed in the selector.
+    ajax: {
+      url: 'https://' + getProject() + '.org/w/api.php',
+      dataType: 'jsonp',
+      delay: 200,
+      jsonpCallback: 'articleSuggestionCallback',
+      data: function data(search) {
+        return {
+          'action': 'query',
+          'list': 'prefixsearch',
+          'format': 'json',
+          'pssearch': search.term || '',
+          'cirrusUseCompletionSuggester': 'yes'
+        };
+      },
+      processResults: function processResults(data) {
+        // Processes Mediawiki API results into Select2 format.
+        var results = [];
+        if (data && data.query && data.query.prefixsearch.length) {
+          results = data.query.prefixsearch.map(function (elem) {
+            return {
+              id: elem.title.replace(/ /g, '_'),
+              text: elem.title
+            };
+          });
+        }
+        return { results: results };
+      },
+      cache: true
+    }
+  });
+
+  articleSelector.on('change', updateChart);
+}
+
+function setupListeners() {
+  $('.download-csv').on('click', exportCSV);
+  $('.download-json').on('click', exportJSON);
+  $('#platform-select, #agent-select').on('change', updateChart);
+  // window.onpopstate = popParams();
+}
+
+// Select2 library prints "Uncaught TypeError: XYZ is not a function" errors
+// caused by race conditions between consecutive ajax calls. They are actually
+// not critical and can be avoided with this empty function.
+function articleSuggestionCallback(data) {}
+
+function resetArticleSelector() {
+  var articleSelector = $(config.articleSelector);
+  articleSelector.off('change');
+  articleSelector.select2('val', null);
+  articleSelector.select2('data', null);
+  articleSelector.select2('destroy');
+  $('.data-links').hide();
+  setupArticleSelector();
+  updateChart();
+}
+
+function setArticleSelectorDefaults(defaults) {
+  // Caveat: This method only works with single-word article names.
+  var articleSelectorQuery = config.articleSelector;
+  defaults.forEach(function (elem) {
+    var escapedText = $('<div>').text(elem).html();
+    $('<option>' + escapedText + '</option>').appendTo(articleSelectorQuery);
+  });
+  var articleSelector = $(articleSelectorQuery);
+  articleSelector.select2('val', defaults);
+  articleSelector.select2('close');
+}
+
+function updateChart() {
+  pushParams();
+  // Collect parameters from inputs.
+  var dateRangeSelector = $(config.dateRangeSelector),
+      startDate = dateRangeSelector.data('daterangepicker').startDate,
+      endDate = dateRangeSelector.data('daterangepicker').endDate,
+      articles = $(config.articleSelector).select2('val') || [];
+
+  // Destroy previous chart, if needed.
+  if (config.articleComparisonChart) {
+    config.articleComparisonChart.destroy();
+    delete config.articleComparisonChart;
+  }
+
+  if (articles.length) {
+    $(".chart-container").addClass("loading");
+  } else {
+    $("#chart-legend").html("");
+  }
+
+  // Asynchronously collect the data from Analytics Query Service API,
+  // process it to Chart.js format and initialize the chart.
+  var labels = []; // Labels (dates) for the x-axis.
+  var datasets = []; // Data for each article timeseries.
+  articles.forEach(function (article, index) {
+    var uriEncodedArticle = encodeURIComponent(article);
+    // Url to query the API.
+    var url = 'https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/' + getProject() + ('/' + $('#platform-select').val() + '/' + $('#agent-select').val() + '/' + uriEncodedArticle + '/daily') + ('/' + startDate.format(config.timestampFormat) + '/' + endDate.format(config.timestampFormat));
+
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      success: function success(data) {
+        fillInNulls(data, startDate, endDate);
+
+        // Get the labels from the first call.
+        if (labels.length === 0) {
+          labels = data.items.map(function (elem) {
+            return moment(elem.timestamp, config.timestampFormat).format('YYYY-MM-DD');
+          });
+        }
+
+        // Build the article's dataset.
+        var values = data.items.map(function (elem) {
+          return elem.views;
+        });
+        var color = config.colors[index];
+        datasets.push({
+          label: article.replace(/_/g, ' '),
+          fillColor: 'rgba(0,0,0,0)',
+          strokeColor: color,
+          pointColor: color,
+          pointStrokeColor: '#fff',
+          pointHighlightFill: '#fff',
+          pointHighlightStroke: color,
+          data: values,
+          sum: values.reduce(function (a, b) {
+            return a + b;
+          })
+        });
+
+        window.chartData = datasets;
+
+        var template = "<b>Totals:</b><ul class=\"<%=name.toLowerCase()%>-legend\">" + "<% for (var i=0; i<datasets.length; i++){%>" + "<li><span class=\"indic\" style=\"background-color:<%=datasets[i].strokeColor%>\">" + "<a href='<%= getPageURL(datasets[i].label) %>'><%=datasets[i].label%></a></span> " + "<%= chartData[i].sum %> (<%= Math.round(chartData[i].sum / numDaysInRange()) %>/day)</li><%}%></ul>";
+
+        // When all article datasets have been collected,
+        // initialize the chart.
+        if (datasets.length === articles.length) {
+          $(".chart-container").removeClass("loading");
+          var lineData = { labels: labels, datasets: datasets };
+          var options = {
+            animation: true,
+            animationEasing: "easeInOutQuart",
+            bezierCurve: false,
+            legendTemplate: template
+          };
+          $(".chart-container").html("");
+          $(".chart-container").append("<canvas class='aqs-chart'>");
+          var context = $(config.chart)[0].getContext('2d');
+          config.articleComparisonChart = new Chart(context).Line(lineData, options);
+          $("#chart-legend").html(config.articleComparisonChart.generateLegend());
+          $('.data-links').show();
+        }
+      },
+      error: function error(data) {
+        if (data.status === 404) {
+          $(".chart-container").html("");
+          $(".chart-container").removeClass("loading");
+          writeMessage("No data found for the page <a href='" + getPageURL(article) + "'>" + article + "</a>");
+        }
+      }
+    });
+  });
+}
+
+// Fills in null values to a timeseries, see:
+// https://wikitech.wikimedia.org/wiki/Analytics/AQS/Pageview_API#Gotchas
+function fillInNulls(data, startDate, endDate) {
+  // Extract the dates that are already in the timeseries
+  var alreadyThere = {};
+  data.items.forEach(function (elem) {
+    var date = moment(elem.timestamp, config.timestampFormat);
+    alreadyThere[date] = elem;
+  });
+  data.items = [];
+  // Reconstruct the timeseries adding nulls
+  // for the dates that are not in the timeseries
+  // FIXME: use this implementation for getDateHeadings()
+  for (var date = moment(startDate); date.isBefore(endDate); date.add(1, 'd')) {
+    if (alreadyThere[date]) {
+      data.items.push(alreadyThere[date]);
+    } else if (date !== endDate) {
+      data.items.push({
+        timestamp: date.format(config.timestampFormat),
+        views: null
+      });
+    }
+  }
+}
+
+function writeMessage(message, className, clear) {
+  if (clear) {
+    $(".chart-container").removeClass("loading");
+    $(".chart-container").html("");
+  }
+  $(".chart-container").append('<p class=\'' + (className || '') + '\'>' + message + '</p>');
+}
+
+function pushParams() {
+  var daterangepicker = $(config.dateRangeSelector).data('daterangepicker'),
+      pages = $(config.articleSelector).select2('val') || [];
+
+  var state = $.param({
+    start: daterangepicker.startDate.format("YYYY-MM-DD"),
+    end: daterangepicker.endDate.format("YYYY-MM-DD"),
+    project: $(config.projectInput).val(),
+    platform: $('#platform-select').val(),
+    agent: $('#agent-select').val()
+  }) + '&pages=' + pages.join('|');
+
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({}, 'Pageview comparsion', "#" + state);
+  }
+}
+
+function popParams() {
+  var params = parseHashParams();
+
+  $(config.projectInput).val(params.project || 'en.wikipedia.org');
+  if (validateProject()) return;
+
+  var startDate = moment(params.start || moment().subtract(config.daysAgo, 'days')),
+      endDate = moment(params.end || Date.now());
+
+  $(config.dateRangeSelector).data('daterangepicker').setStartDate(startDate);
+  $(config.dateRangeSelector).data('daterangepicker').setEndDate(endDate);
+  $('#platform-select').val(params.platform || 'all-access');
+  $('#agent-select').val(params.agent || 'user');
+
+  resetArticleSelector();
+
+  if (!params.pages || params.pages.length === 1 && !params.pages[0]) {
+    params.pages = ['Cat', 'Dog'];
+    setArticleSelectorDefaults(params.pages);
+  } else {
+    if (normalized) {
+      params.pages = underscorePageNames(params.pages);
+      setArticleSelectorDefaults(params.pages);
+    } else {
+      normalizePageNames(params.pages).then(function (data) {
+        normalized = true;
+
+        if (data.query.normalized) {
+          data.query.normalized.forEach(function (normalPage) {
+            // do it this way to preserve ordering of pages
+            params.pages = params.pages.map(function (page) {
+              if (normalPage.from === page) {
+                return normalPage.to;
+              } else {
+                return page;
+              }
+            });
+          });
+        }
+
+        setArticleSelectorDefaults(underscorePageNames(params.pages));
+      });
+    }
+  }
+}
+
+function normalizePageNames(pages) {
+  return $.ajax({
+    url: 'https://' + getProject() + '.org/w/api.php?action=query&prop=info&format=json&titles=' + pages.join('|'),
+    dataType: 'jsonp'
+  });
+}
+
+function underscorePageNames(pages) {
+  return pages.map(function (page) {
+    return decodeURIComponent(page.replace(/ /g, '_'));
+  });
+}
+
+function numDaysInRange() {
+  var daterangepicker = $(config.dateRangeSelector).data('daterangepicker');
+  return daterangepicker.endDate.diff(daterangepicker.startDate, 'days') + 1;
+}
+window.numDaysInRange = numDaysInRange;
+
+function getDateHeadings() {
+  var daterangepicker = $(config.dateRangeSelector).data('daterangepicker'),
+      startMoment = moment(daterangepicker.startDate),
+      dateHeadings = [];
+  for (var i = 0; i < numDaysInRange(); i++) {
+    dateHeadings.push(startMoment.format("YYYY-MM-DD"));
+    startMoment.add(1, 'day');
+  }
+  return dateHeadings;
+}
+
+function parseHashParams() {
+  var uri = decodeURI(location.hash.slice(1)),
+      chunks = uri.split('&');
+  var params = {};
+
+  for (var i = 0; i < chunks.length; i++) {
+    var chunk = chunks[i].split('=');
+
+    if (chunk[0] === 'pages') {
+      params.pages = chunk[1].split('|');
+    } else {
+      params[chunk[0]] = chunk[1];
+    }
+  }
+
+  return params;
+}
+
+function sanitizeData(data) {
+  return data.map(function (entry) {
+    return entry || 0;
+  });
+}
+
+function exportCSV(e) {
+  e.preventDefault();
+  var csvContent = "data:text/csv;charset=utf-8,Page,Color,Sum,Daily average,";
+
+  var dataRows = [];
+  chartData.forEach(function (page, index) {
+    var dataString = ['"' + page.label.replace(/"/g, '""').replace(/'/g, "''") + '"', page.strokeColor, page.sum, Math.round(page.sum / numDaysInRange())].concat(sanitizeData(page.data)).join(',');
+    dataRows.push(dataString);
+  });
+
+  csvContent = csvContent + getDateHeadings().join(',') + '\n' + dataRows.join('\n');
+
+  var encodedUri = encodeURI(csvContent);
+  window.open(encodedUri);
+}
+
+function exportJSON(e) {
+  e.preventDefault();
+
+  var data = [];
+
+  chartData.forEach(function (page, index) {
+    var entry = {
+      page: page.label.replace(/"/g, "\"").replace(/'/g, "\'"),
+      color: page.strokeColor,
+      sum: page.sum,
+      daily_average: Math.round(page.sum / numDaysInRange())
+    };
+    page.data = sanitizeData(page.data);
+
+    getDateHeadings().forEach(function (heading, index) {
+      entry[heading.replace(/\\/, '')] = page.data[index];
+    });
+
+    data.push(entry);
+  });
+
+  var jsonContent = "data:text/json;charset=utf-8," + JSON.stringify(data),
+      encodedUri = encodeURI(jsonContent);
+  window.open(encodedUri);
+}
+
+$(document).ready(function () {
+  $.extend(Chart.defaults.global, { animation: false, responsive: true });
+
+  setupProjectInput();
+  setupDateRangeSelector();
+  setupArticleSelector();
+  popParams();
+
+  // simple metric to see how many use it (pageviews of the pageview, a meta-pageview, if you will :)
+  $.ajax({
+    url: "/musikanimal/api/uses",
+    method: 'PATCH',
+    data: {
+      tool: 'pageviews',
+      type: 'form'
+    }
+  });
+
+  $('.date-latest a').on('click', function (e) {
+    var daterangepicker = $(config.dateRangeSelector).data('daterangepicker');
+    daterangepicker.setStartDate(moment().subtract($(this).data('value'), 'days'));
+    daterangepicker.setEndDate(moment());
+    e.preventDefault();
+  });
+
+  setupListeners();
+});
+
+},{}]},{},[1]);

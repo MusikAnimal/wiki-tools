@@ -9,6 +9,7 @@
     "babelify": "^7.2.0",
     "babel-preset-es2015": "*",
     "eslint": "*",
+    "grunt": "0.4.5",
     "grunt-contrib-watch": "0.6.1",
     "grunt-babel": "*",
     "grunt-browserify": "4.0.1",
