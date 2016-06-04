@@ -100,7 +100,7 @@ module Helpers
     data.delete_if { |_k, v| v.nil? } if data.is_a?(Hash)
 
     if opts[:replag]
-      lag = repl_client.replag
+      lag = 5000 #repl_client.replag
       data[:replication_lag] = lag.to_i if lag > 100
     end
     data[:elapsed_time] = (Time.now.to_f - @t1).round(3) if @t1 && opts[:timing]
