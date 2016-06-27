@@ -1,9 +1,47 @@
-{
-  "name" : "musikanimal-nonautomated-contribs",
-  "title" : "Non-automated edit counter",
-  "description" : "View non-automated contributions of a user, and also show a count of all the different tools they've used",
-  "url" : "http://tools.wmflabs.org/musikanimal/nonautomated_edits",
-  "keywords" : "tools, counter, nonautomated, automated contributions, non-automated",
-  "author" : "MusikAnimal",
-  "repository" : "https://github.com/musikanimal/wiki-tools"
-}
+[
+  {
+    "name" : "nonautomated-edit",
+    "title" : "Non-automated edit counter",
+    "description" : "View non-automated contributions of a user, and also show a count of all the different tools they've used",
+    "url" : "http://tools.wmflabs.org/musikanimal/nonautomated_edits",
+    "keywords" : "tools,counter,nonautomated,automated contributions,non-automated,edit count,stats,statistics,activity",
+    "author" : "MusikAnimal",
+    "repository" : "https://github.com/musikanimal/wiki-tools"
+  },
+  {
+    "name" : "blp-edits",
+    "title" : "BLP edit counter",
+    "description" : "View a user's contributions to biographies of living persons, with options to exclude (semi-)automated edits",
+    "url" : "http://tools.wmflabs.org/musikanimal/blp_edits",
+    "keywords" : "blp,tools,counter,nonautomated,automated contributions,non-automated,edit count,stats,statistics,activity",
+    "author" : "MusikAnimal",
+    "repository" : "https://github.com/musikanimal/wiki-tools"
+  },
+  {
+    "name" : "policy-edits",
+    "title" : "Policies and guidelines edit counter",
+    "description" : "View a user's contributions to policies and guidelines, with options to exclude (semi-)automated edits",
+    "url" : "http://tools.wmflabs.org/musikanimal/policy_edits",
+    "keywords" : "policy,polices,guidelines,tools,counter,nonautomated,automated contributions,non-automated,edit count,stats,statistics,activity",
+    "author" : "MusikAnimal",
+    "repository" : "https://github.com/musikanimal/wiki-tools"
+  },
+  {
+    "name" : "category-edits",
+    "title" : "Category edit counter",
+    "description" : "View a user's contributions to given categories, with options to exclude (semi-)automated edits",
+    "url" : "http://tools.wmflabs.org/musikanimal/category_edits",
+    "keywords" : "categories,category,guidelines,tools,counter,nonautomated,automated contributions,non-automated,edit count,stats,statistics,activity",
+    "author" : "MusikAnimal",
+    "repository" : "https://github.com/musikanimal/wiki-tools"
+  },
+  {
+    "name" : "nonautomated-namespace-edits",
+    "title" : "Non-automated namespace counter",
+    "description" : "View non-automated contributions of a user, graphed by namespace",
+    "url" : "http://tools.wmflabs.org/musikanimal/namespace_counter",
+    "keywords" : "namespace,tools,counter,nonautomated,automated contributions,non-automated,edit count,stats,statistics,activity",
+    "author" : "MusikAnimal",
+    "repository" : "https://github.com/musikanimal/wiki-tools"
+  }
+]
