@@ -156,6 +156,13 @@ module Helpers
     query('UPDATE massviews_projects SET count = count + 1 WHERE project = ?;', project)
   end
 
+  def record_xtools_use(project)
+    if query('SELECT * FROM xtools_projects WHERE project = ?', project).to_a.empty?
+      query('INSERT INTO xtools_projects VALUES(NULL, ?, 0)', project)
+    end
+    query('UPDATE xtools_projects SET count = count + 1 WHERE project = ?;', project)
+  end
+
   def query(sql, *values)
     statement = metadata_client.prepare(sql)
     statement.execute(*values)

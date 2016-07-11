@@ -90,6 +90,10 @@ class WikiTools < Sinatra::Application
     patch '/mv_uses/:project' do
       record_massviews_use(params['project'])
     end
+
+    patch '/xtools_uses/:project' do
+      record_xtools_use(params['project'])
+    end
   end
 
   not_found do
