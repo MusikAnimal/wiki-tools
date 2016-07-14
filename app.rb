@@ -1,6 +1,7 @@
 $LOAD_PATH << '.'
 require 'sinatra'
 require 'sinatra/namespace'
+# require 'sinatra/cross_origin'
 require 'haml'
 require 'json'
 require 'pry'
@@ -55,8 +56,9 @@ class WikiTools < Sinatra::Application
   end
 
   post '/musikanimal/paste' do
+    # cross_origin
     if request.host.include?('wmflabs')
-      HTTParty.post('https://phabricator.wikimedia.org/api/paste.create',
+      res = HTTParty.post('https://phabricator.wikimedia.org/api/paste.create',
         body: {
           'api.token' => Auth.get_phab_token,
           title: params[:title],
@@ -64,6 +66,7 @@ class WikiTools < Sinatra::Application
         }
       )
     end
+    halt 201, { 'Content-Type' => 'application/json' }, res.to_json
   end
 
   namespace '/musikanimal/api' do
