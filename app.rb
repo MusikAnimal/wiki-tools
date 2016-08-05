@@ -106,6 +106,10 @@ class WikiTools < Sinatra::Application
       record_massviews_use(params['project'])
     end
 
+    patch '/rv_uses/:project' do
+      record_redirectviews_use(params['project'])
+    end
+
     patch '/xtools_uses/:project' do
       record_xtools_use(params['project'])
     end
