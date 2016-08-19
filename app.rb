@@ -87,31 +87,31 @@ class WikiTools < Sinatra::Application
     end
 
     patch '/pv_uses/:project' do
-      record_pageviews_use(params['project'])
+      record_project_use('pageviews', params['project'])
     end
 
     patch '/tv_uses/:project' do
-      record_topviews_use(params['project'])
+      record_project_use('topviews', params['project'])
     end
 
     patch '/lv_uses/:project' do
-      record_langviews_use(params['project'])
+      record_project_use('langviews', params['project'])
     end
 
     patch '/sv_uses/:project' do
-      record_siteviews_use(params['project'])
+      record_project_use('siteviews', params['project'])
     end
 
     patch '/mv_uses/:project' do
-      record_massviews_use(params['project'])
+      record_project_use('massviews', params['project'])
     end
 
     patch '/rv_uses/:project' do
-      record_redirectviews_use(params['project'])
+      record_project_use('redirectviews', params['project'])
     end
 
     patch '/xtools_uses/:project' do
-      record_xtools_use(params['project'])
+      record_project_use('xtools', params['project'], true)
     end
   end
 

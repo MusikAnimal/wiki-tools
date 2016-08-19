@@ -330,7 +330,7 @@ module Repl
         },
         {
           name: 'delsort',
-          regex: 'Wikipedia:WP:FWDS|WP:FWDS|\\\\(\\\\[\\\\[User:APerson/delsort\\\\|delsort.js',
+          regex: 'Wikipedia:WP:FWDS|WP:FWDS|User:APerson/delsort\\\\|delsort.js|User:Enterprisey/delsort\\\\|assisted',
           link: 'WP:DELSORT#Scripts and tools'
         },
         {
@@ -472,6 +472,26 @@ module Repl
           name: 'stubtagtab.js',
           regex: 'using \\\\[\\\\[User:MC10/stubtagtab.js',
           link: 'User:MC10/stubtagtab.js'
+        },
+        {
+          name: 'AutoSpell',
+          regex: 'User:Symplectic_Map/AutoSpell\\\\|Script-assisted',
+          link: 'User:Symplectic_Map/AutoSpell'
+        },
+        {
+          name: 'Draftify',
+          regex: '\\\\(\\\\[\\\\[WP:DFY\\\\|DFY\\\\]\\\\]\\\\)',
+          link: 'WP:DFY'
+        },
+        {
+          name: 'AFC/R HS',
+          regex: 'Using \\\\[\\\\[User:PhantomTech/scripts/AFCRHS.js\\\\|AFC/R HS',
+          link: 'User:PhantomTech/scripts/AFCRHS.js'
+        },
+        {
+          name: 'For the Common Good',
+          regex: 'WP:FTCG\\\\|FtCG',
+          link: 'WP:FTCG'
         }
       ]
 

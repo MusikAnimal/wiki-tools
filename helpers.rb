@@ -121,53 +121,21 @@ module Helpers
     metadata_client.query("UPDATE views SET #{type} = #{type} + 1 WHERE tool = '#{tool}';")
   end
 
-  def record_pageviews_use(project)
-    if query('SELECT * FROM pageviews_projects WHERE project = ?', project).to_a.empty?
-      query('INSERT INTO pageviews_projects VALUES(NULL, ?, 0)', project)
+  def record_project_use(tool, project, no_timeline = false)
+    if query("SELECT * FROM #{tool}_projects WHERE project = ?", project).to_a.empty?
+      query("INSERT INTO #{tool}_projects VALUES(NULL, ?, 1)", project)
+    else
+      query("UPDATE #{tool}_projects SET count = count + 1 WHERE project = ?;", project)
     end
-    query('UPDATE pageviews_projects SET count = count + 1 WHERE project = ?;', project)
-  end
 
-  def record_topviews_use(project)
-    if query('SELECT * FROM topviews_projects WHERE project = ?', project).to_a.empty?
-      query('INSERT INTO topviews_projects VALUES(NULL, ?, 0)', project)
+    unless no_timeline
+      date = Date.today.to_s
+      if query("SELECT * FROM #{tool}_timeline WHERE date = ?", date).to_a.empty?
+        query("INSERT INTO #{tool}_timeline VALUES(NULL, ?, 1)", date)
+      else
+        query("UPDATE #{tool}_timeline SET count = count + 1 WHERE date = ?;", date)
+      end
     end
-    query('UPDATE topviews_projects SET count = count + 1 WHERE project = ?;', project)
-  end
-
-  def record_langviews_use(project)
-    if query('SELECT * FROM langviews_projects WHERE project = ?', project).to_a.empty?
-      query('INSERT INTO langviews_projects VALUES(NULL, ?, 0)', project)
-    end
-    query('UPDATE langviews_projects SET count = count + 1 WHERE project = ?;', project)
-  end
-
-  def record_siteviews_use(project)
-    if query('SELECT * FROM siteviews_projects WHERE project = ?', project).to_a.empty?
-      query('INSERT INTO siteviews_projects VALUES(NULL, ?, 0)', project)
-    end
-    query('UPDATE siteviews_projects SET count = count + 1 WHERE project = ?;', project)
-  end
-
-  def record_massviews_use(project)
-    if query('SELECT * FROM massviews_projects WHERE project = ?', project).to_a.empty?
-      query('INSERT INTO massviews_projects VALUES(NULL, ?, 0)', project)
-    end
-    query('UPDATE massviews_projects SET count = count + 1 WHERE project = ?;', project)
-  end
-
-  def record_redirectviews_use(project)
-    if query('SELECT * FROM redirectviews_projects WHERE project = ?', project).to_a.empty?
-      query('INSERT INTO redirectviews_projects VALUES(NULL, ?, 0)', project)
-    end
-    query('UPDATE redirectviews_projects SET count = count + 1 WHERE project = ?;', project)
-  end
-
-  def record_xtools_use(project)
-    if query('SELECT * FROM xtools_projects WHERE project = ?', project).to_a.empty?
-      query('INSERT INTO xtools_projects VALUES(NULL, ?, 0)', project)
-    end
-    query('UPDATE xtools_projects SET count = count + 1 WHERE project = ?;', project)
   end
 
   def query(sql, *values)
