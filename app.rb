@@ -85,34 +85,6 @@ class WikiTools < Sinatra::Application
         status 304
       end
     end
-
-    patch '/pv_uses/:project' do
-      record_project_use('pageviews', params['project'])
-    end
-
-    patch '/tv_uses/:project' do
-      record_project_use('topviews', params['project'])
-    end
-
-    patch '/lv_uses/:project' do
-      record_project_use('langviews', params['project'])
-    end
-
-    patch '/sv_uses/:project' do
-      record_project_use('siteviews', params['project'])
-    end
-
-    patch '/mv_uses/:project' do
-      record_project_use('massviews', params['project'])
-    end
-
-    patch '/rv_uses/:project' do
-      record_project_use('redirectviews', params['project'])
-    end
-
-    patch '/xtools_uses/:project' do
-      record_project_use('xtools', params['project'], true)
-    end
   end
 
   not_found do
@@ -126,6 +98,7 @@ end
 require_relative 'helpers'
 WikiTools.helpers Helpers
 
+require_relative 'tools/usage'
 require_relative 'tools/nonautomated_edits'
 require_relative 'tools/blp_edits'
 require_relative 'tools/policy_edits'

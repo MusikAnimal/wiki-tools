@@ -121,23 +121,6 @@ module Helpers
     metadata_client.query("UPDATE views SET #{type} = #{type} + 1 WHERE tool = '#{tool}';")
   end
 
-  def record_project_use(tool, project, no_timeline = false)
-    if query("SELECT * FROM #{tool}_projects WHERE project = ?", project).to_a.empty?
-      query("INSERT INTO #{tool}_projects VALUES(NULL, ?, 1)", project)
-    else
-      query("UPDATE #{tool}_projects SET count = count + 1 WHERE project = ?;", project)
-    end
-
-    unless no_timeline
-      date = Date.today.to_s
-      if query("SELECT * FROM #{tool}_timeline WHERE date = ?", date).to_a.empty?
-        query("INSERT INTO #{tool}_timeline VALUES(NULL, ?, 1)", date)
-      else
-        query("UPDATE #{tool}_timeline SET count = count + 1 WHERE date = ?;", date)
-      end
-    end
-  end
-
   def query(sql, *values)
     statement = metadata_client.prepare(sql)
     statement.execute(*values)

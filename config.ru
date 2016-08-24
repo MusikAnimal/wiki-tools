@@ -13,7 +13,7 @@ require './repl'
 require './auth'
 
 root = ::File.dirname(__FILE__)
-require ::File.join( root, 'app' )
+require ::File.join(root, 'app')
 Sass::Plugin.options[:style] = :compressed
 use Sass::Plugin::Rack
 
