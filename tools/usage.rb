@@ -1,9 +1,3 @@
-require 'sinatra/cross_origin'
-
-configure do
-  enable :cross_origin
-end
-
 class WikiTools < Sinatra::Application
   namespace '/musikanimal/api/usage' do
     # pageviews
