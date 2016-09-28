@@ -1,6 +1,7 @@
 module Repl
   class Session
     require 'mysql2'
+    require 'httparty'
 
     def initialize(username, password, host, db, port)
       @client = Mysql2::Client.new(
@@ -14,11 +15,59 @@ module Repl
       @db = db
     end
 
+    # UTILITIES
+    def parse_date(obj, convert = false)
+      if obj.is_a?(String)
+        begin
+          DateTime.parse(obj).new_offset(0)
+        rescue => e
+          raise e unless e.message == 'invalid date'
+          # try as if i18n wiki date
+          DateTime.parse(delocalize_wiki_date(obj))
+        end
+      elsif obj.is_a?(DateTime)
+        obj.new_offset(0)
+      elsif convert
+        obj.to_datetime
+      else
+        obj
+      end
+    end
+
+    def api_date(date)
+      parse_date(date).strftime('%Y-%m-%dT%H:%M:%SZ')
+    end
+
+    def db_date(date, end_of_day = false)
+      if end_of_day
+        parse_date(date).strftime('%Y%m%d235959')
+      else
+        parse_date(date).strftime('%Y%m%d%H%M%S')
+      end
+    end
+
+    # ARTICLE ANALYSIS
+    def page_id(title)
+      res = HTTParty.get(
+        "https://en.wikipedia.org/w/api.php?action=query&titles=#{title}&prop=info&format=json&formatversion=2"
+      )
+      return res["query"]["pages"].first["pageid"]
+    end
+
+    def edit_timeline(title, start_date, end_date)
+      end_date = DateTime.now.new_offset(0) unless end_date.present?
+      start_date = db_date(start_date)
+      end_date = db_date(end_date, true)
+      puts end_date
+      query("SELECT rev_timestamp AS timestamp, rev_user_text AS user FROM #{@db}.revision_userindex " \
+        "WHERE rev_page = #{page_id(title)} AND rev_timestamp >= '#{start_date}' AND rev_timestamp <= '#{end_date}'").to_a
+    end
+
     # COUNTERS
     def count_articles_created(username)
       count("SELECT COUNT(*) FROM #{@db}.page JOIN #{@db}.revision_userindex ON page_id = rev_page " \
         "WHERE #{user_where_clause(username)} AND rev_timestamp > 1 AND rev_parent_id = 0 " \
-        'AND page_namespace = 0 AND page_is_redirect = 0;')
+        'AND page_namespace = 0 AND page_is_redirect = 0')
     end
 
     def count_all_edits(username)

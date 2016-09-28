@@ -3,7 +3,7 @@ class WikiTools < Sinatra::Application
   require 'open-uri'
   app_name = 'Article analysis'
 
-  namespace '/musikanimal' do
+  namespace '/musikanimal/api/article_analysis' do
     # get '/article_analysis' do
     #   haml :article_analysis, locals: {
     #     app_name: app_name,
@@ -12,7 +12,65 @@ class WikiTools < Sinatra::Application
     #   }
     # end
 
-    get '/api/article_analysis' do
+    get '/edit_timeline' do
+      [:page, :start].each do |param|
+        unless params[param].present?
+          return respond_error("Bad request! #{param} parameter is required")
+        end
+      end
+
+      begin
+        start_date = Date.parse(params[:start])
+      rescue
+        return respond_error("Bad request! start parameter is invalid")
+      end
+
+      begin
+        end_date = Date.parse(params[:end])
+      rescue
+        end_date = Date.today
+      end
+
+      if end_date < start_date
+        return respond_error("Bad request! end must be after start")
+      end
+
+      res = {
+        page: params[:page],
+        start: start_date.strftime('%Y-%m-%d'),
+        end: end_date.strftime('%Y-%m-%d'),
+        total_edits: nil,
+        total_editors: nil,
+        avg_daily_edits: nil,
+        timeline: []
+      }
+
+      timeline_data = repl_client.edit_timeline(
+        res[:page],
+        res[:start],
+        res[:end]
+      )
+
+      res[:total_edits] = timeline_data.length
+      res[:total_editors] = timeline_data.map { |item| item['user'] }.uniq.length
+
+      dates = timeline_data.select { |item| item['timestamp'] }
+      date_range = (Date.parse(res[:start])..Date.parse(res[:end])).to_a
+
+      res[:avg_daily_edits] = (res[:total_edits] / date_range.length.to_f).round(2)
+
+      date_range.each do |date|
+        formatted_date = date.strftime('%Y-%m-%d')
+        res[:timeline].push(
+          date: formatted_date,
+          count: timeline_data.count { |item| Date.parse(item['timestamp']) == date }
+        )
+      end
+
+      respond(res)
+    end
+
+    get '/word_count' do
       unless params[:page].present?
         return respond_error('Bad request! page parameter is required')
       end
