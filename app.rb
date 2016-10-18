@@ -1,7 +1,7 @@
 $LOAD_PATH << '.'
 require 'sinatra'
 require 'sinatra/namespace'
-# require 'sinatra/cross_origin'
+require 'sinatra/cross_origin'
 require 'haml'
 require 'json'
 require 'pry'
@@ -19,6 +19,7 @@ class WikiTools < Sinatra::Application
   end
 
   configure :development do
+    enable :cross_origin
     $CACHE_TIME = 0
   end
 
@@ -56,7 +57,6 @@ class WikiTools < Sinatra::Application
   end
 
   post '/musikanimal/paste' do
-    # cross_origin
     if request.host.include?('wmflabs')
       res = HTTParty.post('https://phabricator.wikimedia.org/api/paste.create',
         body: {

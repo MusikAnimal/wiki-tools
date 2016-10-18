@@ -12,6 +12,51 @@ class WikiTools < Sinatra::Application
     #   }
     # end
 
+    get '/basic_info' do
+      [:pages].each do |param|
+        unless params[param].present?
+          return respond_error("Bad request! #{param} parameter is required")
+        end
+      end
+
+      res = {
+        pages: {}
+      }
+
+      if params[:start].present?
+        begin
+          start_date = Date.parse(params[:start])
+        rescue
+          return respond_error("Bad request! start parameter is invalid")
+        end
+
+        begin
+          end_date = Date.parse(params[:end])
+        rescue
+          end_date = Date.today
+        end
+
+        if end_date < start_date
+          return respond_error("Bad request! end must be after start")
+        end
+
+        res[:start] = start_date.strftime('%Y-%m-%d')
+        res[:end] = end_date.strftime('%Y-%m-%d')
+      end
+
+      db = site_map.key(params[:project].sub(/.org$/, ''))
+
+      params[:pages].split('|').each do |page|
+        res[:pages][page] = repl_client("#{db}_p").num_revisions_editors(
+          page,
+          res[:start],
+          res[:end]
+        )
+      end
+
+      respond(res, replag: false)
+    end
+
     get '/edit_timeline' do
       [:page, :start].each do |param|
         unless params[param].present?

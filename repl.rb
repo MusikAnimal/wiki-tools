@@ -15,7 +15,15 @@ module Repl
       @db = db
     end
 
+    def set_db(db)
+      @db = db
+    end
+
     # UTILITIES
+    def site_map(db)
+      YAML.load(File.open('site_map.yml').read)[db]
+    end
+
     def parse_date(obj, convert = false)
       if obj.is_a?(String)
         begin
@@ -48,19 +56,37 @@ module Repl
 
     # ARTICLE ANALYSIS
     def page_id(title)
+      title = URI.encode(title)
       res = HTTParty.get(
-        "https://en.wikipedia.org/w/api.php?action=query&titles=#{title}&prop=info&format=json&formatversion=2"
+        "https://#{site_map(@db.sub('_p', ''))}.org/w/api.php?action=query&titles=#{title}&prop=info&format=json&formatversion=2"
       )
       return res["query"]["pages"].first["pageid"]
+    end
+
+    def num_revisions_editors(title, start_date = nil, end_date = nil)
+      sql = "SELECT COUNT(*) AS num_edits, COUNT(DISTINCT(rev_user_text)) AS num_users " \
+        "FROM #{@db}.revision WHERE rev_page = #{page_id(title)}"
+      if start_date
+        end_date = DateTime.now.new_offset(0) unless end_date.present?
+        start_date = db_date(start_date)
+        end_date = db_date(end_date, true)
+        sql += " AND rev_timestamp >= '#{start_date}' AND rev_timestamp <= '#{end_date}'"
+      end
+      query(sql).first
     end
 
     def edit_timeline(title, start_date, end_date)
       end_date = DateTime.now.new_offset(0) unless end_date.present?
       start_date = db_date(start_date)
       end_date = db_date(end_date, true)
-      puts end_date
       query("SELECT rev_timestamp AS timestamp, rev_user_text AS user FROM #{@db}.revision_userindex " \
         "WHERE rev_page = #{page_id(title)} AND rev_timestamp >= '#{start_date}' AND rev_timestamp <= '#{end_date}'").to_a
+    end
+
+    def first_edit(title)
+      DateTime.parse(query("SELECT rev_timestamp AS timestamp FROM #{@db}.revision_userindex " \
+        "WHERE rev_page = #{page_id(title)} AND rev_timestamp >= '#{start_date}' AND rev_timestamp <= '#{end_date}' LIMIT 1")
+      .first.values['rev_timestamp'])
     end
 
     # COUNTERS
@@ -71,7 +97,7 @@ module Repl
     end
 
     def count_all_edits(username)
-      count("SELECT COUNT(*) FROM enwiki_p.revision_userindex WHERE #{user_where_clause(username)};")
+      count("SELECT COUNT(*) FROM #{@db}.revision_userindex WHERE #{user_where_clause(username)};")
     end
 
     def count_blp_edits(opts)
@@ -147,7 +173,7 @@ module Repl
       query = 'SELECT ' +
         (opts[:count] ? 'COUNT(*) ' : 'rev_id, rev_comment, rev_timestamp, rev_minor_edit, page_title, cl_to ') +
         "FROM #{@db}.revision_userindex " \
-        'JOIN enwiki_p.categorylinks JOIN enwiki_p.page ' \
+        "JOIN #{@db}.categorylinks JOIN #{@db}.page " \
         "WHERE #{user_where_clause(opts[:username])} " \
         'AND rev_timestamp > 0 ' \
         'AND page_namespace = 4 ' \
@@ -172,7 +198,7 @@ module Repl
       query = 'SELECT ' +
         (opts[:count] ? 'COUNT(*) ' : 'rev_id, rev_comment, rev_timestamp, rev_minor_edit, page_title ') +
         "FROM #{@db}.revision_userindex " \
-        'JOIN enwiki_p.categorylinks JOIN enwiki_p.page ' \
+        "JOIN #{@db}.categorylinks JOIN #{@db}.page " \
         "WHERE #{user_where_clause(opts[:username])} " \
         'AND rev_timestamp > 0 ' \
         'AND cl_from = rev_page ' \
@@ -199,7 +225,7 @@ module Repl
       query = 'SELECT ' +
         (opts[:count] ? 'COUNT(*) ' : "#{rev_attrs} ") +
         "FROM #{@db}.page " \
-        'JOIN enwiki_p.revision_userindex ON page_id = rev_page ' \
+        "JOIN #{@db}.revision_userindex ON page_id = rev_page " \
         "WHERE #{user_where_clause(opts[:username])} " \
         'AND rev_timestamp > 0 ' +
         (opts[:namespace].to_s.empty? ? '' : "AND page_namespace = #{opts[:namespace]} ") +
@@ -225,8 +251,8 @@ module Repl
     def get_backlinks(filename)
       get(
         'SELECT page_title ' \
-        'FROM enwiki_p.imagelinks ' \
-        'JOIN enwiki_p.page ' \
+        "FROM #{@db}.imagelinks " \
+        "JOIN #{@db}.page " \
         "WHERE il_to = \"#{filename.gsub(/ /, '_').gsub(/\"/, '\"')}\" " \
         'AND page_id = il_from ' \
         'AND il_from_namespace = 0'

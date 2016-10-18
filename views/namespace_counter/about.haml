@@ -15,7 +15,7 @@
 
   %ul
     %li
-      %h3 GET /musikanimal/namespace_counter
+      %h3 GET /musikanimal/api/namespace_counter
       %div.description
         Fetch the number of contirubtions a user has made to each namespace
       %div
@@ -25,7 +25,7 @@
         %span nonautomated
         %span Whether to exclude (semi-)automated edits from the edit count. Anything other than blank
     %li
-      %h3 GET /musikanimal/namespace_counter/:id
+      %h3 GET /musikanimal/api/namespace_counter/:id
       %div.description
         Fetch the number of edits a user has made to the given namespaces
       %div
@@ -35,6 +35,6 @@
         %span nonautomated
         %span Whether to exclude (semi-)automated edits from the edit count. Anything other than blank
     %li
-      %h3 GET /musikanimal/namespace_counter/namespaces
+      %h3 GET /musikanimal/api/namespace_counter/namespaces
       %div.description
         Fetch a map of all of the wiki's namespaces and their IDs

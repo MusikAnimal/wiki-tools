@@ -1,6 +1,8 @@
 module Helpers
-  def repl_client
+  def repl_client(db = 'enwiki_p')
     @@repl_client ||= Auth.get_repl
+    @@repl_client.set_db(db)
+    @@repl_client
   end
 
   def repl_call(method, params)
@@ -124,6 +126,10 @@ module Helpers
   def query(sql, *values)
     statement = metadata_client.prepare(sql)
     statement.execute(*values)
+  end
+
+  def site_map
+    YAML.load(File.open('site_map.yml').read)
   end
 
   def user_info(username, groups = false, db = :enwiki)

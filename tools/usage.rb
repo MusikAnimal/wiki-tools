@@ -1,31 +1,31 @@
 class WikiTools < Sinatra::Application
   namespace '/musikanimal/api/usage' do
     # pageviews
-    patch('/pageviews/:project') { record_usage('pageviews', params['project']) }
+    post('/pageviews/:project') { record_usage('pageviews', params['project']) }
     get('/pageviews/:start/:end') { get_usage('pageviews', params[:start], params[:end]) }
 
     # topviews
-    patch('/topviews/:project') { record_usage('topviews', params['project']) }
+    post('/topviews/:project') { record_usage('topviews', params['project']) }
     get('/topviews/:start/:end') { get_usage('topviews', params[:start], params[:end]) }
 
     # langviews
-    patch('/langviews/:project') { record_usage('langviews', params['project']) }
+    post('/langviews/:project') { record_usage('langviews', params['project']) }
     get('/langviews/:start/:end') { get_usage('langviews', params[:start], params[:end]) }
 
     # siteviews
-    patch('/siteviews/:project') { record_usage('siteviews', params['project']) }
+    post('/siteviews/:project') { record_usage('siteviews', params['project']) }
     get('/siteviews/:start/:end') { get_usage('siteviews', params[:start], params[:end]) }
 
     # massviews
-    patch('/massviews/:project') { record_usage('massviews', params['project']) }
+    post('/massviews/:project') { record_usage('massviews', params['project']) }
     get('/massviews/:start/:end') { get_usage('massviews', params[:start], params[:end]) }
 
     # redirectviews
-    patch('/redirectviews/:project') { record_usage('redirectviews', params['project']) }
+    post('/redirectviews/:project') { record_usage('redirectviews', params['project']) }
     get('/redirectviews/:start/:end') { get_usage('redirectviews', params[:start], params[:end]) }
 
     # xtools
-    patch('/xtools/:project') { record_usage('xtools', params['project'], true) }
+    post('/xtools/:project') { record_usage('xtools', params['project'], true) }
   end
 
   private
@@ -71,5 +71,7 @@ class WikiTools < Sinatra::Application
         query("UPDATE #{tool}_timeline SET count = count + 1 WHERE date = ?;", date)
       end
     end
+
+    respond({})
   end
 end

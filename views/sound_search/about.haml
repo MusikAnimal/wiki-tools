@@ -10,7 +10,7 @@
 
   %ul
     %li
-      %h3 GET /musikanimal/sound_search
+      %h3 GET /musikanimal/api/sound_search
       %div.description
         Fetch audio files of given composer (or name of category)
       %div
@@ -23,14 +23,14 @@
         %span backlinks
         %span Whether to include pages that link to the files. Redundant if <b>list</b> is set to <b>unused</b>. Anything other than blank.
     %li
-      %h3 GET /musikanimal/sound_search/info/:filenames
+      %h3 GET /musikanimal/api/sound_search/info/:filenames
       %div.description
         Fetch info about given files, such as the description, author, and date
       %div
         %span :filenames
         %span Names of files, separated by a pipe <code>|</code> character (part of the URI, not the query string) (required)
     %li
-      %h3 GET /musikanimal/sound_search/backlinks/:filename
+      %h3 GET /musikanimal/api/sound_search/backlinks/:filename
       %div.description
         Fetch pages that link to the given file, excluding redirects
       %div
