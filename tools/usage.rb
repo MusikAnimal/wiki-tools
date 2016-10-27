@@ -1,28 +1,36 @@
 class WikiTools < Sinatra::Application
   namespace '/musikanimal/api/usage' do
-    # pageviews
-    post('/pageviews/:project') { record_usage('pageviews', params['project']) }
-    get('/pageviews/:start/:end') { get_usage('pageviews', params[:start], params[:end]) }
+    apps = %w(pageviews topviews langviews siteviews massviews redirectviews)
 
-    # topviews
-    post('/topviews/:project') { record_usage('topviews', params['project']) }
-    get('/topviews/:start/:end') { get_usage('topviews', params[:start], params[:end]) }
+    apps.each do |app|
+      post("/#{app}/:project") { record_usage(app, params['project']) }
+      get("/#{app}/:start/:end") { get_usage(app, params[:start], params[:end]) }
+      post("/#{app}-test/:project") { record_usage("#{app}_test", params['project'], true) }
+    end
 
-    # langviews
-    post('/langviews/:project') { record_usage('langviews', params['project']) }
-    get('/langviews/:start/:end') { get_usage('langviews', params[:start], params[:end]) }
+    # # pageviews
+    # post('/pageviews/:project') { record_usage('pageviews', params['project']) }
+    # get('/pageviews/:start/:end') { get_usage('pageviews', params[:start], params[:end]) }
 
-    # siteviews
-    post('/siteviews/:project') { record_usage('siteviews', params['project']) }
-    get('/siteviews/:start/:end') { get_usage('siteviews', params[:start], params[:end]) }
+    # # topviews
+    # post('/topviews/:project') { record_usage('topviews', params['project']) }
+    # get('/topviews/:start/:end') { get_usage('topviews', params[:start], params[:end]) }
 
-    # massviews
-    post('/massviews/:project') { record_usage('massviews', params['project']) }
-    get('/massviews/:start/:end') { get_usage('massviews', params[:start], params[:end]) }
+    # # langviews
+    # post('/langviews/:project') { record_usage('langviews', params['project']) }
+    # get('/langviews/:start/:end') { get_usage('langviews', params[:start], params[:end]) }
 
-    # redirectviews
-    post('/redirectviews/:project') { record_usage('redirectviews', params['project']) }
-    get('/redirectviews/:start/:end') { get_usage('redirectviews', params[:start], params[:end]) }
+    # # siteviews
+    # post('/siteviews/:project') { record_usage('siteviews', params['project']) }
+    # get('/siteviews/:start/:end') { get_usage('siteviews', params[:start], params[:end]) }
+
+    # # massviews
+    # post('/massviews/:project') { record_usage('massviews', params['project']) }
+    # get('/massviews/:start/:end') { get_usage('massviews', params[:start], params[:end]) }
+
+    # # redirectviews
+    # post('/redirectviews/:project') { record_usage('redirectviews', params['project']) }
+    # get('/redirectviews/:start/:end') { get_usage('redirectviews', params[:start], params[:end]) }
 
     # xtools
     post('/xtools/:project') { record_usage('xtools', params['project'], true) }
