@@ -27,7 +27,7 @@ class WikiTools < Sinatra::Application
         begin
           start_date = Date.parse(params[:start])
         rescue
-          return respond_error("Bad request! start parameter is invalid")
+          return respond_error('Bad request! start parameter is invalid')
         end
 
         begin
@@ -37,7 +37,7 @@ class WikiTools < Sinatra::Application
         end
 
         if end_date < start_date
-          return respond_error("Bad request! end must be after start")
+          return respond_error('Bad request! end must be after start')
         end
 
         res[:start] = start_date.strftime('%Y-%m-%d')
@@ -47,11 +47,17 @@ class WikiTools < Sinatra::Application
       db = site_map.key(params[:project].sub(/.org$/, ''))
 
       params[:pages].split('|').each do |page|
-        res[:pages][page] = repl_client("#{db}_p").num_revisions_editors(
+        data = repl_client("#{db}_p").num_revisions_editors(
           page,
           res[:start],
           res[:end]
         )
+
+        res[:pages][page] = data || {
+          num_edits: 0,
+          num_users: 0,
+          missing: true
+        }
       end
 
       respond(res, replag: false)
@@ -67,7 +73,7 @@ class WikiTools < Sinatra::Application
       begin
         start_date = Date.parse(params[:start])
       rescue
-        return respond_error("Bad request! start parameter is invalid")
+        return respond_error('Bad request! start parameter is invalid')
       end
 
       begin
@@ -77,7 +83,7 @@ class WikiTools < Sinatra::Application
       end
 
       if end_date < start_date
-        return respond_error("Bad request! end must be after start")
+        return respond_error('Bad request! end must be after start')
       end
 
       res = {
@@ -99,7 +105,6 @@ class WikiTools < Sinatra::Application
       res[:total_edits] = timeline_data.length
       res[:total_editors] = timeline_data.map { |item| item['user'] }.uniq.length
 
-      dates = timeline_data.select { |item| item['timestamp'] }
       date_range = (Date.parse(res[:start])..Date.parse(res[:end])).to_a
 
       res[:avg_daily_edits] = (res[:total_edits] / date_range.length.to_f).round(2)

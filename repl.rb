@@ -60,12 +60,13 @@ module Repl
       res = HTTParty.get(
         "https://#{site_map(@db.sub('_p', ''))}.org/w/api.php?action=query&titles=#{title}&prop=info&format=json&formatversion=2"
       )
-      return res["query"]["pages"].first["pageid"]
+      res['query']['pages'].first['pageid']
     end
 
     def num_revisions_editors(title, start_date = nil, end_date = nil)
-      sql = "SELECT COUNT(*) AS num_edits, COUNT(DISTINCT(rev_user_text)) AS num_users " \
-        "FROM #{@db}.revision WHERE rev_page = #{page_id(title)}"
+      return nil unless pid = page_id(title)
+      sql = 'SELECT COUNT(*) AS num_edits, COUNT(DISTINCT(rev_user_text)) AS num_users ' \
+        "FROM #{@db}.revision WHERE rev_page = #{pid}"
       if start_date
         end_date = DateTime.now.new_offset(0) unless end_date.present?
         start_date = db_date(start_date)
@@ -76,16 +77,18 @@ module Repl
     end
 
     def edit_timeline(title, start_date, end_date)
+      return nil unless pid = page_id(title)
       end_date = DateTime.now.new_offset(0) unless end_date.present?
       start_date = db_date(start_date)
       end_date = db_date(end_date, true)
       query("SELECT rev_timestamp AS timestamp, rev_user_text AS user FROM #{@db}.revision_userindex " \
-        "WHERE rev_page = #{page_id(title)} AND rev_timestamp >= '#{start_date}' AND rev_timestamp <= '#{end_date}'").to_a
+        "WHERE rev_page = #{pid} AND rev_timestamp >= '#{start_date}' AND rev_timestamp <= '#{end_date}'").to_a
     end
 
     def first_edit(title)
+      return nil unless pid = page_id(title)
       DateTime.parse(query("SELECT rev_timestamp AS timestamp FROM #{@db}.revision_userindex " \
-        "WHERE rev_page = #{page_id(title)} AND rev_timestamp >= '#{start_date}' AND rev_timestamp <= '#{end_date}' LIMIT 1")
+        "WHERE rev_page = #{pid} AND rev_timestamp >= '#{start_date}' AND rev_timestamp <= '#{end_date}' LIMIT 1")
       .first.values['rev_timestamp'])
     end
 
@@ -210,8 +213,6 @@ module Repl
       opts[:count] ? count(query) : get(query)
     end
 
-    # rubocop:disable CyclomaticComplexity
-    # rubocop:disable AbcSize
     def get_edits(opts)
       opts = {
         namespace: nil,
@@ -238,9 +239,9 @@ module Repl
     def tool_objects
       res = []
 
-      tools.each_with_index do |tool, toolId|
+      tools.each_with_index do |tool, tool_id|
         res.push(tool.merge(
-          id: toolId,
+          id: tool_id,
           regex: tool[:regex].gsub(/\\{2}/, '\\')
         ))
       end
@@ -253,7 +254,7 @@ module Repl
         'SELECT page_title ' \
         "FROM #{@db}.imagelinks " \
         "JOIN #{@db}.page " \
-        "WHERE il_to = \"#{filename.gsub(/ /, '_').gsub(/\"/, '\"')}\" " \
+        "WHERE il_to = \"#{filename.tr(' ', '_').gsub(/\"/, '\"')}\" " \
         'AND page_id = il_from ' \
         'AND il_from_namespace = 0'
       )
@@ -284,7 +285,7 @@ module Repl
     end
 
     def user_where_clause(username)
-      if username.is_a?(Fixnum)
+      if username.is_a?(Integer)
         "rev_user = #{username}"
       else
         "rev_user_text = \"#{username}\""
