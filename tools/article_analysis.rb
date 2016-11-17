@@ -48,7 +48,7 @@ class WikiTools < Sinatra::Application
 
       params[:pages].split('|').each do |page|
         data = repl_client("#{db}_p").num_revisions_editors(
-          page,
+          CGI.unescape(page),
           res[:start],
           res[:end]
         )

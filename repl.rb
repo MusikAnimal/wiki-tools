@@ -56,7 +56,7 @@ module Repl
 
     # ARTICLE ANALYSIS
     def page_id(title)
-      title = URI.encode(title)
+      title = CGI.escape(title.tr(' ', '_'))
       res = HTTParty.get(
         "https://#{site_map(@db.sub('_p', ''))}.org/w/api.php?action=query&titles=#{title}&prop=info&format=json&formatversion=2"
       )
