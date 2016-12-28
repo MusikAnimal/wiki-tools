@@ -284,6 +284,10 @@ module Repl
       @client.query(query)
     end
 
+    def escape(string)
+      @client.escape(string)
+    end
+
     def user_where_clause(username)
       if username.is_a?(Integer)
         "rev_user = #{username}"

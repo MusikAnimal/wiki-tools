@@ -10,11 +10,37 @@ class WikiTools < Sinatra::Application
       post("/#{app}-test/:project") { record_usage("#{app}_test", params['project'], true) }
     end
 
+    get("/topviews/:project") { get_topviews_false_positives(params['project']) }
+    post("/topviews/:project/false_positives") { record_topviews_false_positives(params['project'], params['pages']) }
+
     # xtools
     post('/xtools/:project') { record_usage('xtools', params['project'], true) }
   end
 
   private
+
+  def get_topviews_false_positives(project)
+    false_positives = query("SELECT page FROM topviews_false_positives WHERE project = ? AND confirmed = 1", project).to_a
+
+    respond(
+      false_positives.collect { |fp| fp['page'] },
+      replag: false,
+      timing: false
+    )
+  end
+
+  def record_topviews_false_positives(project, pages)
+    return unless params[:pages].is_a?(Array)
+    params[:pages].each do |page|
+      page = metadata_client.escape(page)
+      if query("SELECT * FROM topviews_false_positives WHERE project = ? AND page = ?", project, page).to_a.empty?
+        query("INSERT INTO topviews_false_positives VALUES(NULL, ?, ?, 0, 0)", project, page)
+      else
+        query("UPDATE topviews_false_positives SET count = count + 1 WHERE project = ? AND page = ?", project, page)
+      end
+    end
+    halt 204
+  end
 
   def get_usage(tool, start_date, end_date)
     data = query("SELECT * FROM #{tool}_timeline WHERE date >= ? AND date <= ? ORDER BY date ASC", start_date, end_date).to_a
