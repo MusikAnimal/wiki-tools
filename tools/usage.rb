@@ -22,7 +22,11 @@ class WikiTools < Sinatra::Application
   def get_topviews_false_positives(project)
     false_positives = query("SELECT page FROM topviews_false_positives WHERE project = ? AND confirmed = 1", project).to_a
 
-    record_usage('topviews', project)
+    if query("SELECT * FROM topviews_projects WHERE project = ?", project).to_a.empty?
+      query("INSERT INTO topviews_projects VALUES(NULL, ?, 1)", project)
+    else
+      query("UPDATE topviews_projects SET count = count + 1 WHERE project = ?;", project)
+    end
 
     respond(
       false_positives.collect { |fp| fp['page'] },
