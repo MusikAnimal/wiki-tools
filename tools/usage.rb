@@ -22,6 +22,8 @@ class WikiTools < Sinatra::Application
   def get_topviews_false_positives(project)
     false_positives = query("SELECT page FROM topviews_false_positives WHERE project = ? AND confirmed = 1", project).to_a
 
+    record_usage('topviews', project)
+
     respond(
       false_positives.collect { |fp| fp['page'] },
       replag: false,
