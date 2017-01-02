@@ -20,7 +20,8 @@ class WikiTools < Sinatra::Application
       end
 
       res = {
-        pages: {}
+        pages: {},
+        totals: {}
       }
 
       if params[:start].present?
@@ -46,7 +47,9 @@ class WikiTools < Sinatra::Application
 
       db = site_map.key(params[:project].sub(/.org$/, ''))
 
-      params[:pages].split('|').each do |page|
+      pages = params[:pages].split('|').map { |page| CGI.unescape(page) }
+
+      pages.each do |page|
         data = repl_client("#{db}_p").num_revisions_editors(
           CGI.unescape(page),
           res[:start],
@@ -58,6 +61,19 @@ class WikiTools < Sinatra::Application
           num_users: 0,
           missing: true
         }
+      end
+
+      if pages.length > 1
+        res[:totals] = repl_client("#{db}_p").num_revisions_editors_multi(
+          pages,
+          res[:start],
+          res[:end]
+        ) || {
+          num_edits: 0,
+          num_users: 0
+        }
+      else
+        res.delete(:totals)
       end
 
       respond(res, replag: false)

@@ -76,6 +76,21 @@ module Repl
       query(sql).first
     end
 
+    def num_revisions_editors_multi(titles, start_date = nil, end_date = nil)
+      pids = titles.map { |title| page_id(title) }
+      return nil unless pids.any?
+      rev_page_sql = pids.map { |pid| "rev_page = #{pid}" }.join(' OR ')
+      sql = 'SELECT COUNT(*) AS num_edits, COUNT(DISTINCT(rev_user_text)) AS num_users ' \
+        "FROM #{@db}.revision WHERE (#{rev_page_sql})"
+      if start_date
+        end_date = DateTime.now.new_offset(0) unless end_date.present?
+        start_date = db_date(start_date)
+        end_date = db_date(end_date, true)
+        sql += " AND rev_timestamp >= '#{start_date}' AND rev_timestamp <= '#{end_date}'"
+      end
+      query(sql).first
+    end
+
     def edit_timeline(title, start_date, end_date)
       return nil unless pid = page_id(title)
       end_date = DateTime.now.new_offset(0) unless end_date.present?
