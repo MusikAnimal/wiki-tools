@@ -47,11 +47,11 @@ class WikiTools < Sinatra::Application
 
       db = site_map.key(params[:project].sub(/.org$/, ''))
 
-      pages = params[:pages].split('|').map { |page| CGI.unescape(page) }
+      pages = params[:pages].split('|')
 
       pages.each do |page|
         data = repl_client("#{db}_p").num_revisions_editors(
-          CGI.unescape(page),
+          page,
           res[:start],
           res[:end]
         )
