@@ -28,6 +28,13 @@ class WikiTools < Sinatra::Application
       query("UPDATE topviews_projects SET count = count + 1 WHERE project = ?;", project)
     end
 
+    date = Date.today.to_s
+    if query("SELECT * FROM topviews_timeline WHERE date = ?", date).to_a.empty?
+      query("INSERT INTO topviews_timeline VALUES(NULL, ?, 1)", date)
+    else
+      query("UPDATE topviews_timeline SET count = count + 1 WHERE date = ?;", date)
+    end
+
     respond(
       false_positives.collect { |fp| fp['page'] },
       replag: false,
