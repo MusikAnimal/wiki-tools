@@ -2,7 +2,7 @@ class WikiTools < Sinatra::Application
   app_name = 'Usage'
 
   namespace '/musikanimal/api/usage' do
-    apps = %w(pageviews topviews langviews siteviews massviews redirectviews)
+    apps = %w(pageviews topviews langviews siteviews massviews redirectviews userviews)
 
     apps.each do |app|
       post("/#{app}/:project") { record_usage(app, params['project']) }

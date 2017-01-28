@@ -36,7 +36,7 @@ class WikiTools < Sinatra::Application
 
       sql += " LIMIT 20000"
 
-      cache_response("#{db}#{params[:username]}") do
+      ret = cache_response("#{sql}#{params[:username]}") do
         statement = repl_client(db).client.prepare(sql)
         res[:pages] = statement.execute(params[:username].tr('_', ' ')).to_a
 
@@ -52,7 +52,7 @@ class WikiTools < Sinatra::Application
         end
       end
 
-      respond(res)
+      respond(ret)
     end
   end
 end
