@@ -10,6 +10,7 @@ class WikiTools < Sinatra::Application
       post("/#{app}-test/:project") { record_usage("#{app}_test", params['project'], true) }
     end
 
+    get("/pageviews/:project") { record_pageviews_and_get_false_positives(params['project'], params['page']) }
     get("/topviews/:project") { get_topviews_false_positives(params['project']) }
     post("/topviews/:project/false_positives") { record_topviews_false_positives(params['project'], params['pages']) }
 
@@ -18,6 +19,10 @@ class WikiTools < Sinatra::Application
   end
 
   private
+
+  def record_pageviews_and_get_false_positives(project, page)
+
+  end
 
   def get_topviews_false_positives(project)
     false_positives = query("SELECT page FROM topviews_false_positives WHERE project = ? AND confirmed = 1", project).to_a

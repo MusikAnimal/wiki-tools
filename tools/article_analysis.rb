@@ -26,13 +26,22 @@ class WikiTools < Sinatra::Application
 
       if params[:start].present?
         begin
-          start_date = Date.parse(params[:start])
+          # if given a year and month, use the 1st as the day
+          if params[:start] =~ /^\d{4}-\d{2}$/
+            start_date = Date.parse("#{params[:start]}-01")
+          else
+            start_date = Date.parse(params[:start])
+          end
         rescue
           return respond_error('Bad request! start parameter is invalid')
         end
 
         begin
-          end_date = Date.parse(params[:end])
+          if params[:end] =~ /^\d{4}-\d{2}$/
+            end_date = Date.civil(params[:end][0..3].to_i, params[:end][5..6].to_i, -1)
+          else
+            end_date = Date.parse(params[:end])
+          end
         rescue
           end_date = Date.today
         end

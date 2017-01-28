@@ -275,6 +275,10 @@ module Repl
       )
     end
 
+    def client
+      @client
+    end
+
     def query(sql)
       puts sql
       @client.query(sql)
