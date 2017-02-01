@@ -10,9 +10,8 @@ class WikiTools < Sinatra::Application
       post("/#{app}-test/:project") { record_usage("#{app}_test", params['project'], true) }
     end
 
-    get("/pageviews/:project") { record_pageviews_and_get_false_positives(params['project'], params['page']) }
-    get("/topviews/:project") { get_topviews_false_positives(params['project']) }
-    post("/topviews/:project/false_positives") { record_topviews_false_positives(params['project'], params['pages']) }
+    get("/topviews/false_positives") { get_topviews_false_positives(params) }
+    post("/topviews/false_positives") { record_topviews_false_positives(params) }
 
     # xtools
     post('/xtools/:project') { record_usage('xtools', params['project'], true) }
@@ -20,25 +19,11 @@ class WikiTools < Sinatra::Application
 
   private
 
-  def record_pageviews_and_get_false_positives(project, page)
-
-  end
-
-  def get_topviews_false_positives(project)
-    false_positives = query("SELECT page FROM topviews_false_positives WHERE project = ? AND confirmed = 1", project).to_a
-
-    if query("SELECT * FROM topviews_projects WHERE project = ?", project).to_a.empty?
-      query("INSERT INTO topviews_projects VALUES(NULL, ?, 1)", project)
-    else
-      query("UPDATE topviews_projects SET count = count + 1 WHERE project = ?;", project)
-    end
-
-    date = Date.today.to_s
-    if query("SELECT * FROM topviews_timeline WHERE date = ?", date).to_a.empty?
-      query("INSERT INTO topviews_timeline VALUES(NULL, ?, 1)", date)
-    else
-      query("UPDATE topviews_timeline SET count = count + 1 WHERE date = ?;", date)
-    end
+  def get_topviews_false_positives(params)
+    false_positives = query(
+      "SELECT page FROM topviews_false_positives WHERE project = ? AND date = ? AND platform = ? AND confirmed = 1",
+      params[:project], params[:date], params[:platform]
+    ).to_a
 
     respond(
       false_positives.collect { |fp| fp['page'] },
@@ -47,14 +32,19 @@ class WikiTools < Sinatra::Application
     )
   end
 
-  def record_topviews_false_positives(project, pages)
+  def record_topviews_false_positives(params)
     return unless params[:pages].is_a?(Array)
+
+    where_clause = "WHERE project = ? AND page = ? AND date = ? AND platform = ?"
+    where_args = [params[:project], nil, params[:date], params[:platform]]
+
     params[:pages].each do |page|
+      where_args[1] = page
       page = metadata_client.escape(page)
-      if query("SELECT * FROM topviews_false_positives WHERE project = ? AND page = ?", project, page).to_a.empty?
-        query("INSERT INTO topviews_false_positives VALUES(NULL, ?, ?, 0, 0)", project, page)
+      if query("SELECT * FROM topviews_false_positives #{where_clause}", *where_args).to_a.empty?
+        query("INSERT INTO topviews_false_positives VALUES(NULL, ?, ?, 0, 0, ?, ?)", *where_args)
       else
-        query("UPDATE topviews_false_positives SET count = count + 1 WHERE project = ? AND page = ?", project, page)
+        query("UPDATE topviews_false_positives SET count = count + 1 #{where_clause}", *where_args)
       end
     end
     halt 204
@@ -86,7 +76,7 @@ class WikiTools < Sinatra::Application
     )
   end
 
-  def record_usage(tool, project, no_timeline = false)
+  def record_usage(tool, project, no_timeline = false, no_response = false)
     if query("SELECT * FROM #{tool}_projects WHERE project = ?", project).to_a.empty?
       query("INSERT INTO #{tool}_projects VALUES(NULL, ?, 1)", project)
     else
@@ -102,6 +92,6 @@ class WikiTools < Sinatra::Application
       end
     end
 
-    respond({})
+    respond({}, replag: false) unless no_response
   end
 end
