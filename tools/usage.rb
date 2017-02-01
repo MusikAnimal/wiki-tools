@@ -11,7 +11,7 @@ class WikiTools < Sinatra::Application
     end
 
     get("/topviews/false_positives") { get_topviews_false_positives(params) }
-    post("/topviews/false_positives") { record_topviews_false_positives(params) }
+    post("/topviews/:project/false_positives") { record_topviews_false_positives(params) }
 
     # xtools
     post('/xtools/:project') { record_usage('xtools', params['project'], true) }
