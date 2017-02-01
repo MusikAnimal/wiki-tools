@@ -23,10 +23,15 @@ class WikiTools < Sinatra::Application
     false_positives = query(
       "SELECT page FROM topviews_false_positives WHERE project = ? AND date = ? AND platform = ? AND confirmed = 1",
       params[:project], params[:date], params[:platform]
-    ).to_a
+    ).to_a.collect { |fp| fp['page'] }
+
+    blacklist = query(
+      "SELECT page FROM topviews_blacklist WHERE project = ? AND platform = ?",
+      params[:project], params[:platform]
+    ).to_a.collect { |fp| fp['page'] }
 
     respond(
-      false_positives.collect { |fp| fp['page'] },
+      (false_positives + blacklist).uniq,
       replag: false,
       timing: false
     )
@@ -35,8 +40,8 @@ class WikiTools < Sinatra::Application
   def record_topviews_false_positives(params)
     return unless params[:pages].is_a?(Array)
 
-    where_clause = "WHERE project = ? AND page = ? AND date = ? AND platform = ?"
-    where_args = [params[:project], nil, params[:date], params[:platform]]
+    where_clause = "WHERE project = ? AND page = ? AND platform = ? AND date = ?"
+    where_args = [params[:project], nil, params[:platform], params[:date]]
 
     params[:pages].each do |page|
       where_args[1] = page
