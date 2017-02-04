@@ -7,6 +7,7 @@ class WikiTools < Sinatra::Application
     apps.each do |app|
       post("/#{app}/:project") { record_usage(app, params['project']) }
       get("/#{app}/:start/:end") { get_usage(app, params[:start], params[:end]) }
+      get("/#{app}-projects") { get_project_usage(app) }
       post("/#{app}-test/:project") { record_usage("#{app}_test", params['project'], true) }
     end
 
@@ -18,6 +19,14 @@ class WikiTools < Sinatra::Application
   end
 
   private
+
+  def get_project_usage(tool)
+    respond(
+      query("SELECT * FROM #{tool}_projects").to_a,
+      replag: false,
+      timing: false
+    )
+  end
 
   def get_topviews_false_positives(params)
     false_positives = query(
