@@ -53,8 +53,8 @@ class WikiTools < Sinatra::Application
     where_args = [params[:project], nil, params[:platform], params[:date]]
 
     params[:pages].each do |page|
-      where_args[1] = page
       page = metadata_client.escape(page)
+      where_args[1] = page
       if query("SELECT * FROM topviews_false_positives #{where_clause}", *where_args).to_a.empty?
         query("INSERT INTO topviews_false_positives VALUES(NULL, ?, ?, 0, 0, ?, ?)", *where_args)
       else
