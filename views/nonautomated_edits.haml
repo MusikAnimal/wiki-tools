@@ -1,4 +1,4 @@
-%form
+%form{style: 'display:none'}
   %fieldset.basic
     %label{for: "username"} Username
     %input#username{type: "text", placeholder: "Example", name: "username", required: true, value: params[:username]}
@@ -27,17 +27,17 @@
 
   %button Submit
 
-%section.output
-  %span.another-query &larr; Do another query
-  %div.summary-output.result-block
-  %dl.counts-output.result-block
-  %small.notes-output.result-block
-  %ul#contribs.contribs-output.result-block
-  %div.contrib-nav
-    %div.prev-page &larr; Newer 50
-    %div.next-page Older 50 &rarr;
+This tool has been
+%strong
+  retired.
 
-%section.loading
-  %div.loading-text Thinking...
-  %progress{max: "100", value: "0"}
-  %div.progress-report
+Thanks for the support over the years!
+
+%p
+  You will now be redirected to XTools, which is more comprehensive and up-to-date. Please update your links.
+
+%h3.countdown-text{style: 'color: red'}
+  Redirecting to XTools in&nbsp;
+  %span.redirect-countdown>
+    10
+  &hellip;
