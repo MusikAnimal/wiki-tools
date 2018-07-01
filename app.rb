@@ -56,19 +56,6 @@ class WikiTools < Sinatra::Application
     redirect 'https://tools.wmflabs.org/pageviews?redirected=true'
   end
 
-  post '/musikanimal/paste' do
-    if request.host.include?('wmflabs')
-      res = HTTParty.post('https://phabricator.wikimedia.org/api/paste.create',
-        body: {
-          'api.token' => Auth.get_phab_token,
-          title: params[:title],
-          content: params[:content]
-        }
-      )
-    end
-    halt 201, { 'Content-Type' => 'application/json' }, res.to_json
-  end
-
   namespace '/musikanimal/api' do
     after '/*' do
       return if params['splat'].join.include?('uses')
